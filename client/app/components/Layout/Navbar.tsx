@@ -1,16 +1,19 @@
 "use client";
+import Link from "next/link";
 import React, { FC, useState } from "react";
 import {
   AiOutlineShoppingCart,
   AiOutlineHeart,
-  AiOutlineUser,
+  AiOutlineUser
 } from "react-icons/ai";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 type Props = {};
 
 const Navbar: FC<Props> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { isSignedIn } = useUser(); // Check if user is signed in
 
   const cartCount = 3;
   const wishlistCount = 5;
@@ -24,7 +27,9 @@ const Navbar: FC<Props> = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex items-center space-x-6">
-          <h2 className="text-2xl font-bold text-primary">Sellify</h2> {/* Use primary color */}
+          <h2 className="text-2xl font-bold text-primary">
+            <Link href='/'>Sellify</Link>
+            </h2> {/* Use primary color */}
         </div>
 
         {/* Search Box */}
@@ -112,7 +117,25 @@ const Navbar: FC<Props> = () => {
             )}
           </div>
 
-          <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
+          {/* User Profile Button */}
+          <div className="relative">
+            {isSignedIn ? (
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    avatar: "w-8 h-8 rounded-full object-cover",
+                    button: "text-black hover:text-primary",
+                    logo: "hidden",
+                  },
+                }}
+              />
+            ) : (
+              <Link href="/login">
+                <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
