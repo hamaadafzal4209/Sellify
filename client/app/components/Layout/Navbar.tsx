@@ -11,6 +11,10 @@ type Props = {};
 
 const Navbar: FC<Props> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  // Example counters for cart and wishlist (can be dynamic)
+  const cartCount = 3;
+  const wishlistCount = 5;
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -91,8 +95,27 @@ const Navbar: FC<Props> = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-4">
-          <AiOutlineHeart className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
-          <AiOutlineShoppingCart className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
+          {/* Wishlist Icon with Counter */}
+          <div className="relative">
+            <AiOutlineHeart className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-[#866bac] rounded-full">
+                {wishlistCount}
+              </span>
+            )}
+          </div>
+
+          {/* Cart Icon with Counter */}
+          <div className="relative">
+            <AiOutlineShoppingCart className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-[#866bac] rounded-full">
+                {cartCount}
+              </span>
+            )}
+          </div>
+
+          {/* User Icon */}
           <AiOutlineUser className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
         </div>
       </div>
