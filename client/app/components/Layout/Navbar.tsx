@@ -13,7 +13,7 @@ type Props = {};
 
 const Navbar: FC<Props> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { isSignedIn } = useUser(); // Check if user is signed in
+  const { isSignedIn } = useUser();
 
   const cartCount = 3;
   const wishlistCount = 5;
