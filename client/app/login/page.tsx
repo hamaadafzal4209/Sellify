@@ -1,9 +1,11 @@
-import { SignIn } from "@clerk/nextjs";
+import React, { FC } from 'react'
 
-export default function LoginPage() {
+type Props = {}
+
+const page:FC<Props> = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <SignIn />
-    </div>
-  );
+    <div>Login Page</div>
+  )
 }
+
+export default page

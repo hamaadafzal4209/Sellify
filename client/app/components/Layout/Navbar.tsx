@@ -7,13 +7,11 @@ import {
   AiOutlineUser,
 } from "react-icons/ai";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
-import { UserButton, useUser } from "@clerk/nextjs";
 
 type Props = {};
 
 const Navbar: FC<Props> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { isSignedIn } = useUser();
 
   const cartCount = 3;
   const wishlistCount = 5;
@@ -117,25 +115,9 @@ const Navbar: FC<Props> = () => {
             )}
           </div>
 
-          {/* User Profile Button */}
-          <div className="relative">
-            {isSignedIn ? (
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatar: "w-8 h-8 rounded-full object-cover",
-                    button: "text-black hover:text-primary",
-                    logo: "hidden",
-                  },
-                }}
-              />
-            ) : (
-              <Link href="/login">
-                <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
-              </Link>
-            )}
-          </div>
+          <Link href="/login">
+            <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
+          </Link>
         </div>
       </div>
 
