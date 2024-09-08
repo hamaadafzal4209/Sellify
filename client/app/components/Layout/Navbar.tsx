@@ -47,7 +47,6 @@ const Navbar: FC<Props> = () => {
                   d="m1 1 4 4 4-4"
                 />
               </svg>
-              
             </button>
             {dropdownOpen && (
               <div className="absolute left-0 top-0 max-h-96 overflow-y-auto mt-12 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
