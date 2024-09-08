@@ -11,8 +11,7 @@ type Props = {};
 
 const Navbar: FC<Props> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  
-  // Example counters for cart and wishlist (can be dynamic)
+
   const cartCount = 3;
   const wishlistCount = 5;
 
@@ -25,7 +24,7 @@ const Navbar: FC<Props> = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex items-center space-x-6">
-          <h2 className="text-2xl font-bold text-teal-600">Sellify</h2>
+          <h2 className="text-2xl font-bold text-primary">Sellify</h2> {/* Use primary color */}
         </div>
 
         {/* Search Box */}
@@ -34,7 +33,7 @@ const Navbar: FC<Props> = () => {
             <button
               type="button"
               onClick={toggleDropdown}
-              className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
+              className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
             >
               All categories
               <BiChevronDown className="ml-2.5" size={20} />
@@ -79,13 +78,13 @@ const Navbar: FC<Props> = () => {
             )}
             <input
               type="search"
-              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-teal-500"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-primary"
               placeholder="Search Mockups, Logos, Design Templates..."
               required
             />
             <button
               type="submit"
-              className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-teal-600 rounded-e-lg border border-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-500 dark:hover:bg-teal-600 dark:focus:ring-teal-700"
+              className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-primary rounded-e-lg border border-primary hover:bg-darkPrimary focus:ring-4 focus:outline-none"
             >
               <BiSearch size={20} />
               <span className="sr-only">Search</span>
@@ -95,28 +94,25 @@ const Navbar: FC<Props> = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-4">
-          {/* Wishlist Icon with Counter */}
           <div className="relative">
-            <AiOutlineHeart className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
+            <AiOutlineHeart className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-[#866bac] rounded-full">
+              <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-primary rounded-full">
                 {wishlistCount}
               </span>
             )}
           </div>
 
-          {/* Cart Icon with Counter */}
           <div className="relative">
-            <AiOutlineShoppingCart className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
+            <AiOutlineShoppingCart className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-[#866bac] rounded-full">
+              <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-primary rounded-full">
                 {cartCount}
               </span>
             )}
           </div>
 
-          {/* User Icon */}
-          <AiOutlineUser className="text-2xl text-teal-600 cursor-pointer hover:text-teal-800 transition-colors duration-200" />
+          <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
         </div>
       </div>
 
@@ -126,7 +122,7 @@ const Navbar: FC<Props> = () => {
           <button
             type="button"
             onClick={toggleDropdown}
-            className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
+            className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
           >
             All categories
             <BiChevronDown className="ml-2.5" size={20} />
@@ -171,13 +167,13 @@ const Navbar: FC<Props> = () => {
           )}
           <input
             type="search"
-            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-teal-500"
+            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-primary"
             placeholder="Search Mockups, Logos, Design Templates..."
             required
           />
           <button
             type="submit"
-            className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-teal-600 rounded-e-lg border border-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-500 dark:hover:bg-teal-600 dark:focus:ring-teal-700"
+            className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-primary rounded-e-lg border border-primary hover:bg-darkPrimary focus:ring-4 focus:outline-none"
           >
             <BiSearch size={20} />
             <span className="sr-only">Search</span>
