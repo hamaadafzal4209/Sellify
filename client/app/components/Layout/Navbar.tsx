@@ -4,7 +4,7 @@ import React, { FC, useState } from "react";
 import {
   AiOutlineShoppingCart,
   AiOutlineHeart,
-  AiOutlineUser
+  AiOutlineUser,
 } from "react-icons/ai";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { UserButton, useUser } from "@clerk/nextjs";
@@ -28,8 +28,8 @@ const Navbar: FC<Props> = () => {
         {/* Logo */}
         <div className="flex items-center space-x-6">
           <h2 className="text-2xl font-bold text-primary">
-            <Link href='/'>Sellify</Link>
-            </h2> {/* Use primary color */}
+            <Link href="/">Sellify</Link>
+          </h2>{" "}
         </div>
 
         {/* Search Box */}
