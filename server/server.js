@@ -37,7 +37,7 @@ connectDatabase();
 
 // import routes
 
-app.use("/api/v1/user", userRouter)
+app.use("/api/v1/user", userRouter);
 
 // unhandled promise rejection
 process.on("unhandledRejection", (err) => {
