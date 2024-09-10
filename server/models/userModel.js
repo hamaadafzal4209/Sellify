@@ -1,10 +1,12 @@
-require("dotenv").config();
+import 'dotenv/config';
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+// Email Regex for validation
 const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// User Schema
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -39,7 +41,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// hash password before creation
+// Hash password before creation
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -48,10 +50,24 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// compare password
+// Sign access token
+userSchema.methods.SignAccessToken = function () {
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "5m",
+  });
+};
+
+// Sign refresh token
+userSchema.methods.SignRefreshToken = function () {
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
+};
+
+// Compare password
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const userModel = mongoose.model("user", userSchema);
+const userModel = mongoose.model("User", userSchema);
 export default userModel;

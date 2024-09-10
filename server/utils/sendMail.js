@@ -1,6 +1,6 @@
-require("dotenv").config();
+import 'dotenv/config';
 import ejs from "ejs";
-import nodemailer, { Transporter } from "nodemailer";
+import nodemailer from "nodemailer";
 import path from "path";
 
 const sendMail = async (options) => {
