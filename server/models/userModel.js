@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -41,26 +40,26 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password before creation
+// Hash password before saving user
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Sign access token
+// Sign Access Token
 userSchema.methods.SignAccessToken = function () {
   return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "5m",
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRE,
   });
 };
 
-// Sign refresh token
+// Sign Refresh Token
 userSchema.methods.SignRefreshToken = function () {
   return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: "7d",
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRE,
   });
 };
 

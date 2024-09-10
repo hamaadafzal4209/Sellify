@@ -3,7 +3,7 @@ import ErrorHandler from "../utils/ErrorHandler.js";
 import userModel from "../models/userModel.js";
 import catchAsyncErrors from "./catchAsyncErrors.js";
 
-// Authenticated users
+// Check if user is authenticated
 export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   const accessToken = req.cookies.access_token;
 
@@ -12,7 +12,6 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   }
 
   const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
-
   const user = await userModel.findById(decoded.id);
 
   if (!user) {
@@ -23,7 +22,7 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   next();
 });
 
-// Authorize user role
+// Authorize user roles
 export const authorizeRole = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user?.role)) {
     return next(new ErrorHandler(`Role: ${req.user.role} not allowed`, 403));
