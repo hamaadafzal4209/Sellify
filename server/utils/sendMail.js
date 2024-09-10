@@ -1,8 +1,8 @@
 import ejs from "ejs";
 import nodemailer from "nodemailer";
 import path from "path";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 // Define __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);

@@ -60,33 +60,35 @@ export const registrationUser = catchAsyncErrors(async (req, res, next) => {
 
 // User Activation
 export const activateUser = catchAsyncErrors(async (req, res, next) => {
-    const { activation_token, activation_code } = req.body;
-  
-    if (!activation_token || !activation_code) {
-      return next(new ErrorHandler("Please provide both activation token and code", 400));
-    }
-  
-    let newUser;
-    try {
-      newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
-    } catch (error) {
-      return next(new ErrorHandler("Invalid or expired activation token", 400));
-    }
-  
-    if (newUser.activationCode !== activation_code.toString()) {
-      return next(new ErrorHandler("Invalid activation code", 400));
-    }
-  
-    const { name, email, password } = newUser.user;
-    const existUser = await userModel.findOne({ email });
-  
-    if (existUser) {
-      return next(new ErrorHandler("Email already exists", 400));
-    }
-  
-    await userModel.create({ name, email, password });
-    res.status(201).json({ success: true });
-  });
+  const { activation_token, activation_code } = req.body;
+
+  if (!activation_token || !activation_code) {
+    return next(
+      new ErrorHandler("Please provide both activation token and code", 400)
+    );
+  }
+
+  let newUser;
+  try {
+    newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
+  } catch (error) {
+    return next(new ErrorHandler("Invalid or expired activation token", 400));
+  }
+
+  if (newUser.activationCode !== activation_code.toString()) {
+    return next(new ErrorHandler("Invalid activation code", 400));
+  }
+
+  const { name, email, password } = newUser.user;
+  const existUser = await userModel.findOne({ email });
+
+  if (existUser) {
+    return next(new ErrorHandler("Email already exists", 400));
+  }
+
+  await userModel.create({ name, email, password });
+  res.status(201).json({ success: true });
+});
 
 // User Login
 export const loginUser = catchAsyncErrors(async (req, res, next) => {
