@@ -1,27 +1,11 @@
 import express from "express";
-import {
-	login,
-	logout,
-	signup,
-	verifyEmail,
-	forgotPassword,
-	resetPassword,
-	checkAuth,
-} from "../controllers/userController.js";
-import { verifyToken } from "../middleware/verifyToken.js";
-import upload from '../config/multer.js';
+import { activateUser, loginUser, logoutUser, registrationUser } from "../controllers/userController";
 
 const userRouter = express.Router();
 
-userRouter.get("/check-auth", verifyToken, checkAuth);
-
-userRouter.post('/signup', upload.single('avatar'), signup);
-userRouter.post("/login", login);
-userRouter.post("/logout", logout);
-
-userRouter.post("/verify-email", verifyEmail);
-userRouter.post("/forgot-password", forgotPassword);
-
-userRouter.post("/reset-password/:token", resetPassword);
+userRouter.post("/registration", registrationUser);
+userRouter.post("/activate-user", activateUser);
+userRouter.post("/login", loginUser);
+userRouter.get("/logout", logoutUser);
 
 export default userRouter;
