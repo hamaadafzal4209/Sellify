@@ -8,6 +8,7 @@ import {
 } from "react-icons/ai";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {};
 
 const Navbar: FC<Props> = () => {
