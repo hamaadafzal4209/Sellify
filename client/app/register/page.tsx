@@ -78,7 +78,7 @@ const Register: FC<Props> = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="new-password"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
                 <button
                   type="button"
@@ -102,7 +102,7 @@ const Register: FC<Props> = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
                   autoComplete="new-password"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
                 <button
                   type="button"
@@ -126,7 +126,7 @@ const Register: FC<Props> = () => {
 
           <p className="mt-4 text-center text-sm text-gray-500">
             {"Already have an account? "}
-            <Link href="/signin" className="font-semibold leading-6 text-primary hover:text-primary">
+            <Link href="/login" className="font-semibold leading-6 text-primary hover:text-primary">
               Sign in to your account
             </Link>
           </p>
