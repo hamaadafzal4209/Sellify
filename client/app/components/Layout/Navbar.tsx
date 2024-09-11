@@ -1,29 +1,34 @@
-"use client";
+"use client"
+import { FC, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/redux/store";
+import { logoutUser } from "@/app/redux/features/auth/authSlice";
 import Image from "next/image";
 import Link from "next/link";
-import React, { FC, useState } from "react";
-import {
-  AiOutlineShoppingCart,
-  AiOutlineHeart,
-  AiOutlineUser,
-} from "react-icons/ai";
+import { AiOutlineShoppingCart, AiOutlineHeart, AiOutlineUser } from "react-icons/ai";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
+import { Dropdown, Avatar } from "flowbite-react";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type Props = {};
+const Navbar: FC = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.auth);
 
-const Navbar: FC<Props> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const cartCount = 3;
+  const cartCount = 3
   const wishlistCount = 5;
-  
-  // Simulate user login status
-  const isLoggedIn = true; // Change this based on your login logic
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+
+  const handleLogout = () => {
+    dispatch(logoutUser() as any); // Cast to `any` if necessary
+  };
+
+  useEffect(() => {
+    // Handle side effects if necessary
+  }, [user]);
 
   return (
     <div className="shadow-md w-full px-5 py-4 bg-white">
@@ -122,15 +127,25 @@ const Navbar: FC<Props> = () => {
             )}
           </div>
 
-          {isLoggedIn ? (
+          {user ? (
             <div className="relative">
-                <Image
-                  src="/user.png"
-                  alt="User"
-                  width={32}
-                  height={32}
-                  className="rounded-full cursor-pointer"
-                />
+              <Dropdown
+                label={
+                  <Avatar
+                    alt="User settings"
+                    img={user.profilePicture || "/user.png"}
+                    rounded
+                  />
+                }
+                arrowIcon={false}
+                inline
+              >
+                <Dropdown.Header>
+                  <span className="block text-sm">{user.name}</span>
+                  <span className="block truncate text-sm font-medium">{user.email}</span>
+                </Dropdown.Header>
+                <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
+              </Dropdown>
             </div>
           ) : (
             <Link href="/login">

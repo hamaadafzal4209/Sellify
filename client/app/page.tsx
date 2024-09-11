@@ -5,7 +5,7 @@ import {Toaster} from 'react-hot-toast';
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {}
 
-const Navbar:FC<Props> = () => {
+const page:FC<Props> = () => {
   return (
     <div>
       <Toaster/>
@@ -14,4 +14,4 @@ const Navbar:FC<Props> = () => {
   )
 }
 
-export default Navbar
+export default page

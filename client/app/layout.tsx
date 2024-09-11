@@ -1,3 +1,4 @@
+// app/layout.tsx (or equivalent file)
 import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from './components/Layout/Navbar';
