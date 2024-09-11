@@ -17,6 +17,9 @@ const Navbar: FC<Props> = () => {
 
   const cartCount = 3;
   const wishlistCount = 5;
+  
+  // Simulate user login status
+  const isLoggedIn = true; // Change this based on your login logic
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -29,9 +32,9 @@ const Navbar: FC<Props> = () => {
         <div className="flex items-center space-x-6">
           <h2 className="text-2xl font-bold text-primary">
             <Link href="/">
-            <Image width={120} height={100} className="mx-auto" src="/logo.png" alt="Sellify" />
+              <Image width={120} height={100} className="mx-auto" src="/logo.png" alt="Sellify" />
             </Link>
-          </h2>{" "}
+          </h2>
         </div>
 
         {/* Search Box */}
@@ -119,9 +122,21 @@ const Navbar: FC<Props> = () => {
             )}
           </div>
 
-          <Link href="/login">
-            <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
-          </Link>
+          {isLoggedIn ? (
+            <div className="relative">
+                <Image
+                  src="/user.png"
+                  alt="User"
+                  width={32}
+                  height={32}
+                  className="rounded-full cursor-pointer"
+                />
+            </div>
+          ) : (
+            <Link href="/login">
+              <AiOutlineUser className="text-2xl text-black cursor-pointer hover:text-primary transition-colors duration-200" />
+            </Link>
+          )}
         </div>
       </div>
 

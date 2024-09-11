@@ -2,9 +2,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC, useState } from 'react';
-import { FiEye, FiEyeOff } from 'react-icons/fi'; // Import icons
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../redux/features/auth/authSlice'; // Import the login action
+import { loginUser } from '../redux/features/auth/authSlice'; 
 import { RootState } from '../redux/store';
 import toast from 'react-hot-toast';
 import { redirect } from 'next/navigation';
