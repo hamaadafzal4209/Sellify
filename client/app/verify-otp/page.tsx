@@ -64,8 +64,7 @@ const OTPVerification = () => {
         <header className="mb-8">
           <h1 className="text-2xl font-bold mb-1">Verify Email</h1>
           <p className="text-[15px] text-slate-500">
-            Enter the 4-digit verification code that was sent to your phone
-            number.
+            Enter the 4-digit verification code that was sent to your email.
           </p>
         </header>
         <form id="otp-form" onSubmit={handleSubmit}>
