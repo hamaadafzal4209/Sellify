@@ -1,9 +1,9 @@
 "use client";
 
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from '../redux/store';
-import { useEffect, useState } from 'react';
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "../redux/store";
+import { useEffect, useState } from "react";
 
 export default function ReduxProvider({
   children,
@@ -14,7 +14,7 @@ export default function ReduxProvider({
 
   useEffect(() => {
     // Check if window is available, meaning we're on the client-side
-    setIsClient(typeof window !== 'undefined');
+    setIsClient(typeof window !== "undefined");
   }, []);
 
   if (!isClient) {

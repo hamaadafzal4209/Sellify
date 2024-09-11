@@ -132,8 +132,9 @@ const Navbar: FC = () => {
               <Dropdown
                 label={
                   <Avatar
+                  className="w-10 h-10 !aspect-square flex-shrink-0"
                     alt="User settings"
-                    img={user.profilePicture || "/user.png"}
+                    img={user?.avatar || "/user.png"}
                     rounded
                   />
                 }
@@ -144,6 +145,7 @@ const Navbar: FC = () => {
                   <span className="block text-sm">{user.name}</span>
                   <span className="block truncate text-sm font-medium">{user.email}</span>
                 </Dropdown.Header>
+                <Dropdown.Item>Profile</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
               </Dropdown>
             </div>
