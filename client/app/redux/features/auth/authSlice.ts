@@ -22,24 +22,24 @@ const initialState: AuthState = {
 
 // Register User
 export const registerUser = createAsyncThunk(
-    "auth/registerUser",
-    async (
-      userData: { name: string; email: string; password: string },
-      { rejectWithValue }
-    ) => {
-      try {
-        const response = await axios.post(
-          "http://localhost:8000/api/v1/user/registration",
-          userData
-        );
-        
-        // Return the response with the token
-        return response.data;
-      } catch (error: any) {
-        return rejectWithValue(error.response.data.message);
-      }
+  "auth/registerUser",
+  async (
+    userData: { name: string; email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/user/registration",
+        userData
+      );
+
+      // Return the response with the token
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
     }
-  );  
+  }
+);
 
 // Verify OTP
 export const verifyOTP = createAsyncThunk(
@@ -79,6 +79,19 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Logout User
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await axios.get("http://localhost:8000/api/v1/user/logout");
+      return; // No payload needed for logout
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -91,6 +104,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Register User
     builder.addCase(registerUser.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -130,6 +144,23 @@ const authSlice = createSlice({
       state.refreshToken = payload.refreshToken;
     });
     builder.addCase(loginUser.rejected, (state, { payload }) => {
+      state.loading = false;
+      state.error = payload as string;
+    });
+
+    // Logout User
+    builder.addCase(logoutUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.loading = false;
+      state.user = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.message = "Logged out successfully";
+    });
+    builder.addCase(logoutUser.rejected, (state, { payload }) => {
       state.loading = false;
       state.error = payload as string;
     });
