@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use cient"
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 interface AuthState {
   user: any;
@@ -23,23 +22,37 @@ const initialState: AuthState = {
 
 // Register User
 export const registerUser = createAsyncThunk(
-  'auth/registerUser',
-  async (userData: { name: string; email: string; password: string }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post('/api/registration', userData);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data.message);
+    "auth/registerUser",
+    async (
+      userData: { name: string; email: string; password: string },
+      { rejectWithValue }
+    ) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/v1/user/registration",
+          userData
+        );
+        
+        // Return the response with the token
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response.data.message);
+      }
     }
-  }
-);
+  );  
 
-// Activate User
-export const activateUser = createAsyncThunk(
-  'auth/activateUser',
-  async (activationData: { activation_token: string; activation_code: string }, { rejectWithValue }) => {
+// Verify OTP
+export const verifyOTP = createAsyncThunk(
+  "auth/verifyOTP",
+  async (
+    otpData: { activation_token: string; activation_code: string },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axios.post('/api/activate-user', activationData);
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/user/activate-user",
+        otpData
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -49,23 +62,16 @@ export const activateUser = createAsyncThunk(
 
 // Login User
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
-  async (loginData: { email: string; password: string }, { rejectWithValue }) => {
+  "auth/loginUser",
+  async (
+    loginData: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axios.post('/api/login', loginData);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
-
-// Logout User
-export const logoutUser = createAsyncThunk(
-  'auth/logoutUser',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get('/api/logout');
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/user/login",
+        loginData
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -74,7 +80,7 @@ export const logoutUser = createAsyncThunk(
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     resetMessage: (state) => {
@@ -85,7 +91,6 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Register
     builder.addCase(registerUser.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -99,16 +104,16 @@ const authSlice = createSlice({
       state.error = payload as string;
     });
 
-    // Activate User
-    builder.addCase(activateUser.pending, (state) => {
+    // Verify OTP
+    builder.addCase(verifyOTP.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(activateUser.fulfilled, (state) => {
+    builder.addCase(verifyOTP.fulfilled, (state, { payload }) => {
       state.loading = false;
-      state.message = 'User activated successfully';
+      state.message = payload.message;
     });
-    builder.addCase(activateUser.rejected, (state, { payload }) => {
+    builder.addCase(verifyOTP.rejected, (state, { payload }) => {
       state.loading = false;
       state.error = payload as string;
     });
@@ -125,21 +130,6 @@ const authSlice = createSlice({
       state.refreshToken = payload.refreshToken;
     });
     builder.addCase(loginUser.rejected, (state, { payload }) => {
-      state.loading = false;
-      state.error = payload as string;
-    });
-
-    // Logout User
-    builder.addCase(logoutUser.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(logoutUser.fulfilled, (state) => {
-      state.loading = false;
-      state.user = null;
-      state.accessToken = null;
-      state.refreshToken = null;
-    });
-    builder.addCase(logoutUser.rejected, (state, { payload }) => {
       state.loading = false;
       state.error = payload as string;
     });

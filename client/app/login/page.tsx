@@ -1,18 +1,42 @@
-"use client"
+"use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC, useState } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi'; // Import icons
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/features/auth/authSlice'; // Import the login action
+import { RootState } from '../redux/store';
+import toast from 'react-hot-toast';
+import { redirect } from 'next/navigation';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {};
 
 const Page: FC<Props> = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const dispatch = useDispatch();
+  const { loading, error, user } = useSelector((state: RootState) => state.auth);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(loginUser({ email, password }));
+  };
+
+  if (error) {
+    toast.error(error);
+  }
+
+  if (user) {
+    toast.success("Login successful!");
+    redirect('/')
+  }
 
   return (
     <div>
@@ -25,7 +49,7 @@ const Page: FC<Props> = () => {
         </div>
 
         <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
@@ -36,6 +60,8 @@ const Page: FC<Props> = () => {
                   name="email"
                   type="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
@@ -59,16 +85,17 @@ const Page: FC<Props> = () => {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
-                {/* Show or hide password icon */}
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-600"
                 >
-                  {showPassword ? <FiEyeOff /> : <FiEye />} {/* Toggle between eye and eye-off */}
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
             </div>
@@ -77,8 +104,9 @@ const Page: FC<Props> = () => {
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-darkPrimary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                disabled={loading}
               >
-                Sign in
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>

@@ -1,23 +1,70 @@
-"use client"
+"use client";
+
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC, useState } from 'react';
-import { FiEye, FiEyeOff } from 'react-icons/fi'; // Import icons
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { registerUser } from '../redux/features/auth/authSlice';
+import { RootState } from '../redux/store';
+import toast from 'react-hot-toast';
+import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type Props = {};
+interface IFormInput {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
-const Register: FC<Props> = () => {
+const Register: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { loading, error, message } = useSelector((state: RootState) => state.auth);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<IFormInput>();
+
+  const password = watch("password");
+
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    if (data.password !== data.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    dispatch(registerUser({ name: data.username, email: data.email, password: data.password }))
+      .unwrap()
+      .then((res) => {
+        // Store activationToken in localStorage (or Redux)
+        localStorage.setItem("activationToken", res.activationToken);
+        toast.success("Registration successful, please verify your email.");
+        router.push('/verify-otp');  // Redirect to OTP verification
+      })
+      .catch((err) => {
+        toast.error(err);
+      });
   };
 
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+
+  if (message) {
+    toast.success(message);
+    redirect('/verify-otp')
+  }
+
+  if (error) {
+    toast.error(error);
+  }
 
   return (
     <div>
@@ -30,9 +77,7 @@ const Register: FC<Props> = () => {
         </div>
 
         <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
-            
-            {/* Username Field */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
                 Username
@@ -40,16 +85,14 @@ const Register: FC<Props> = () => {
               <div className="mt-2">
                 <input
                   id="username"
-                  name="username"
+                  {...register('username', { required: 'Username is required' })}
                   type="text"
-                  required
-                  autoComplete="username"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
+                {errors.username && <p className="text-red-600 text-sm mt-1">{errors.username.message}</p>}
               </div>
             </div>
 
-            {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
@@ -57,16 +100,14 @@ const Register: FC<Props> = () => {
               <div className="mt-2">
                 <input
                   id="email"
-                  name="email"
+                  {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Enter a valid email' } })}
                   type="email"
-                  required
-                  autoComplete="email"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
+                {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>}
               </div>
             </div>
 
-            {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                 Password
@@ -74,10 +115,8 @@ const Register: FC<Props> = () => {
               <div className="mt-2 relative">
                 <input
                   id="password"
-                  name="password"
+                  {...register('password', { required: 'Password is required' })}
                   type={showPassword ? 'text' : 'password'}
-                  required
-                  autoComplete="new-password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
                 <button
@@ -87,10 +126,10 @@ const Register: FC<Props> = () => {
                 >
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
+                {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>}
               </div>
             </div>
 
-            {/* Confirm Password Field */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">
                 Confirm Password
@@ -98,10 +137,8 @@ const Register: FC<Props> = () => {
               <div className="mt-2 relative">
                 <input
                   id="confirmPassword"
-                  name="confirmPassword"
+                  {...register('confirmPassword', { required: 'Confirm password is required' })}
                   type={showConfirmPassword ? 'text' : 'password'}
-                  required
-                  autoComplete="new-password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                 />
                 <button
@@ -111,6 +148,7 @@ const Register: FC<Props> = () => {
                 >
                   {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
+                {errors.confirmPassword && <p className="text-red-600 text-sm mt-1">{errors.confirmPassword.message}</p>}
               </div>
             </div>
 
@@ -118,8 +156,9 @@ const Register: FC<Props> = () => {
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-darkPrimary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                disabled={loading}
               >
-                Register
+                {loading ? 'Registering...' : 'Register'}
               </button>
             </div>
           </form>
