@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { PURGE } from "redux-persist";
 
 interface AuthState {
   user: any;
@@ -32,8 +33,6 @@ export const registerUser = createAsyncThunk(
         "http://localhost:8000/api/v1/user/registration",
         userData
       );
-
-      // Return the response with the token
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -72,6 +71,11 @@ export const loginUser = createAsyncThunk(
         "http://localhost:8000/api/v1/user/login",
         loginData
       );
+
+      // Store the tokens in localStorage
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -82,10 +86,18 @@ export const loginUser = createAsyncThunk(
 // Logout User
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       await axios.get("http://localhost:8000/api/v1/user/logout");
-      return; // No payload needed for logout
+
+      // Clear tokens from localStorage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      // Clear persisted state
+      dispatch({ type: PURGE, result: () => null });
+
+      return;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
     }

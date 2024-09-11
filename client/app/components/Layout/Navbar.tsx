@@ -1,11 +1,15 @@
-"use client"
-import { FC, useState, useEffect } from "react";
+"use client";
+import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
 import { logoutUser } from "@/app/redux/features/auth/authSlice";
 import Image from "next/image";
 import Link from "next/link";
-import { AiOutlineShoppingCart, AiOutlineHeart, AiOutlineUser } from "react-icons/ai";
+import {
+  AiOutlineShoppingCart,
+  AiOutlineHeart,
+  AiOutlineUser,
+} from "react-icons/ai";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { Dropdown, Avatar } from "flowbite-react";
 
@@ -15,7 +19,7 @@ const Navbar: FC = () => {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const cartCount = 3
+  const cartCount = 3;
   const wishlistCount = 5;
 
   const toggleDropdown = () => {
@@ -23,12 +27,13 @@ const Navbar: FC = () => {
   };
 
   const handleLogout = () => {
-    dispatch(logoutUser() as any); // Cast to `any` if necessary
+    // Clear localStorage and dispatch logout action
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    
+    // Dispatch logout to update state
+    dispatch(logoutUser() as any); 
   };
-
-  useEffect(() => {
-    // Handle side effects if necessary
-  }, [user]);
 
   return (
     <div className="shadow-md w-full px-5 py-4 bg-white">
@@ -37,7 +42,13 @@ const Navbar: FC = () => {
         <div className="flex items-center space-x-6">
           <h2 className="text-2xl font-bold text-primary">
             <Link href="/">
-              <Image width={120} height={100} className="mx-auto" src="/logo.png" alt="Sellify" />
+              <Image
+                width={120}
+                height={100}
+                className="mx-auto"
+                src="/logo.png"
+                alt="Sellify"
+              />
             </Link>
           </h2>
         </div>
@@ -132,7 +143,7 @@ const Navbar: FC = () => {
               <Dropdown
                 label={
                   <Avatar
-                  className="w-10 h-10 !aspect-square flex-shrink-0"
+                    className="w-10 h-10 !aspect-square flex-shrink-0"
                     alt="User settings"
                     img={user?.avatar || "/user.png"}
                     rounded
@@ -143,7 +154,9 @@ const Navbar: FC = () => {
               >
                 <Dropdown.Header>
                   <span className="block text-sm">{user.name}</span>
-                  <span className="block truncate text-sm font-medium">{user.email}</span>
+                  <span className="block truncate text-sm font-medium">
+                    {user.email}
+                  </span>
                 </Dropdown.Header>
                 <Dropdown.Item>Profile</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
