@@ -75,7 +75,7 @@ export default function Header() {
                       href="/shop"
                       className="text-base font-medium text-gray-900 hover:text-primary-500"
                     >
-                      Shop All
+                      Shop
                     </Link>
                     <Link
                       href="/categories"
@@ -85,9 +85,11 @@ export default function Header() {
                     </Link>
                   </nav>
                   <div className="mt-6">
-                    <Button className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-[#e63b61]">
-                      Login
-                    </Button>
+                    <Link href="/login" passHref>
+                      <Button className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-[#e63b61]">
+                        Login
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </SheetContent>
@@ -106,7 +108,7 @@ export default function Header() {
               href="/shop"
               className="text-base font-medium text-gray-900 hover:text-primary-600"
             >
-              Shop All
+              Shop
             </Link>
             <Link
               href="/categories"
@@ -118,12 +120,14 @@ export default function Header() {
 
           {/* Login Button for Desktop */}
           <div className="hidden md:flex items-center ml-8">
-            <Button
-              variant="ghost"
-              className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
-            >
-              Login
-            </Button>
+            <Link href="/login" passHref>
+              <Button
+                variant="ghost"
+                className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
+              >
+                Login
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
