@@ -11,25 +11,39 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          400: "#FF708C", // Lighter variant: Use for subtle hover or background elements.
-          500: "#FE426D", // Main color: Use for primary buttons, headings, or call-to-action elements.
-          600: "#E6395E", // Darker variant: Use for hover effects on buttons.
+          400: "#FF708C", // Lighter variant
+          500: "#FE426D", // Main color
+          600: "#E6395E", // Darker variant
         },
         gray: {
-          100: "#F5F5F5", // Light Gray: Use for backgrounds, sections, or areas with less focus.
-          900: "#333333", // Charcoal Gray: Use for text, footers, and headings for contrast.
+          100: "#F5F5F5", // Light gray
+          900: "#333333", // Charcoal gray
         },
         accent: {
-          500: "#42FEBD", // Mint Green: Use for accents, hover effects, or secondary buttons.
+          500: "#42FEBD", // Mint green
         },
       },
       fontFamily: {
-        // Add your font definitions here
         sans: ["var(--font-inter)", "sans-serif"], // Inter for body text
         poppins: ["var(--font-poppins)", "sans-serif"], // Poppins for headings
       },
+      keyframes: {
+        "sheet-open": {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        "sheet-close": {
+          '0%': { transform: 'translateX(0)', opacity: '1' },
+          '100%': { transform: 'translateX(-100%)', opacity: '0' },
+        },
+      },
+      animation: {
+        "sheet-open": "sheet-open 0.3s ease-out",
+        "sheet-close": "sheet-close 0.3s ease-in",
+      },
     },
   },
+  plugins: [],
 };
 
 export default config;
