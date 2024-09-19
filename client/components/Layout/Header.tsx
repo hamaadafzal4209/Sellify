@@ -15,8 +15,8 @@ export default function Header() {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold text-[#FE426D]">
-              EcoShop
+            <Link href="/" className="text-xl font-bold text-primary-500">
+              Sellify
             </Link>
           </div>
 
@@ -36,7 +36,7 @@ export default function Header() {
                 <Input
                   id="search"
                   name="search"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#FE426D] focus:border-[#FE426D] sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   placeholder="Search for products"
                   type="search"
                 />
@@ -50,7 +50,7 @@ export default function Header() {
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="text-[#FE426D]"
+                  className="text-primary-500"
                   aria-label="Open menu"
                 >
                   <Menu className="h-6 w-6" />
@@ -67,25 +67,25 @@ export default function Header() {
                   <nav className="flex flex-col gap-4">
                     <Link
                       href="/"
-                      className="text-base font-medium text-gray-900 hover:text-[#FE426D]"
+                      className="text-base font-medium text-gray-900 hover:text-primary-500"
                     >
                       Home
                     </Link>
                     <Link
                       href="/shop"
-                      className="text-base font-medium text-gray-900 hover:text-[#FE426D]"
+                      className="text-base font-medium text-gray-900 hover:text-primary-500"
                     >
                       Shop All
                     </Link>
                     <Link
                       href="/categories"
-                      className="text-base font-medium text-gray-900 hover:text-[#FE426D]"
+                      className="text-base font-medium text-gray-900 hover:text-primary-500"
                     >
                       Categories
                     </Link>
                   </nav>
                   <div className="mt-6">
-                    <Button className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-[#FE426D] hover:bg-[#e63b61]">
+                    <Button className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-[#e63b61]">
                       Login
                     </Button>
                   </div>
@@ -98,19 +98,19 @@ export default function Header() {
           <nav className="hidden md:flex space-x-10">
             <Link
               href="/"
-              className="text-base font-medium text-gray-500 hover:text-gray-900"
+              className="text-base font-medium text-gray-900 hover:text-primary-600"
             >
               Home
             </Link>
             <Link
               href="/shop"
-              className="text-base font-medium text-gray-500 hover:text-gray-900"
+              className="text-base font-medium text-gray-900 hover:text-primary-600"
             >
               Shop All
             </Link>
             <Link
               href="/categories"
-              className="text-base font-medium text-gray-500 hover:text-gray-900"
+              className="text-base font-medium text-gray-900 hover:text-primary-600"
             >
               Categories
             </Link>
@@ -120,7 +120,7 @@ export default function Header() {
           <div className="hidden md:flex items-center ml-8">
             <Button
               variant="ghost"
-              className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-[#FE426D] hover:bg-[#e63b61]"
+              className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
             >
               Login
             </Button>
@@ -135,7 +135,7 @@ export default function Header() {
           <Input
             id="search"
             name="search"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#FE426D] focus:border-[#FE426D] sm:text-sm"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
             placeholder="Search for products"
             type="search"
           />
