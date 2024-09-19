@@ -9,9 +9,7 @@ import { errorHandlerMiddleware } from "./middleware/error.js";
 // config
 const app = express();
 if (process.env.NODE_ENV !== "PRODUCTION") {
-  dotenv.config({
-    path: "config/.env",
-  });
+  dotenv.config();
 }
 
 app.use(
