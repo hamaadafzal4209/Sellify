@@ -63,8 +63,7 @@ export const categoriesData = [
     id: 6,
     title: "Gifts",
     subTitle: "",
-    image_Url:
-      "https://cdn-icons-png.flaticon.com/128/2349/2349820.png",
+    image_Url: "https://cdn-icons-png.flaticon.com/128/2349/2349820.png",
   },
   {
     id: 7,
