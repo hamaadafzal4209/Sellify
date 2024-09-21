@@ -59,17 +59,23 @@ const Footer = () => {
         <hr className="my-6 border-gray-600" />
 
         {/* Bottom Section */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
+        <div className="md:flex md:justify-between md:items-center">
+          <div className="text-center md:text-left">
             <span className="text-sm text-gray-400">
               &copy; {new Date().getFullYear()} Sellify. All rights reserved.
             </span>
           </div>
-          <div className="space-x-4">
-            <Link href="" className="text-gray-300 hover:underline">
+          <div className="mt-1 md:mt-0 flex space-x-4 justify-center md:justify-end">
+            <Link
+              href="/privacy-policy"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link href="" className="text-gray-300 hover:underline">
+            <Link
+              href="/terms-of-service"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
               Terms of Service
             </Link>
           </div>
