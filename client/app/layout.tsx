@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
 import Header from "@/components/Layout/Header";
+import Footer from "@/components/Layout/Footer";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body>
         <Header />
         {children}
+        <Footer/>
       </body>
     </html>
   );
