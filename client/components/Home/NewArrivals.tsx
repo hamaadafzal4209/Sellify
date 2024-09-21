@@ -2,11 +2,11 @@
 import React from "react";
 import ProductCard from "../Products/ProductCard";
 
-const FeaturedProducts = () => {
+const NewArrivalProducts = () => {
   return (
-    <section className="main-container py-12">
+    <section className="main-container pb-12">
       <div className="flex items-center justify-between gap-4 mb-6">
-        <h2 className="section-heading">Featured Products</h2>
+        <h2 className="section-heading">Latest Products</h2>
       </div>
 
       {/* Product Grid */}
@@ -22,4 +22,4 @@ const FeaturedProducts = () => {
   );
 };
 
-export default FeaturedProducts;
+export default NewArrivalProducts;

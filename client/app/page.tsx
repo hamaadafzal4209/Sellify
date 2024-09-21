@@ -2,6 +2,7 @@ import BestSellingProducts from "@/components/Home/BestSelling";
 import CategoriesSection from "@/components/Home/Categories";
 import FeaturedProducts from "@/components/Home/FeaturedProducts";
 import Hero from "@/components/Home/Hero";
+import NewArrivalProducts from "@/components/Home/NewArrivals";
 import React from "react";
 
 const Home = () => {
@@ -9,8 +10,9 @@ const Home = () => {
     <div>
       <Hero />
       <CategoriesSection />
-      <BestSellingProducts />
       <FeaturedProducts/>
+      <NewArrivalProducts/>
+      <BestSellingProducts />
     </div>
   );
 };
