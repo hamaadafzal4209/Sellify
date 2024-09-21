@@ -26,8 +26,8 @@ const ProductCard = () => {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-      <div className="h-56 w-full">
+    <div className="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="h-56 w-full relative">
         <Link href="">
           <Image
             width={1000}
@@ -37,17 +37,17 @@ const ProductCard = () => {
             alt="Product"
           />
         </Link>
+
+        {/* New Tag */}
+        {isNew && (
+          <span className="absolute top-3 left-3 rounded-full bg-primary-500 px-3 py-1 text-xs font-semibold text-white">
+            New
+          </span>
+        )}
       </div>
       <div className="pt-3">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
-            {/* New Condition */}
-            {isNew && (
-              <span className="me-2 rounded bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
-                New
-              </span>
-            )}
-
             {/* Discount Condition */}
             {hasDiscount && (
               <span className="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-600">
