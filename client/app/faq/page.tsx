@@ -59,7 +59,7 @@ const FAQs = () => {
               <h3>
                 <button
                   type="button"
-                  className={`flex items-center justify-between w-full p-5 font-medium border-b rounded-md transition-transform duration-300 ease-in-out ${
+                  className={`flex items-center justify-between w-full p-5 font-medium border-b rounded-t-md transition-transform duration-300 ease-in-out ${
                     activeIndex === index
                       ? "bg-primary-500 text-white"
                       : "text-gray-500 border-gray-200 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -75,8 +75,10 @@ const FAQs = () => {
                 </button>
               </h3>
               <div
-                className={`border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-                  activeIndex === index ? "max-h-40" : "max-h-0 overflow-hidden"
+                className={`border-b border-gray-200 dark:border-gray-700 transition-all duration-300 rounded-b-md ${
+                  activeIndex === index
+                    ? "max-h-40 bg-gray-100 mb-2"
+                    : "max-h-0 overflow-hidden"
                 }`}
               >
                 <div className="p-5 text-gray-500 text-left">{faq.answer}</div>
