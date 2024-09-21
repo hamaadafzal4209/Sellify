@@ -15,9 +15,10 @@ import { Tooltip } from "react-tooltip";
 const ProductCard = () => {
   const [isFavorited, setIsFavorited] = useState(false);
 
-  // Sample conditions for stock and discount
+  // Sample conditions for stock, discount, and new status
   const isInStock = true; // Modify this based on actual stock status
   const hasDiscount = true; // Modify this based on actual discount status
+  const isNew = true; // Modify this based on actual product status
 
   // Function to toggle the favorite status
   const handleFavoriteToggle = () => {
@@ -40,6 +41,13 @@ const ProductCard = () => {
       <div className="pt-3">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
+            {/* New Condition */}
+            {isNew && (
+              <span className="me-2 rounded bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
+                New
+              </span>
+            )}
+
             {/* Discount Condition */}
             {hasDiscount && (
               <span className="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-600">
