@@ -4,7 +4,7 @@ import ProductCard from "../Products/ProductCard";
 
 const BestSellingProducts = () => {
   return (
-    <section className="main-container py-12">
+    <section className="main-container pb-12">
       <div className="flex items-center justify-between gap-4 mb-6">
         <h2 className="section-heading">Best Deals</h2>
       </div>
