@@ -24,9 +24,9 @@ const categories = [
 
 const CategoriesSection = () => {
   return (
-    <section className="main-container py-12 bg-gray-50">
+    <section className="main-container pt-12 pb-4">
       <div className="flex items-center justify-between gap-4 mb-6">
-        <h2 className="text-3xl font-bold text-gray-900">Shop by Category</h2>
+        <h2 className="section-heading">Shop by Category</h2>
         <button className="hidden sm:block py-2.5 px-5 text-sm font-medium text-primary-600 bg-white border border-primary-500 rounded-lg hover:bg-primary-50 hover:text-white transition-colors hover:bg-primary-500">
           See all categories
         </button>

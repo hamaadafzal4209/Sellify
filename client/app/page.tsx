@@ -1,3 +1,4 @@
+import BestSellingProducts from '@/components/Home/BestSelling'
 import CategoriesSection from '@/components/Home/Categories'
 import Hero from '@/components/Home/Hero'
 import React from 'react'
@@ -7,6 +8,7 @@ const Home = () => {
     <div>
       <Hero/>
       <CategoriesSection/>
+      <BestSellingProducts/>
     </div>
   )
 }

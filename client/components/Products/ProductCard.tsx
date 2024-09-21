@@ -13,8 +13,11 @@ import { FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
 const ProductCard = () => {
-  // State to track if the product is favorited
   const [isFavorited, setIsFavorited] = useState(false);
+
+  // Sample conditions for stock and discount
+  const isInStock = true; // Modify this based on actual stock status
+  const hasDiscount = true; // Modify this based on actual discount status
 
   // Function to toggle the favorite status
   const handleFavoriteToggle = () => {
@@ -22,7 +25,7 @@ const ProductCard = () => {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
       <div className="h-56 w-full">
         <Link href="">
           <Image
@@ -34,11 +37,27 @@ const ProductCard = () => {
           />
         </Link>
       </div>
-      <div className="pt-6">
+      <div className="pt-3">
         <div className="mb-4 flex items-center justify-between gap-4">
-          <span className="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-600">
-            Up to 35% off
-          </span>
+          <div>
+            {/* Discount Condition */}
+            {hasDiscount && (
+              <span className="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-600">
+                Up to 35% off
+              </span>
+            )}
+
+            {/* Stock Condition */}
+            {isInStock ? (
+              <span className="me-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-600">
+                In Stock
+              </span>
+            ) : (
+              <span className="me-2 rounded bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-600">
+                Out of Stock
+              </span>
+            )}
+          </div>
 
           <div className="flex items-center gap-1">
             <button
@@ -51,24 +70,27 @@ const ProductCard = () => {
             </button>
             <Tooltip id="tooltip-quick-view" content="Quick View" />
 
+            {/* Favorite Button with Conditional Tooltip */}
             <button
               type="button"
-              data-tooltip-id="tooltip-add-to-favorites"
-              onClick={handleFavoriteToggle} // Add onClick handler
+              data-tooltip-id="tooltip-favorite"
+              onClick={handleFavoriteToggle}
               className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
             >
               {isFavorited ? (
-                <AiFillHeart className="h-5 w-5 text-red-500" /> // Filled heart if favorited
+                <AiFillHeart className="h-5 w-5 text-red-500" />
               ) : (
-                <AiOutlineHeart className="h-5 w-5" /> // Outline heart if not favorited
+                <AiOutlineHeart className="h-5 w-5" />
               )}
               <span className="sr-only">
                 {isFavorited ? "Remove from Favorites" : "Add to Favorites"}
               </span>
             </button>
             <Tooltip
-              id="tooltip-add-to-favorites"
-              content={isFavorited ? "Remove from Favorites" : "Add to Favorites"}
+              id="tooltip-favorite"
+              content={
+                isFavorited ? "Remove from Favorites" : "Add to Favorites"
+              }
             />
           </div>
         </div>
@@ -77,7 +99,7 @@ const ProductCard = () => {
           href=""
           className="text-lg font-semibold leading-tight text-gray-900 hover:underline"
         >
-          Apple iMac 27", 1TB HDD, Retina 5K Display, M3 Max
+          Apple iMac 27, 1TB HDD, Retina 5K Display, M3 Max
         </Link>
 
         <div className="mt-2 flex items-center gap-2">
