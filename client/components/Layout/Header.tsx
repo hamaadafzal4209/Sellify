@@ -40,7 +40,7 @@ export default function Header() {
           </div>
 
           {/* Search Bar for Large Screens */}
-          <div className="hidden lg:flex-1 lg:flex items-center justify-center mx-4 relative">
+          <div className="hidden lg:flex-1 lg:flex items-center justify-center mx-4 relative z-50">
             <div className="relative max-w-lg w-full">
               <label htmlFor="search" className="sr-only">
                 Search
@@ -62,6 +62,11 @@ export default function Header() {
                   onChange={handleSearch}
                   onFocus={() => setIsInputFocused(true)}
                   onBlur={() => setIsInputFocused(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                      e.target.blur();
+                    }
+                  }}
                 />
               </div>
               {/* Display filtered product results below the search bar */}
@@ -185,7 +190,7 @@ export default function Header() {
       </div>
 
       {/* Search input and results for mobile screens */}
-      <div className="block lg:hidden relative px-4 pb-4">
+      <div className="block lg:hidden relative px-4 pb-4 z-50">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
