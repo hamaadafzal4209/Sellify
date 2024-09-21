@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -10,7 +10,9 @@ const Footer = () => {
           <div>
             <h2 className="text-lg font-semibold mb-4">About Us</h2>
             <p className="text-gray-400">
-              We are dedicated to providing the best products and services to our customers. Our commitment to quality and customer satisfaction is our top priority.
+              We are dedicated to providing the best products and services to
+              our customers. Our commitment to quality and customer satisfaction
+              is our top priority.
             </p>
           </div>
 
@@ -24,18 +26,21 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-300 hover:underline">
-                  About Us
+                <Link href="/shop" className="text-gray-300 hover:underline">
+                  Shop
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-gray-300 hover:underline">
-                  Products
+                <Link href="/faq" className="text-gray-300 hover:underline">
+                  FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:underline">
-                  Contact
+                <Link
+                  href="/community-support"
+                  className="text-gray-300 hover:underline"
+                >
+                  Community Support
                 </Link>
               </li>
             </ul>
@@ -56,12 +61,17 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <Image src="/assets/logo.png" alt="Logo" width={40} height={40} className="mr-2" />
-            <span className="text-sm text-gray-400">&copy; {new Date().getFullYear()} EcoShop. All rights reserved.</span>
+            <span className="text-sm text-gray-400">
+              &copy; {new Date().getFullYear()} Sellify. All rights reserved.
+            </span>
           </div>
           <div className="space-x-4">
-            <Link href="#" className="text-gray-300 hover:underline">Privacy Policy</Link>
-            <Link href="#" className="text-gray-300 hover:underline">Terms of Service</Link>
+            <Link href="" className="text-gray-300 hover:underline">
+              Privacy Policy
+            </Link>
+            <Link href="" className="text-gray-300 hover:underline">
+              Terms of Service
+            </Link>
           </div>
         </div>
       </div>
