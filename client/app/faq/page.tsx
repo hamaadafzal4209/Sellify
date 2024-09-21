@@ -50,7 +50,7 @@ const FAQs = () => {
               <h3>
                 <button
                   type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border-b border-gray-200 rounded-t-lg hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 transition-transform duration-300 ease-in-out"
+                  className={`flex items-center justify-between w-full p-5 font-medium border-b rounded-md transition-transform duration-300 ease-in-out ${activeIndex === index ? 'bg-primary-500 text-white' : 'text-gray-500 border-gray-200 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                   onClick={() => toggleFAQ(index)}
                 >
                   <span>{faq.question}</span>
