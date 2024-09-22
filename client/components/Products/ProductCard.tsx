@@ -26,7 +26,7 @@ const ProductCard = () => {
   };
 
   return (
-    <div className="relative rounded-lg border border-gray-100 bg-white p-4 shadow-sm hover:shadow-lg transition-shadow duration-300">
+    <div className="relative rounded-lg border border-gray-100 bg-white p-4 shadow hover:shadow-lg transition-shadow duration-300">
       <div className="h-56 w-full relative">
         <Link href="">
           <Image

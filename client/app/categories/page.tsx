@@ -69,7 +69,7 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="main-container py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block w-64">
             <div className="p-6 bg-white rounded-md shadow">
