@@ -34,7 +34,7 @@ const Testimonial = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-100 dark:bg-gray-900">
+    <section className="py-16 main-container">
       <div className="max-w-5xl mx-auto text-center">
         <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-12">
           What Our Clients Say
