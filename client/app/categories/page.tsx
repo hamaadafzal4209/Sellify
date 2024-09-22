@@ -73,6 +73,9 @@ export default function ProductPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block w-64">
             <div className="p-6 bg-white rounded-md shadow">
+              <h2 className="text-xl  font-poppins pb-4 font-semibold">
+                Filter By Category
+              </h2>
               <CategoryFilter />
             </div>
           </aside>

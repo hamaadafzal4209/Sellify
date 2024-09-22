@@ -38,7 +38,7 @@ export default function RootLayout({
         poppins.variable
       )}
     >
-      <body>
+      <body className="font-poppins">
         <Header />
         {children}
         <Footer />
