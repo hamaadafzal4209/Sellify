@@ -86,7 +86,7 @@ const VerifyOtpPage = () => {
   };
 
   return (
-    <div className="max-w-md mt-16 sm:mx-auto mx-4 text-center bg-white px-4 sm:px-8 py-10 rounded-xl shadow">
+    <div className="max-w-md my-16 sm:mx-auto mx-4 text-center bg-white px-4 sm:px-8 py-10 rounded-xl shadow">
       <header className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Email Address Verification</h1>
         <p className="text-[15px] text-slate-500">
