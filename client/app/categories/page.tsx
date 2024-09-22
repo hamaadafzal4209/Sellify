@@ -93,15 +93,36 @@ export default function ProductPage() {
                       : "animate-fade-out pointer-events-none"
                   }`}
                 >
-                  <SelectItem value="default">Default</SelectItem>
-                  <SelectItem value="price-low-high">
+                  <SelectItem
+                    className="cursor-pointer hover:bg-gray-100 rounded-md"
+                    value="default"
+                  >
+                    Default
+                  </SelectItem>
+                  <SelectItem
+                    className="cursor-pointer hover:bg-gray-100 rounded-md"
+                    value="price-low-high"
+                  >
                     Price: Low to High
                   </SelectItem>
-                  <SelectItem value="price-high-low">
+                  <SelectItem
+                    className="cursor-pointer hover:bg-gray-100 rounded-md"
+                    value="price-high-low"
+                  >
                     Price: High to Low
                   </SelectItem>
-                  <SelectItem value="name-a-z">Name: A to Z</SelectItem>
-                  <SelectItem value="name-z-a">Name: Z to A</SelectItem>
+                  <SelectItem
+                    className="cursor-pointer hover:bg-gray-100 rounded-md"
+                    value="name-a-z"
+                  >
+                    Name: A to Z
+                  </SelectItem>
+                  <SelectItem
+                    className="cursor-pointer hover:bg-gray-100 rounded-md"
+                    value="name-z-a"
+                  >
+                    Name: Z to A
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
