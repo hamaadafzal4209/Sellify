@@ -73,7 +73,7 @@ export default function ProductPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block w-64">
             <div className="p-6 bg-white rounded-md shadow">
-              <h2 className="text-xl  font-poppins pb-4 font-semibold">
+              <h2 className="text-xl font-poppins pb-4 font-semibold">
                 Filter By Category
               </h2>
               <CategoryFilter />
@@ -87,8 +87,10 @@ export default function ProductPage() {
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent
-                  className={`bg-white transition-transform duration-300 ease-in-out transform ${
-                    isSelectOpen ? "scale-y-100" : "scale-y-0"
+                  className={`bg-white transition-all duration-300 ease-in-out ${
+                    isSelectOpen
+                      ? "animate-fade-in"
+                      : "animate-fade-out pointer-events-none"
                   }`}
                 >
                   <SelectItem value="default">Default</SelectItem>

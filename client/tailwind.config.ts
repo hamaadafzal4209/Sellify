@@ -41,10 +41,20 @@ const config: Config = {
           "0%": { transform: "translateX(0)", opacity: "1" },
           "100%": { transform: "translateX(-100%)", opacity: "0" },
         },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "fade-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
       },
       animation: {
         "sheet-open": "sheet-open 0.3s ease-out",
         "sheet-close": "sheet-close 0.3s ease-in",
+        "fade-in": "fade-in 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940)",
+        "fade-out": "fade-out 0.3s ease-in",
       },
     },
   },
