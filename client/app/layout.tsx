@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
+import { cn } from "@/lib/utils";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -29,11 +30,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html
+      lang="en"
+      className={cn(
+        "min-h-screen bg-dark-300 font-sans antialiased",
+        inter.variable,
+        poppins.variable
+      )}
+    >
       <body>
         <Header />
         {children}
-        <Footer/>
+        <Footer />
       </body>
     </html>
   );
