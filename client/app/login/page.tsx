@@ -14,12 +14,12 @@ const SignInPage = () => {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="section-heading text-center text-gray-900">
           Sign in to Sellify
         </h2>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
         <form method="POST">
           <div>
             <label
