@@ -151,7 +151,7 @@ const SignUpPage = () => {
 
         <div className="relative flex items-center justify-center my-8">
           <div className="w-full h-[1px] bg-gray-300"></div>
-          <span className="px-4 text-sm font-medium text-gray-500 bg-white mx-4">
+          <span className="px-4 text-sm font-medium text-gray-500 bg-white mx-2">
             or
           </span>
           <div className="w-full h-[1px] bg-gray-300"></div>
