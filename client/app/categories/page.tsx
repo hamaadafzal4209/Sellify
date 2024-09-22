@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { Menu } from "lucide-react";
 import ProductCard from "@/components/Products/ProductCard";
+import RangeSlider from "react-range-slider-input";
+import "react-range-slider-input/dist/style.css"; // Import the slider styles
 
 const categoriesData = [
   "Electronics",
@@ -36,6 +38,7 @@ const categoriesData = [
 export default function ProductPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isSelectOpen, setSelectOpen] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -47,6 +50,25 @@ export default function ProductPage() {
 
   const CategoryFilter = () => (
     <div className="space-y-4">
+      {/* Price Range Slider */}
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold mb-4">Price Range</h3>
+        <RangeSlider
+          min={0}
+          max={1000}
+          step={10}
+          value={priceRange}
+          onInput={(value: [number, number]) => setPriceRange(value)}
+          className="range-slider"
+        />
+        <div className="flex justify-between mt-2 text-sm">
+          <span>${priceRange[0]}</span>
+          <span>${priceRange[1]}</span>
+        </div>
+      </div>
+
+      {/* Categories */}
+      <h3 className="text-lg font-semibold">Categories</h3>
       {categoriesData.map((category) => (
         <div key={category} className="flex items-center gap-2">
           <input
@@ -73,9 +95,7 @@ export default function ProductPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block w-64">
             <div className="p-6 bg-white rounded-md shadow">
-              <h2 className="text-xl font-poppins pb-4 font-semibold">
-                Filter By Category
-              </h2>
+              <h2 className="text-xl font-poppins font-semibold">Filter By</h2>
               <CategoryFilter />
             </div>
           </aside>

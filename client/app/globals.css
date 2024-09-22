@@ -83,3 +83,11 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
 }
+
+.range-slider .thumb {
+  background-color: #FE426D;
+}
+
+.range-slider .track {
+  background-color: #FE426D;
+}

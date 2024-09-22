@@ -108,7 +108,7 @@ export default function Header() {
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="text-primary-500"
+                  className="text-primary-500 bg-gray-100"
                   aria-label="Open menu"
                 >
                   <Menu className="h-6 w-6" />
