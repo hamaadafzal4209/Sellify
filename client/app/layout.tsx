@@ -4,9 +4,9 @@ import { Inter, Poppins } from "next/font/google";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import { cn } from "@/lib/utils";
-import { Providers } from "./Provider";
-import { PersistGate } from "redux-persist/integration/react";
-import store, { persistor } from "@/redux/store";
+// import { Providers } from "./Provider";
+// import { PersistGate } from "redux-persist/integration/react";
+// import store, { persistor } from "@/redux/store";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -42,13 +42,13 @@ export default function RootLayout({
       )}
     >
       <body className="font-poppins">
-        <Providers>
-          <PersistGate loading={null} persistor={persistor}>
-            <Header />
-            {children}
-            <Footer />
-          </PersistGate>
-        </Providers>
+        {/* <Providers>
+          <PersistGate loading={null} persistor={persistor}> */}
+        <Header />
+        {children}
+        <Footer />
+        {/* </PersistGate>
+        </Providers> */}
       </body>
     </html>
   );
