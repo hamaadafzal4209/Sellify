@@ -1,132 +1,137 @@
 import userModel from "../models/userModel.js";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import ejs from "ejs";
+import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 
-export const signup = async (req, res, next) => {
-  const { username, email, password } = req.body;
-
-  if (
-    !username ||
-    !email ||
-    !password ||
-    username === "" ||
-    email === "" ||
-    password === ""
-  ) {
-    next(errorHandler(401, "All fields are required!"));
-  }
-
-  const checkEmail = await userModel.findOne({ email });
-  if (checkEmail) {
-    next(errorHandler(401, "Email already in use!"));
-  }
-
-  const checkusername = await userModel.findOne({ username });
-  if (checkusername) {
-    next(errorHandler(401, "Username already in use!"));
-  }
-
-  const hashPassword = bcrypt.hashSync(password, 10);
-
+export const registrationUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    const user = await userModel.create({
-      username,
+    const { name, email, password } = req.body;
+
+    const isExistEmail = await userModel.findOne({ email });
+
+    if (isExistEmail) {
+      return next(new ErrorHandler("Email already exists", 400));
+    }
+
+    const user = {
+      name,
       email,
-      password: hashPassword,
-    });
+      password,
+    };
 
-    await user.save();
+    const activationToken = createActivationToken(user);
 
-    res.json("user created successfully");
-  } catch (error) {
-    next(error);
-  }
-};
+    const activationCode = activationToken.activationCode;
 
-export const signin = async (req, res, next) => {
-  const { email, password } = req.body;
+    const data = { user: { name: user.name }, activationCode };
 
-  if (!email || !password || email === "" || password === "") {
-    next(errorHandler(401, "All fields are required!"));
-  }
-
-  try {
-    const validUser = await userModel.findOne({ email });
-
-    if (!validUser) {
-      return next(errorHandler(404, "User not found!"));
-    }
-
-    const validPassword = bcrypt.compareSync(password, validUser.password);
-
-    if (!validPassword) {
-      return next(errorHandler(404, "Invalid password!"));
-    }
-
-    const token = jwt.sign(
-      { id: validUser._id, isAdmin: validUser.isAdmin },
-      process.env.JWT_SECRET_KEY
+    const html = await ejs.renderFile(
+      path.join(__dirname, "../mails/activation-mail.ejs"),
+      data
     );
 
-    const { password: pass, ...rest } = validUser._doc; // remove password from the object
-
-    res
-      .status(200)
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .json(rest);
-
-    res.status(200).json("Login succesful!");
-  } catch (error) {
-    next(errorHandler({ message: error.message }));
-  }
-};
-
-export const google = async (req, res, next) => {
-  const { name, email, googlePhotoUrl } = req.body;
-  try {
-    const user = await userModel.findOne({ email });
-    if (user) {
-      const token = jwt.sign(
-        { id: user._id, isAdmin: user.isAdmin },
-        process.env.JWT_SECRET_KEY
-      );
-      const { password, ...rest } = user._doc; // remove password from the object
-      res
-        .status(200)
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .json(rest);
-    } else {
-      const generatedPassword =
-        Math.random().toString(36).slice(-8) +
-        Math.random().toString(36).slice(-8);
-      const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
-      const newUser = new userModel({
-        username:
-          name.toLowerCase().split(" ").join("") +
-          Math.random().toString(9).slice(-4),
-        email,
-        password: hashedPassword,
-        profilePicture: googlePhotoUrl,
+    try {
+      await sendMail({
+        email: user.email,
+        subject: "Activate your account",
+        template: "activation-mail.ejs",
+        data,
       });
-      await newUser.save();
-      const token = jwt.sign(
-        { id: newUser._id, isAdmin: newUser.isAdmin },
-        process.env.JWT_SECRET_KEY
-      );
-      const { password, ...rest } = newUser._doc; // remove password from the object
-      res
-        .status(200)
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .json(rest);
+
+      res.status(201).json({
+        success: true,
+        message: `Please check your email ${user.email} to activate your account`,
+        activationToken: activationToken.token,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
     }
   } catch (error) {
-    console.error("Google OAuth error: ", error);
-    next(error);
+    return next(new ErrorHandler(error.message, 400));
   }
+});
+
+// create activation token
+export const createActivationToken = (user) => {
+  const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+  const token = jwt.sign(
+    { user, activationCode },
+    process.env.ACTIVATION_SECRET,
+    { expiresIn: "5m" }
+  );
+
+  return { token, activationCode };
 };
+
+// activate user controller
+export const activateUser = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { activation_token, activation_code } = req.body;
+
+    const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
+
+    if (newUser.activationCode !== activation_code) {
+      return next(new ErrorHandler("Invalid activation code", 400));
+    }
+
+    const { name, email, password } = newUser.user;
+
+    const existUser = await userModel.findOne({ email });
+
+    if (existUser) {
+      return next(new ErrorHandler("Email already exists", 400));
+    }
+
+    const user = await userModel.create({
+      name,
+      email,
+      password,
+    });
+
+    res.status(201).json({
+      success: true,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
+
+// login user controller
+export const loginUser = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (email === "" || password === "") {
+      return next(new ErrorHandler("Please fill all the required fields", 404));
+    }
+
+    const user = await userModel.findOne({ email }).select("+password");
+
+    if (!user) {
+      return next(new ErrorHandler("User not found", 400));
+    }
+
+    const isPasswordMatch = await user.comparePassword(password);
+
+    if (!isPasswordMatch) {
+      return next(new ErrorHandler("Wrong Credentials", 400));
+    }
+
+    // Generate tokens
+    const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN, {
+      expiresIn: "5m",
+    });
+
+    // Send tokens
+    res.cookie("access_token", accessToken, accessTokenOptions);
+
+    res.status(200).json({
+      accessToken,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
