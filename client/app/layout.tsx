@@ -42,13 +42,13 @@ export default function RootLayout({
       )}
     >
       <body className="font-poppins">
-        <Providers>
-          <PersistGate loading={null} persistor={persistor}>
+        {/* <Providers> */}
+          {/* <PersistGate loading={null} persistor={persistor}> */}
             <Header />
             {children}
             <Footer />
-          </PersistGate>
-        </Providers>
+          {/* </PersistGate> */}
+        {/* </Providers> */}
       </body>
     </html>
   );
