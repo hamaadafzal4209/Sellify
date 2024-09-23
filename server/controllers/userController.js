@@ -79,11 +79,11 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
 
     // Verify the token
     const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
-    console.log("Decoded User:", newUser); // Log the decoded user info
+    // console.log("Decoded User:", newUser); 
 
     // Compare the activation code
     if (newUser.activationCode !== activation_code) {
-      console.log(`Provided Code: ${activation_code}, Expected Code: ${newUser.activationCode}`); // Log both codes
+      // console.log(`Provided Code: ${activation_code}, Expected Code: ${newUser.activationCode}`);
       return next(new ErrorHandler("Invalid activation code", 400));
     }
 
