@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React from "react";
 import {
   FaLaptop,
@@ -28,7 +29,7 @@ const CategoriesSection = () => {
       <div className="flex items-center justify-between gap-4 mb-6">
         <h2 className="section-heading">Shop by Category</h2>
         <button className="hidden sm:block py-2.5 px-5 text-sm font-medium text-primary-600 bg-white border border-primary-500 rounded-lg hover:bg-primary-50 hover:text-white transition-colors hover:bg-primary-500">
-          See all categories
+          <Link href="/categories">See all categories</Link>
         </button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
