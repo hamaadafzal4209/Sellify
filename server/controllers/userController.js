@@ -79,7 +79,7 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
 
     // Verify the token
     const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
-    // console.log("Decoded User:", newUser); 
+    // console.log("Decoded User:", newUser);
 
     // Compare the activation code
     if (newUser.activationCode !== activation_code) {
@@ -135,6 +135,19 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     res.status(200).json({
       accessToken,
       user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
+
+// logout user
+export const logoutUser = catchAsyncErrors(async (req, res, next) => {
+  try {
+    res.cookie("access_token", "", { maxAge: 1 });
+    res.status(200).json({
+      success: true,
+      message: "User Loggout Successfully!",
     });
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
