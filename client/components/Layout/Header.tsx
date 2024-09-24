@@ -130,12 +130,6 @@ export default function Header() {
                       Home
                     </Link>
                     <Link
-                      href="/shop"
-                      className="text-base font-medium text-gray-900 hover:text-primary-500"
-                    >
-                      Shop
-                    </Link>
-                    <Link
                       href="/categories"
                       className="text-base font-medium text-gray-900 hover:text-primary-500"
                     >
@@ -161,12 +155,6 @@ export default function Header() {
               className="text-base font-medium text-gray-900 hover:text-primary-600"
             >
               Home
-            </Link>
-            <Link
-              href="/shop"
-              className="text-base font-medium text-gray-900 hover:text-primary-600"
-            >
-              Shop
             </Link>
             <Link
               href="/categories"
