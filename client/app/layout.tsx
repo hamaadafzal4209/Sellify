@@ -1,11 +1,10 @@
+// layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import { cn } from "@/lib/utils";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistor } from "@/app/redux/store";
 import { Providers } from "./redux/Provider";
 
 // Load the Inter font for body text
@@ -29,9 +28,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) { 
+}) {
   return (
     <html
       lang="en"
@@ -43,11 +42,9 @@ export default function RootLayout({
     >
       <body className="font-poppins">
         <Providers>
-          <PersistGate loading={null} persistor={persistor}>
-            <Header />
-            {children}
-            <Footer />
-          </PersistGate>
+          <Header />
+          {children}
+          <Footer />
         </Providers>
       </body>
     </html>
