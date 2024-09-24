@@ -24,6 +24,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductCard from "@/components/Products/ProductCard";
+import { StarFilledIcon } from "@radix-ui/react-icons";
 
 // Mock data for the product
 const product = {
@@ -43,19 +44,22 @@ const product = {
       id: 1,
       author: "John D.",
       rating: 5,
-      comment: "Excellent quality and fit! The leather feels premium, and it's perfect for both casual and formal occasions.",
+      comment:
+        "Excellent quality and fit! The leather feels premium, and it's perfect for both casual and formal occasions.",
     },
     {
       id: 2,
       author: "Sarah M.",
       rating: 4,
-      comment: "Great jacket, but runs a bit small. I would recommend ordering one size up.",
+      comment:
+        "Great jacket, but runs a bit small. I would recommend ordering one size up.",
     },
     {
       id: 3,
       author: "Mike R.",
       rating: 5,
-      comment: "Exactly what I was looking for. The jacket looks and feels amazing, definitely worth the price.",
+      comment:
+        "Exactly what I was looking for. The jacket looks and feels amazing, definitely worth the price.",
     },
   ],
   relatedProducts: [
@@ -135,12 +139,19 @@ export default function ProductDetails() {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold">{product.name}</h1>
-            <p className="text-2xl font-semibold mt-2">
-              ${product.price.toFixed(2)}
-            </p>
+            <div className="flex gap-2">
+              <p className="text-2xl font-semibold text-primary-500">
+                ${product.price.toFixed(2)}
+              </p>
+              <p className="text-base text-gray-600 line-through">250.00$</p>
+            </div>
             <div className="flex items-center">
+              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
+              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
+              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
+              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
               <Star className="h-5 w-5 text-yellow-400" />
-              <span className="ml-1">{product.reviews.length} Reviews</span>
+              <span className="ml-2">{product.reviews.length} Reviews</span>
             </div>
           </div>
           <p className="text-gray-600">{product.description}</p>
@@ -175,8 +186,9 @@ export default function ProductDetails() {
           <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
           <p className="text-gray-600">
             {product.description}
-            This jacket is crafted with a tailored fit to ensure comfort and style.
-            The high-quality leather is designed to last and only gets better with age.
+            This jacket is crafted with a tailored fit to ensure comfort and
+            style. The high-quality leather is designed to last and only gets
+            better with age.
           </p>
         </TabsContent>
         <TabsContent value="reviews" className="mt-6">
@@ -213,10 +225,7 @@ export default function ProductDetails() {
         <h2 className="text-2xl font-semibold mb-6">Related Products</h2>
         <div className="card-container grid grid-cols-2 gap-6 md:grid-cols-3">
           {product.relatedProducts.map((relatedProduct) => (
-            <ProductCard
-              key={relatedProduct.id}
-              product={relatedProduct}
-            />
+            <ProductCard key={relatedProduct.id} product={relatedProduct} />
           ))}
         </div>
       </div>
