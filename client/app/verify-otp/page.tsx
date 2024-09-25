@@ -55,7 +55,6 @@ const OtpInput = ({ length, onChange }) => {
           className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
         />
       ))}
-    </div>
   );
 };
 
