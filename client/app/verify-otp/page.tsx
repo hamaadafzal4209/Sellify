@@ -1,7 +1,10 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import axios from "axios"; // For API requests
+import { server } from "@/server";
 
+// OTP Input component
 const OtpInput = ({ length, onChange }) => {
   const [otp, setOtp] = useState(Array(length).fill(""));
   const inputsRef = useRef([]);
@@ -14,7 +17,6 @@ const OtpInput = ({ length, onChange }) => {
       setOtp(newOtp);
       onChange(newOtp.join(""));
 
-      // Move to next input if value is entered
       if (index < length - 1 && value) {
         inputsRef.current[index + 1].focus();
       }
@@ -30,29 +32,13 @@ const OtpInput = ({ length, onChange }) => {
   const handlePaste = (e) => {
     e.preventDefault();
     const text = e.clipboardData.getData("text");
-    if (/^\d{4}$/.test(text)) {
+    if (text.length === length && /^\d+$/.test(text)) {
       const digits = text.split("");
       setOtp(digits);
       onChange(digits.join(""));
       inputsRef.current[length - 1].focus();
     }
   };
-
-  useEffect(() => {
-    const handleFocus = (e) => {
-      e.target.select();
-    };
-
-    inputsRef.current.forEach((input, index) => {
-      input.addEventListener("focus", handleFocus);
-    });
-
-    return () => {
-      inputsRef.current.forEach((input, index) => {
-        input.removeEventListener("focus", handleFocus);
-      });
-    };
-  }, [length]);
 
   return (
     <div className="flex items-center justify-center gap-3">
@@ -63,6 +49,7 @@ const OtpInput = ({ length, onChange }) => {
           value={value}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
+          onPaste={handlePaste}
           ref={(el) => (inputsRef.current[index] = el)}
           maxLength="1"
           className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
@@ -72,17 +59,41 @@ const OtpInput = ({ length, onChange }) => {
   );
 };
 
-const VerifyOtpPage = () => {
+// Main OTP verification page component
+const VerifyOtpPage = ({ email, activationToken }) => {
   const [otp, setOtp] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleOtpChange = (newOtp) => {
     setOtp(newOtp);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your OTP verification logic here
-    console.log("OTP Submitted:", otp);
+    if (otp.length !== 4) {
+      setError("Please enter the 4-digit code.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(`${server}/user/activate-user`, {
+        activation_token: activationToken,
+        activation_code: otp,
+      });
+
+      if (response.data.success) {
+        alert("Account verified successfully!");
+        // Redirect user or take further actions
+      } else {
+        setError("Invalid OTP. Please try again.");
+      }
+    } catch (err) {
+      setError("Verification failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,24 +101,21 @@ const VerifyOtpPage = () => {
       <header className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Email Address Verification</h1>
         <p className="text-[15px] text-slate-500">
-          Enter the 6-digit verification code that was sent to your email
-          address.
+          Enter the 4-digit verification code sent to your email address: {email}.
         </p>
       </header>
       <form id="otp-form" onSubmit={handleSubmit}>
         <OtpInput length={4} onChange={handleOtpChange} />
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="max-w-[260px] mx-auto mt-4">
-          <Button type="submit" className="submit-full-button !text-sm">
-            Verify Account
+          <Button type="submit" className="submit-full-button !text-sm" disabled={loading}>
+            {loading ? "Verifying..." : "Verify Account"}
           </Button>
         </div>
       </form>
       <div className="text-sm text-slate-500 mt-4">
         Didn't receive code?{" "}
-        <a
-          className="font-medium text-primary-500 hover:text-primary-600"
-          href="#0"
-        >
+        <a className="font-medium text-primary-500 hover:text-primary-600" href="#0">
           Resend
         </a>
       </div>
