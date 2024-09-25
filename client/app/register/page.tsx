@@ -1,12 +1,40 @@
 "use client";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { server } from "@/server";
+
+// Zod schema for form validation
+const SignUpSchema = z.object({
+  username: z.string().min(3, { message: "Username must be at least 3 characters long" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
+  confirmPassword: z.string().min(6, { message: "Confirm password is required" }),
+  terms: z.boolean().refine((value) => value === true, { message: "You must accept the terms and conditions" })
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"], // This will set the error for confirmPassword field
+});
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Initialize react-hook-form with zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(SignUpSchema),
+  });
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -14,6 +42,45 @@ const SignUpPage = () => {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const onSubmit = async (data: any) => {
+    const { username, email, password } = data;
+    
+    try {
+      const formData = new FormData();
+      formData.append("name", username);
+      formData.append("email", email);
+      formData.append("password", password);
+
+      const response = await axios.post(
+        `${server}/user/registration`,
+        {
+          name: username,
+          email,
+          password
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      if (response.data.success) {
+        toast.success(response.data.message);
+        reset(); // Reset the form fields after successful submission
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+      console.log(error);
+    }
   };
 
   return (
@@ -25,60 +92,53 @@ const SignUpPage = () => {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form method="POST">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           {/* Username Field */}
           <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="username" className="block text-sm font-medium text-gray-900">
               Username
             </label>
             <div className="mt-1">
               <input
                 id="username"
-                name="username"
                 type="text"
-                required
-                autoComplete="username"
+                {...register("username")}
                 className="form-input"
               />
+              {errors.username && (
+                <p className="text-sm text-red-600">{errors.username.message}</p>
+              )}
             </div>
           </div>
 
+          {/* Email Field */}
           <div className="mt-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-900">
               Email address
             </label>
             <div className="mt-1">
               <input
                 id="email"
-                name="email"
                 type="email"
-                required
-                autoComplete="email"
+                {...register("email")}
                 className="form-input"
               />
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
           </div>
 
+          {/* Password Field */}
           <div className="mt-4 relative">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
               Password
             </label>
             <div className="mt-1 relative">
               <input
                 id="password"
-                name="password"
                 type={showPassword ? "text" : "password"}
-                required
-                autoComplete="new-password"
+                {...register("password")}
                 className="form-input pr-10"
               />
               <button
@@ -88,23 +148,22 @@ const SignUpPage = () => {
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password.message}</p>
+              )}
             </div>
           </div>
 
+          {/* Confirm Password Field */}
           <div className="mt-4 relative">
-            <label
-              htmlFor="confirm-password"
-              className="block text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-900">
               Confirm Password
             </label>
             <div className="mt-1 relative">
               <input
                 id="confirm-password"
-                name="confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
-                required
-                autoComplete="new-password"
+                {...register("confirmPassword")}
                 className="form-input pr-10"
               />
               <button
@@ -114,32 +173,34 @@ const SignUpPage = () => {
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+              )}
             </div>
           </div>
 
+          {/* Terms and Conditions */}
           <div className="flex items-center justify-between my-4">
             <div className="flex items-center">
               <input
                 id="terms"
-                name="terms"
                 type="checkbox"
+                {...register("terms")}
                 className="h-4 w-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
               />
-              <label
-                htmlFor="terms"
-                className="ml-2 block text-sm text-gray-900"
-              >
+              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
                 I agree to the{" "}
-                <Link
-                  href=""
-                  className="text-primary-500 hover:text-primary-600"
-                >
+                <Link href="" className="text-primary-500 hover:text-primary-600">
                   terms and conditions
                 </Link>
               </label>
             </div>
+            {errors.terms && (
+              <p className="text-sm text-red-600">{errors.terms.message}</p>
+            )}
           </div>
 
+          {/* Submit Button */}
           <div>
             <button type="submit" className="submit-full-button">
               Sign Up
@@ -148,12 +209,9 @@ const SignUpPage = () => {
         </form>
 
         {/* Google Sign Up Button */}
-
         <div className="relative flex items-center justify-center my-8">
           <div className="w-full h-[1px] bg-gray-300"></div>
-          <span className="px-4 text-sm font-medium text-gray-500 bg-white mx-2">
-            or
-          </span>
+          <span className="px-4 text-sm font-medium text-gray-500 bg-white mx-2">or</span>
           <div className="w-full h-[1px] bg-gray-300"></div>
         </div>
 
@@ -172,10 +230,7 @@ const SignUpPage = () => {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-semibold leading-6 text-primary-500 hover:text-primary-600"
-          >
+          <Link href="/login" className="font-semibold leading-6 text-primary-500 hover:text-primary-600">
             Sign in
           </Link>
         </p>

@@ -6,6 +6,7 @@ import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import { cn } from "@/lib/utils";
 import { Providers } from "./redux/Provider";
+import { Toaster } from "react-hot-toast";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -42,6 +43,7 @@ export default function RootLayout({
     >
       <body className="font-poppins">
         <Providers>
+          <Toaster />
           <Header />
           {children}
           <Footer />
