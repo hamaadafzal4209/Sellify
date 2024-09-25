@@ -4,9 +4,7 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   user: null,
-  error: null,
-  addressloading: false,
-  successMessage: null,
+  error: null
 };
 
 const userSlice = createSlice({
@@ -26,9 +24,18 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.isAuthenticated = false;
     },
-    // Add other actions
+
+    // clear errors
+    clearErrors: (state) => {
+      state.error = null;
+    },
   },
 });
 
-export const { loadUserRequest, loadUserSuccess, loadUserFail } = userSlice.actions;
+export const {
+  loadUserRequest,
+  loadUserSuccess,
+  loadUserFail,
+  clearErrors,
+} = userSlice.actions;
 export default userSlice.reducer;
