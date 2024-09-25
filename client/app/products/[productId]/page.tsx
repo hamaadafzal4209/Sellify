@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Star, Heart } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,14 +12,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductCard from "@/components/Products/ProductCard";
@@ -85,19 +76,30 @@ const product = {
 };
 
 export default function ProductDetails() {
-  const [quantity, setQuantity] = useState(1);
-  const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [mainImageIndex, setMainImageIndex] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAddToCart = () => {
-    console.log("Added to cart:", {
-      productId: product.id,
-      name: product.name,
-      quantity: quantity,
-    });
+    try {
+      console.log("Added to cart:", {
+        productId: product.id,
+        name: product.name,
+        quantity: quantity,
+      });
+      // Add logic to update the cart state
+    } catch (err) {
+      setError("Failed to add to cart");
+    }
   };
 
-  const handleImageChange = (index) => {
+  const handleImageChange = (index: number) => {
     setMainImageIndex(index);
+  };
+
+  const handleImageLoad = () => {
+    setIsLoading(false);
   };
 
   return (
@@ -111,10 +113,15 @@ export default function ProductDetails() {
                 <Image
                   src={product.images[mainImageIndex]}
                   alt={`${product.name} - Image`}
+                  onLoad={handleImageLoad}
                   width={600}
                   height={600}
-                  className="rounded-lg h-[400px] w-[400px] object-contain"
+                  className={`rounded-lg h-[400px] w-[400px] object-contain ${
+                    isLoading ? "hidden" : "block"
+                  }`}
+                  loading="lazy"
                 />
+                {isLoading && <p>Loading image...</p>}
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious />
@@ -171,6 +178,7 @@ export default function ProductDetails() {
               Add to Wishlist
             </Button>
           </div>
+          {error && <p className="text-red-500">{error}</p>}
         </div>
       </div>
 
@@ -179,8 +187,26 @@ export default function ProductDetails() {
       {/* Product Tabs: Description and Reviews */}
       <Tabs defaultValue="description" className="w-full">
         <TabsList className="bg-gray-100">
-          <TabsTrigger value="description">Description</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
+          <TabsTrigger
+            value="description"
+            className={({ active }) =>
+              `px-4 py-2 font-semibold transition-colors ${
+                active ? "bg-primary-500 text-white" : "text-gray-600"
+              }`
+            }
+          >
+            Description
+          </TabsTrigger>
+          <TabsTrigger
+            value="reviews"
+            className={({ active }) =>
+              `px-4 py-2 font-semibold transition-colors ${
+                active ? "bg-primary-500 text-white" : "text-gray-600"
+              }`
+            }
+          >
+            Reviews
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="description" className="mt-6">
           <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
