@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -57,7 +57,7 @@ const SignUpPage = () => {
   };
 
   // Updated registration function
-  const onSubmit = async (data:any) => {
+  const onSubmit = async (data: any) => {
     try {
       const response = await axios.post(`${server}/user/registration`, {
         name: data.username,
@@ -263,4 +263,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;  
+export default SignUpPage;

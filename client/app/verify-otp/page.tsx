@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios"; // For API requests
 import { server } from "@/server";
@@ -60,11 +60,23 @@ const OtpInput = ({ length, onChange }) => {
 };
 
 // Main OTP verification page component
-const VerifyOtpPage = ({ email, activationToken }) => {
+const VerifyOtpPage = ({ email }) => {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [activationToken, setActivationToken] = useState(null);
+
+  useEffect(() => {
+    // Retrieve the token from local storage
+    const token = localStorage.getItem("activationToken");
+    if (!token) {
+      setError("No activation token found. Please try again.");
+      // Optionally, redirect the user or take further action
+    } else {
+      setActivationToken(token);
+    }
+  }, []);
 
   const handleOtpChange = (newOtp) => {
     setOtp(newOtp);
@@ -76,7 +88,7 @@ const VerifyOtpPage = ({ email, activationToken }) => {
       setError("Please enter the 4-digit code.");
       return;
     }
-  
+
     setLoading(true);
     try {
       const response = await axios.post(
@@ -87,8 +99,8 @@ const VerifyOtpPage = ({ email, activationToken }) => {
             Authorization: `Bearer ${activationToken}`,
           },
         }
-      );      
-  
+      );
+
       if (response.data.success) {
         alert("Account verified successfully!");
         // Redirect user or take further actions
@@ -100,7 +112,7 @@ const VerifyOtpPage = ({ email, activationToken }) => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   const handleResend = async () => {
     setResendLoading(true);
