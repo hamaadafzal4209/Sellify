@@ -1,14 +1,48 @@
-"use client"
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // to navigate after login
+import axios from "axios"; // Import axios
+import { server } from "@/server";
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(`${server}/user/login`, {
+        email,
+        password,
+      });
+
+      const data = res.data;
+
+      if (res.status === 200) {
+        // Store the access token in cookies or local storage
+        document.cookie = `access_token=${data.accessToken}; path=/;`;
+
+        // Redirect user to the dashboard or homepage after successful login
+        router.push("/");
+      } else {
+        setErrorMessage(data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred while logging in. Please try again."
+      );
+    }
   };
 
   return (
@@ -20,7 +54,11 @@ const SignInPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form method="POST">
+        {errorMessage && (
+          <div className="text-red-500 text-center mb-4">{errorMessage}</div>
+        )}
+
+        <form method="POST" onSubmit={handleLogin}>
           <div>
             <label
               htmlFor="email"
@@ -33,6 +71,8 @@ const SignInPage = () => {
                 id="email"
                 name="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
                 className="form-input"
@@ -52,6 +92,8 @@ const SignInPage = () => {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
                 className="form-input pr-10"
@@ -98,8 +140,6 @@ const SignInPage = () => {
             </button>
           </div>
         </form>
-
-        {/* Google Sign In Button */}
 
         <div className="relative flex items-center justify-center my-8">
           <div className="w-full h-[1px] bg-gray-300"></div>

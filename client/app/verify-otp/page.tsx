@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios"; // For API requests
 import { server } from "@/server";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // OTP Input component
 const OtpInput = ({ length, onChange }) => {
@@ -67,6 +68,7 @@ const VerifyOtpPage = ({ email }) => {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [activationToken, setActivationToken] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     // Retrieve the token from local storage
@@ -104,7 +106,7 @@ const VerifyOtpPage = ({ email }) => {
 
       if (response.data.success) {
         toast.success("Account created successfully!");
-        // Redirect user or take further actions
+        router.push("/login");
       } else {
         setError("Invalid OTP. Please try again.");
       }
