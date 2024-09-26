@@ -172,3 +172,21 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Logout failed: " + error.message, 400));
   }
 });
+
+// get user
+export const getUser = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+
+    if (!user) {
+      return next(new ErrorHandler("User not found", 400));
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
