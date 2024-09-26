@@ -16,11 +16,13 @@ export const registrationUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
+    // Check if email already exists
     const isExistEmail = await userModel.findOne({ email });
     if (isExistEmail) {
       return next(new ErrorHandler("Email already exists", 400));
     }
 
+    // Prepare user data for the activation process
     const user = { name, email, password };
     const activationToken = createActivationToken(user);
 
@@ -29,25 +31,40 @@ export const registrationUser = catchAsyncErrors(async (req, res, next) => {
       activationCode: activationToken.activationCode,
     };
 
-    // Send activation email
-    // ...
+    // Render the HTML template for activation email
+    const html = await ejs.renderFile(
+      join(__dirname, "../mails/activation-mail.ejs"),
+      data
+    );
 
-    res.status(201).json({
-      success: true,
-      message: `Please check your email ${user.email} to activate your account`,
-      activationToken: activationToken.token,
-    });
+    // Send activation email
+    try {
+      await sendMail({
+        email: user.email,
+        subject: "Activate your account",
+        html,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: `Please check your email ${user.email} to activate your account`,
+        activationToken: activationToken.token,
+      });
+    } catch (error) {
+      return next(
+        new ErrorHandler("Error sending activation email: " + error.message, 500)
+      );
+    }
   } catch (error) {
     return next(new ErrorHandler("Registration failed: " + error.message, 400));
   }
 });
 
-
 // Create activation token
 const createActivationToken = (user) => {
   const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
   const token = jwt.sign(
-    { email: user.email, activationCode },
+    { name: user.name, email: user.email, password: user.password, activationCode },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "5m" }
   );
@@ -64,22 +81,23 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("Token must be provided", 400));
     }
 
-    const newUser = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    // Verify and decode the token
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     
-    // Ensure activation code is present
-    if (!newUser.activationCode || newUser.activationCode !== activation_code) {
+    // Ensure the activation code matches
+    if (!decodedToken.activationCode || decodedToken.activationCode !== activation_code) {
       return next(new ErrorHandler("Invalid activation code", 400));
     }
 
-    const { email, name, password } = newUser; // Ensure name is being used
+    const { name, email, password } = decodedToken; // Get user details from token
 
+    // Check if the user already exists
     const existUser = await userModel.findOne({ email });
-
     if (existUser) {
       return next(new ErrorHandler("Email already exists", 400));
     }
 
-    // Create user with all necessary fields
+    // Create the new user with the details from the token
     const user = await userModel.create({ name, email, password });
 
     res.status(201).json({ success: true, message: "Account activated successfully!" });
@@ -87,7 +105,6 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Activation failed: " + error.message, 400));
   }
 });
-
 
 // Login user
 export const loginUser = catchAsyncErrors(async (req, res, next) => {
