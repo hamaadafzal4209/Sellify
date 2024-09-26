@@ -3,9 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // to navigate after login
-import axios from "axios"; // Import axios
+import { useRouter } from "next/navigation";
+import axios from "axios";
 import { server } from "@/server";
+import { useDispatch } from "react-redux";
+import { loadUserSuccess } from "../redux/Features/user/userSlice";
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +15,7 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const dispatch = useDispatch(); // Access Redux dispatch
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -30,8 +33,11 @@ const SignInPage = () => {
       const data = res.data;
 
       if (res.status === 200) {
-        // Store the access token in cookies or local storage
+        // Store the access token in cookies
         document.cookie = `access_token=${data.accessToken}; path=/;`;
+
+        // Dispatch user data to Redux to store in the state
+        dispatch(loadUserSuccess(data.user)); // Dispatch the user data for persistence
 
         // Redirect user to the dashboard or homepage after successful login
         router.push("/");
@@ -40,7 +46,8 @@ const SignInPage = () => {
       }
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message || "An error occurred while logging in. Please try again."
+        error.response?.data?.message ||
+          "An error occurred while logging in. Please try again."
       );
     }
   };
