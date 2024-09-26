@@ -15,7 +15,7 @@ export const loadUser = () => async (dispatch) => {
     const { data } = await axios.get(`${server}/user/getuser`, {
       withCredentials: true,
     });
-    dispatch(loadUserSuccess(data.user)); // Save user data in Redux
+    dispatch(loadUserSuccess(data.user));
   } catch (error) {
     dispatch(loadUserFail(error.response.data.message));
   }
