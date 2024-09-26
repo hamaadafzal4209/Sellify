@@ -198,7 +198,7 @@ export default function Header() {
           {/* Display filtered product results below the search bar */}
           {searchQuery && (
             <div className="absolute inset-x-0 top-full mt-1 bg-white shadow-lg rounded-lg z-50">
-              <ul className="max-w-lg mx-auto space-y-4 py-4 px-3 max-h-[75vh] overflow-y-auto">
+              <ul className="space-y-4 py-4 px-3 max-h-[75vh] overflow-y-auto">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product) => (
                     <li key={product.id} className="flex items-center gap-4">

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -44,7 +44,6 @@ const SignUpPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: zodResolver(SignUpSchema),
   });
@@ -57,40 +56,25 @@ const SignUpPage = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const onSubmit = async (data: any) => {
-    const { username, email, password } = data;
-
+  // Updated registration function
+  const onSubmit = async (data:any) => {
     try {
-      const response = await axios.post(
-        `${server}/user/registration`,
-        {
-          name: username,
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${server}/user/registration`, {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+      });
 
       if (response.data.success) {
         toast.success(response.data.message);
-        reset();
-
-        // Redirect to verify-otp
+        // Store activation token if needed
+        localStorage.setItem("activationToken", response.data.activationToken);
+        // Redirect to verify-otp page
         router.push("/verify-otp");
-      } else {
-        toast.error(response.data.message);
       }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response?.data.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
-      console.log(error);
+    } catch (error) {
+      console.error("Error during registration:", error);
+      toast.error(error.response?.data?.message || "Registration failed");
     }
   };
 
@@ -279,4 +263,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignUpPage;  

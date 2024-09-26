@@ -39,11 +39,10 @@ export const registrationUser = catchAsyncErrors(async (req, res, next) => {
     );
 
     try {
-      // Send the rendered HTML as the email body
       await sendMail({
         email: user.email,
         subject: "Activate your account",
-        html, // Use the rendered HTML here
+        html,
       });
 
       res.status(201).json({
@@ -73,17 +72,21 @@ export const createActivationToken = (user) => {
 };
 
 // activate user controller
+// activate user controller
 export const activateUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    const { activation_token, activation_code } = req.body;
+    const { activation_code } = req.body;
+    const token = req.headers.authorization?.split(" ")[1]; 
+
+    if (!token) {
+      return next(new ErrorHandler("Token must be provided", 400));
+    }
 
     // Verify the token
-    const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
-    // console.log("Decoded User:", newUser);
+    const newUser = jwt.verify(token, process.env.ACTIVATION_SECRET);
 
     // Compare the activation code
     if (newUser.activationCode !== activation_code) {
-      // console.log(`Provided Code: ${activation_code}, Expected Code: ${newUser.activationCode}`);
       return next(new ErrorHandler("Invalid activation code", 400));
     }
 

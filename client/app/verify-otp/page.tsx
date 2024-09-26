@@ -55,6 +55,7 @@ const OtpInput = ({ length, onChange }) => {
           className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
         />
       ))}
+    </div>
   );
 };
 
@@ -63,6 +64,7 @@ const VerifyOtpPage = ({ email, activationToken }) => {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const handleOtpChange = (newOtp) => {
     setOtp(newOtp);
@@ -74,14 +76,19 @@ const VerifyOtpPage = ({ email, activationToken }) => {
       setError("Please enter the 4-digit code.");
       return;
     }
-
+  
     setLoading(true);
     try {
-      const response = await axios.post(`${server}/user/activate-user`, {
-        activation_token: activationToken,
-        activation_code: otp,
-      });
-
+      const response = await axios.post(
+        `${server}/user/activate-user`,
+        { activation_code: otp },
+        {
+          headers: {
+            Authorization: `Bearer ${activationToken}`, // Send token in Authorization header
+          },
+        }
+      );
+  
       if (response.data.success) {
         alert("Account verified successfully!");
         // Redirect user or take further actions
@@ -92,6 +99,23 @@ const VerifyOtpPage = ({ email, activationToken }) => {
       setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };  
+
+  const handleResend = async () => {
+    setResendLoading(true);
+    try {
+      const response = await axios.post(`${server}/user/resend-otp`, { email });
+
+      if (response.data.success) {
+        alert("A new OTP has been sent to your email.");
+      } else {
+        setError("Failed to resend OTP. Please try again later.");
+      }
+    } catch (error) {
+      setError("Error resending OTP.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -114,8 +138,14 @@ const VerifyOtpPage = ({ email, activationToken }) => {
       </form>
       <div className="text-sm text-slate-500 mt-4">
         Didn't receive code?{" "}
-        <a className="font-medium text-primary-500 hover:text-primary-600" href="#0">
-          Resend
+        <a
+          className={`font-medium text-primary-500 hover:text-primary-600 ${
+            resendLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          onClick={handleResend}
+          disabled={resendLoading}
+        >
+          {resendLoading ? "Resending..." : "Resend"}
         </a>
       </div>
     </div>
