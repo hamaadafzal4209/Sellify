@@ -84,10 +84,10 @@ const VerifyOtpPage = ({ email, activationToken }) => {
         { activation_code: otp },
         {
           headers: {
-            Authorization: `Bearer ${activationToken}`, // Send token in Authorization header
+            Authorization: `Bearer ${activationToken}`,
           },
         }
-      );
+      );      
   
       if (response.data.success) {
         alert("Account verified successfully!");
