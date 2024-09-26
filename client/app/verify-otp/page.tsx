@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios"; // For API requests
 import { server } from "@/server";
+import toast from "react-hot-toast";
 
 // OTP Input component
 const OtpInput = ({ length, onChange }) => {
@@ -102,7 +103,7 @@ const VerifyOtpPage = ({ email }) => {
       );
 
       if (response.data.success) {
-        alert("Account verified successfully!");
+        toast.success("Account created successfully!");
         // Redirect user or take further actions
       } else {
         setError("Invalid OTP. Please try again.");
@@ -136,14 +137,19 @@ const VerifyOtpPage = ({ email }) => {
       <header className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Email Address Verification</h1>
         <p className="text-[15px] text-slate-500">
-          Enter the 4-digit verification code sent to your email address: {email}.
+          Enter the 4-digit verification code sent to your email address:{" "}
+          {email}.
         </p>
       </header>
       <form id="otp-form" onSubmit={handleSubmit}>
         <OtpInput length={4} onChange={handleOtpChange} />
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="max-w-[260px] mx-auto mt-4">
-          <Button type="submit" className="submit-full-button !text-sm" disabled={loading}>
+          <Button
+            type="submit"
+            className="submit-full-button !text-sm"
+            disabled={loading}
+          >
             {loading ? "Verifying..." : "Verify Account"}
           </Button>
         </div>

@@ -52,7 +52,10 @@ export const registrationUser = catchAsyncErrors(async (req, res, next) => {
       });
     } catch (error) {
       return next(
-        new ErrorHandler("Error sending activation email: " + error.message, 500)
+        new ErrorHandler(
+          "Error sending activation email: " + error.message,
+          500
+        )
       );
     }
   } catch (error) {
@@ -64,7 +67,12 @@ export const registrationUser = catchAsyncErrors(async (req, res, next) => {
 const createActivationToken = (user) => {
   const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
   const token = jwt.sign(
-    { name: user.name, email: user.email, password: user.password, activationCode },
+    {
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      activationCode,
+    },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "5m" }
   );
@@ -83,9 +91,12 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
 
     // Verify and decode the token
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    
+
     // Ensure the activation code matches
-    if (!decodedToken.activationCode || decodedToken.activationCode !== activation_code) {
+    if (
+      !decodedToken.activationCode ||
+      decodedToken.activationCode !== activation_code
+    ) {
       return next(new ErrorHandler("Invalid activation code", 400));
     }
 
@@ -100,7 +111,9 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
     // Create the new user with the details from the token
     const user = await userModel.create({ name, email, password });
 
-    res.status(201).json({ success: true, message: "Account activated successfully!" });
+    res
+      .status(201)
+      .json({ success: true, message: "Account activated successfully!" });
   } catch (error) {
     return next(new ErrorHandler("Activation failed: " + error.message, 400));
   }
