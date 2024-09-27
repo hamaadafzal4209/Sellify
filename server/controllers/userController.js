@@ -124,17 +124,24 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
   try {
     const { email } = req.body;
 
-    // Check if the user exists
+    // Check if the email field is provided
+    if (!email) {
+      return next(new ErrorHandler("Please provide an email address", 400));
+    }
+
+    // Check if the user exists with the provided email
     const user = await userModel.findOne({ email });
+
+    // If the user is not found, return an error
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler("User not found with this email", 404));
     }
 
     // Generate a new activation token and code
-    const activationToken = createActivationToken({ 
-      name: user.name, 
-      email: user.email, 
-      password: user.password 
+    const activationToken = createActivationToken({
+      name: user.name,
+      email: user.email,
+      password: user.password,
     });
 
     const data = {
@@ -161,7 +168,9 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
       activationToken: activationToken.token,
     });
   } catch (error) {
-    return next(new ErrorHandler("Resending OTP failed: " + error.message, 500));
+    return next(
+      new ErrorHandler("Resending OTP failed: " + error.message, 500)
+    );
   }
 });
 

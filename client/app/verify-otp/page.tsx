@@ -2,7 +2,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios"; // For API requests
-import { server } from "@/server";
+import { server } from "@/server"; // Backend server URL
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -75,7 +75,7 @@ const VerifyOtpPage = ({ email }) => {
     const token = localStorage.getItem("activationToken");
     if (!token) {
       setError("No activation token found. Please try again.");
-      // Optionally, redirect the user or take further action
+      toast.error("No activation token found.");
     } else {
       setActivationToken(token);
     }
@@ -89,6 +89,7 @@ const VerifyOtpPage = ({ email }) => {
     e.preventDefault();
     if (otp.length !== 4) {
       setError("Please enter the 4-digit code.");
+      toast.error("Please enter the 4-digit code.");
       return;
     }
 
@@ -109,9 +110,11 @@ const VerifyOtpPage = ({ email }) => {
         router.push("/login");
       } else {
         setError("Invalid OTP. Please try again.");
+        toast.error("Invalid OTP. Please try again.");
       }
     } catch (err) {
       setError("Verification failed. Please try again.");
+      toast.error("Verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -123,12 +126,15 @@ const VerifyOtpPage = ({ email }) => {
       const response = await axios.post(`${server}/user/resend-otp`, { email });
 
       if (response.data.success) {
-        alert("A new OTP has been sent to your email.");
+        toast.success("A new OTP has been sent to your email.");
+        localStorage.setItem("activationToken", response.data.activationToken);
       } else {
         setError("Failed to resend OTP. Please try again later.");
+        toast.error("Failed to resend OTP. Please try again later.");
       }
     } catch (error) {
       setError("Error resending OTP.");
+      toast.error("Error resending OTP.");
     } finally {
       setResendLoading(false);
     }
@@ -145,7 +151,6 @@ const VerifyOtpPage = ({ email }) => {
       </header>
       <form id="otp-form" onSubmit={handleSubmit}>
         <OtpInput length={4} onChange={handleOtpChange} />
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="max-w-[260px] mx-auto mt-4">
           <Button
             type="submit"
@@ -157,8 +162,8 @@ const VerifyOtpPage = ({ email }) => {
         </div>
       </form>
       <div className="text-sm text-slate-500 mt-4">
-        Didn't receive code?{" "}
-        <a
+        {"Didn't receive code?"}{" "}
+        <button
           className={`font-medium text-primary-500 hover:text-primary-600 ${
             resendLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
@@ -166,7 +171,7 @@ const VerifyOtpPage = ({ email }) => {
           disabled={resendLoading}
         >
           {resendLoading ? "Resending..." : "Resend"}
-        </a>
+        </button>
       </div>
     </div>
   );
