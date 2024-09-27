@@ -10,14 +10,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { logoutUser } from "@/app/redux/Features/user/userAction";
 import toast from "react-hot-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
-  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isAuthenticated, user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -38,7 +46,7 @@ export default function Header() {
   const handleLogout = async () => {
     await dispatch(logoutUser());
     router.push("/");
-    toast.success("Logout Successful")
+    toast.success("Logout Successful");
   };
 
   return (
@@ -73,13 +81,6 @@ export default function Header() {
                   type="search"
                   value={searchQuery}
                   onChange={handleSearch}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => setIsInputFocused(false)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") {
-                      e.target.blur();
-                    }
-                  }}
                 />
               </div>
               {/* Display filtered product results below the search bar */}
@@ -114,69 +115,8 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="text-primary-500 bg-gray-100"
-                  aria-label="Open menu"
-                >
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="left"
-                className={`w-[300px] sm:w-[400px] bg-white ${
-                  isSheetOpen ? "animate-sheet-open" : "animate-sheet-close"
-                }`}
-                onClose={() => setIsSheetOpen(false)}
-              >
-                <div className="flex flex-col gap-4 pt-10 px-4">
-                  <nav className="flex flex-col gap-4">
-                    <Link
-                      href="/"
-                      className="text-base font-medium text-gray-900 hover:text-primary-500"
-                    >
-                      Home
-                    </Link>
-                    <Link
-                      href="/categories"
-                      className="text-base font-medium text-gray-900 hover:text-primary-500"
-                    >
-                      Categories
-                    </Link>
-                  </nav>
-                  <div className="mt-6">
-                    {isAuthenticated ? (
-                      <div>
-                        <Button
-                          variant="ghost"
-                          className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-600"
-                          onClick={handleLogout} // Logout on click
-                        >
-                          Logout
-                        </Button>
-                      </div>
-                    ) : (
-                      <Link href="/login" passHref>
-                        <Button
-                          variant="ghost"
-                          className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
-                        >
-                          Login
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
           {/* Desktop Links */}
-          <nav className="hidden md:flex space-x-10">
+          <nav className="hidden md:flex items-center space-x-10">
             <Link
               href="/"
               className="text-base font-medium text-gray-900 hover:text-primary-600"
@@ -191,19 +131,107 @@ export default function Header() {
             </Link>
           </nav>
 
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center">
+              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="text-primary-500 bg-gray-100"
+                    aria-label="Open menu"
+                  >
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="left"
+                  className={`w-[300px] sm:w-[400px] bg-white ${
+                    isSheetOpen ? "animate-sheet-open" : "animate-sheet-close"
+                  }`}
+                  onClose={() => setIsSheetOpen(false)}
+                >
+                  <div className="flex flex-col gap-4 pt-10 px-4">
+                    <nav className="flex flex-col gap-4">
+                      <Link
+                        href="/"
+                        className="text-base font-medium text-gray-900 hover:text-primary-500"
+                      >
+                        Home
+                      </Link>
+                      <Link
+                        href="/categories"
+                        className="text-base font-medium text-gray-900 hover:text-primary-500"
+                      >
+                        Categories
+                      </Link>
+                    </nav>
+                    <div className="mt-6">
+                      {!isAuthenticated && (
+                        <Link href="/login" passHref>
+                          <Button
+                            variant="ghost"
+                            className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
+                          >
+                            Login
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            {/* Profile Dropdown */}
+            <div>
+              {isAuthenticated && (
+                <div className="md:ml-8">
+                  {" "}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="relative h-10 w-10 rounded-full"
+                      >
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src="/assets/user.png" alt="@user" />
+                          <AvatarFallback>SC</AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="w-56 bg-white"
+                      align="end"
+                      forceMount
+                    >
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">
+                            {user.name} {/* Display real user name */}
+                          </p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email} {/* Display real user email */}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator className="bg-gray-200" />
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem>Billing</DropdownMenuItem>
+                      <DropdownMenuItem>Settings</DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-gray-200" />
+                      <DropdownMenuItem onClick={handleLogout}>
+                        Log out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Login Button for Desktop */}
           <div className="hidden md:flex items-center ml-8">
-            {isAuthenticated ? (
-              <div>
-                <Button
-                  variant="ghost"
-                  className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-600"
-                  onClick={handleLogout} // Logout on click
-                >
-                  Logout
-                </Button>
-              </div>
-            ) : (
+            {!isAuthenticated && (
               <Link href="/login" passHref>
                 <Button
                   variant="ghost"
@@ -224,43 +252,38 @@ export default function Header() {
             <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
           <Input
-            id="search"
-            name="search"
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
             placeholder="Search for products"
             type="search"
             value={searchQuery}
             onChange={handleSearch}
-            onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setIsInputFocused(false)}
           />
-          {/* Display filtered product results below the search bar */}
-          {searchQuery && (
-            <div className="absolute inset-x-0 top-full mt-1 bg-white shadow-lg rounded-lg z-50">
-              <ul className="space-y-4 py-4 px-3 max-h-[70vh] overflow-y-auto">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <li key={product.id} className="flex items-center gap-4">
-                      <img
-                        src={product.image_Url[0]?.url}
-                        alt={product.name}
-                        className="h-12 w-12 object-cover rounded-md"
-                      />
-                      <Link
-                        href={`/products/${product.id}`}
-                        className="text-base font-medium text-gray-900 hover:text-primary-500 line-clamp-2"
-                      >
-                        {product.name}
-                      </Link>
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-gray-600">No products found.</li>
-                )}
-              </ul>
-            </div>
-          )}
         </div>
+        {searchQuery && (
+          <div className="absolute inset-x-0 top-full mt-1 bg-white shadow-lg rounded-lg z-50">
+            <ul className="max-w-lg mx-auto space-y-4 py-4 px-3 max-h-[70vh] overflow-y-auto">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <li key={product.id} className="flex items-center gap-4">
+                    <img
+                      src={product.image_Url[0]?.url}
+                      alt={product.name}
+                      className="h-12 w-12 object-cover rounded-md"
+                    />
+                    <Link
+                      href={`/products/${product.id}`}
+                      className="text-base font-medium text-gray-900 hover:text-primary-500 line-clamp-2"
+                    >
+                      {product.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <li className="text-gray-600">No products found.</li>
+              )}
+            </ul>
+          </div>
+        )}
       </div>
     </header>
   );
