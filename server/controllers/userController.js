@@ -182,41 +182,26 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
 export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const { email } = req.body;
 
-  // Check if user exists
   const user = await userModel.findOne({ email });
   if (!user) {
     return next(new ErrorHandler("User not found with this email", 404));
   }
 
-  // Generate password reset token
   const resetToken = crypto.randomBytes(32).toString("hex");
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+  const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
-  // Set token expiry time
   user.resetPasswordToken = resetPasswordToken;
-  user.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
+  user.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
   await user.save({ validateBeforeSave: false });
 
-  // Create reset URL with token as query parameter
   const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
-
-  // Prepare data for the email template
   const data = {
     user: { name: user.name },
     resetUrl,
   };
 
-  // Render the HTML template for the reset email
-  const html = await ejs.renderFile(
-    join(__dirname, "../mails/reset-password.ejs"),
-    data
-  );
-
-  // Send email
   try {
+    const html = await ejs.renderFile(join(__dirname, "../mails/reset-password.ejs"), data);
     await sendMail({
       email: user.email,
       subject: "Password Reset Request",
@@ -228,23 +213,17 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
       message: `Email sent to ${user.email} with password reset instructions.`,
     });
   } catch (error) {
-    // Clear token fields if email sending fails
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
-
     return next(new ErrorHandler("Error sending email: " + error.message, 500));
   }
 });
 
 // Reset Password Controller
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(req.body.token)
-    .digest("hex");
+  const resetPasswordToken = crypto.createHash("sha256").update(req.body.token).digest("hex");
 
-  // Find the user with the token and check if the token is valid
   const user = await userModel.findOne({
     resetPasswordToken,
     resetPasswordExpire: { $gt: Date.now() },
@@ -254,12 +233,10 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Reset token is invalid or expired", 400));
   }
 
-  // Check if the passwords match
   if (req.body.password !== req.body.confirmPassword) {
     return next(new ErrorHandler("Passwords do not match", 400));
   }
 
-  // Update the password
   user.password = req.body.password;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;

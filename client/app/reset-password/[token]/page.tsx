@@ -1,19 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { server } from "@/server"; // Adjust the import based on your project structure
+import { useRouter } from "next/navigation";
 
-const ResetPassword = () => {
-  const router = useRouter();
-  const { query } = router;
-  const token = query?.token; // Use optional chaining to avoid destructuring an undefined object
+const ResetPassword = ({ params }) => {
+  const { token } = params; // Destructure token directly from params
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     if (!token) {
@@ -36,7 +35,7 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post(`${server}/user/reset-password`, {
-        token,
+        token, // Ensure this is the raw token
         password,
         confirmPassword,
       });
