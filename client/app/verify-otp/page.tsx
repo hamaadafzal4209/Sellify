@@ -124,7 +124,7 @@ const VerifyOtpPage = ({ email }) => {
     setResendLoading(true);
     try {
       const response = await axios.post(`${server}/user/resend-otp`, { email });
-
+  
       if (response.data.success) {
         toast.success("A new OTP has been sent to your email.");
         localStorage.setItem("activationToken", response.data.activationToken);
@@ -139,7 +139,7 @@ const VerifyOtpPage = ({ email }) => {
       setResendLoading(false);
     }
   };
-
+  
   return (
     <div className="max-w-md my-16 sm:mx-auto mx-4 text-center bg-white px-4 sm:px-8 py-10 rounded-xl shadow">
       <header className="mb-8">

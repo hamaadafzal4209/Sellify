@@ -7,6 +7,7 @@ import { accessTokenOptions } from "../utils/jwt.js";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import sendMail from "../utils/sendMail.js";
+import crypto from "crypto";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -124,6 +125,9 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
   try {
     const { email } = req.body;
 
+    // Log the incoming request to debug
+    console.log("Resend OTP request body:", req.body);
+
     // Check if the email field is provided
     if (!email) {
       return next(new ErrorHandler("Please provide an email address", 400));
@@ -171,6 +175,101 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
     return next(
       new ErrorHandler("Resending OTP failed: " + error.message, 500)
     );
+  }
+});
+
+// Reset Password
+export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  // Hash the token and find the user
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.body.token)
+    .digest("hex");
+
+  // Find the user with a valid reset token and token expiration time
+  const user = await userModel.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ErrorHandler("Reset token is invalid or expired", 400));
+  }
+
+  // Check if passwords match
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new ErrorHandler("Passwords do not match", 400));
+  }
+
+  // Update the password
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  // Send success response
+  res.status(200).json({
+    success: true,
+    message: "Password reset successful. You can now log in with your new password.",
+  });
+});
+
+// Forgot Password
+export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.body;
+
+  // Check if the user exists
+  const user = await userModel.findOne({ email });
+  if (!user) {
+    return next(new ErrorHandler("User not found with this email", 404));
+  }
+
+  // Generate a password reset token
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  
+  // Set expiration time for the reset token
+  user.resetPasswordToken = resetPasswordToken;
+  user.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+
+  const data = {
+    user: { name: user.name },
+    resetUrl,
+  };
+
+  // Render reset password email template
+  const html = await ejs.renderFile(
+    join(__dirname, "../mails/reset-password.ejs"),
+    data
+  );  
+
+  console.log("HTML content for reset password email:", html);
+
+  // Send the reset password email
+  try {
+    await sendMail({
+      email: user.email,
+      subject: "Password Reset Request",
+      html,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${user.email} with password reset instructions.`,
+    });
+  } catch (error) {
+    // Reset token fields in case of error
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+    
+    return next(new ErrorHandler("Error sending email: " + error.message, 500));
   }
 });
 
