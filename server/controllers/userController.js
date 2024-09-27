@@ -178,80 +178,44 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Reset Password
-export const resetPassword = catchAsyncErrors(async (req, res, next) => {
-  // Hash the token and find the user
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(req.body.token)
-    .digest("hex");
-
-  // Find the user with a valid reset token and token expiration time
-  const user = await userModel.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() },
-  });
-
-  if (!user) {
-    return next(new ErrorHandler("Reset token is invalid or expired", 400));
-  }
-
-  // Check if passwords match
-  if (req.body.password !== req.body.confirmPassword) {
-    return next(new ErrorHandler("Passwords do not match", 400));
-  }
-
-  // Update the password
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
-
-  // Send success response
-  res.status(200).json({
-    success: true,
-    message: "Password reset successful. You can now log in with your new password.",
-  });
-});
-
-// Forgot Password
+// Forgot Password Controller
 export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const { email } = req.body;
 
-  // Check if the user exists
+  // Check if user exists
   const user = await userModel.findOne({ email });
   if (!user) {
     return next(new ErrorHandler("User not found with this email", 404));
   }
 
-  // Generate a password reset token
+  // Generate password reset token
   const resetToken = crypto.randomBytes(32).toString("hex");
   const resetPasswordToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-  
-  // Set expiration time for the reset token
+
+  // Set token expiry time
   user.resetPasswordToken = resetPasswordToken;
-  user.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+  user.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
   await user.save({ validateBeforeSave: false });
 
+  // Create reset URL with token as query parameter
   const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
 
+  // Prepare data for the email template
   const data = {
     user: { name: user.name },
     resetUrl,
   };
 
-  // Render reset password email template
+  // Render the HTML template for the reset email
   const html = await ejs.renderFile(
     join(__dirname, "../mails/reset-password.ejs"),
     data
-  );  
+  );
 
-  console.log("HTML content for reset password email:", html);
-
-  // Send the reset password email
+  // Send email
   try {
     await sendMail({
       email: user.email,
@@ -264,13 +228,47 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
       message: `Email sent to ${user.email} with password reset instructions.`,
     });
   } catch (error) {
-    // Reset token fields in case of error
+    // Clear token fields if email sending fails
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
-    
+
     return next(new ErrorHandler("Error sending email: " + error.message, 500));
   }
+});
+
+// Reset Password Controller
+export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.body.token)
+    .digest("hex");
+
+  // Find the user with the token and check if the token is valid
+  const user = await userModel.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ErrorHandler("Reset token is invalid or expired", 400));
+  }
+
+  // Check if the passwords match
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new ErrorHandler("Passwords do not match", 400));
+  }
+
+  // Update the password
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset successful. You can now log in with your new password.",
+  });
 });
 
 // Login user
