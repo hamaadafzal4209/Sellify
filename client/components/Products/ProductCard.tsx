@@ -1,24 +1,22 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import {
-  AiFillStar,
-  AiOutlineEye,
-  AiOutlineHeart,
-  AiOutlineStar,
-  AiFillHeart,
-} from "react-icons/ai";
+import { AiFillStar, AiOutlineEye, AiOutlineHeart, AiOutlineStar, AiFillHeart } from "react-icons/ai";
 import { FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
-const ProductCard = () => {
+const ProductCard = ({ product }) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
+  // Validate product data before proceeding
+  if (!product) {
+    return null; // Or a loading state
+  }
+
   // Sample conditions for stock, discount, and new status
-  const isInStock = true;
-  const hasDiscount = true;
-  const isNew = true;
+  const isInStock = true; // You can customize this based on your data
+  const hasDiscount = false; // You can customize this based on your data
+  const isNew = true; // You can customize this based on your data
 
   // Function to toggle the favorite status
   const handleFavoriteToggle = () => {
@@ -28,13 +26,11 @@ const ProductCard = () => {
   return (
     <div className="relative rounded-lg border border-gray-100 bg-white p-4 shadow hover:shadow-lg transition-shadow duration-300">
       <div className="h-56 w-full relative">
-        <Link href="">
-          <Image
-            width={1000}
-            height={1000}
-            className="h-full w-full rounded-lg object-cover"
-            src="/assets/image.jpg"
-            alt="Product"
+        <Link href={`/product/${product.id}`}>
+          <img
+            className="h-full w-full rounded-lg object-contain shadow"
+            src={product.image} // Using the product image from the API
+            alt={product.title} // Using the product title for alt text
           />
         </Link>
 
@@ -102,10 +98,12 @@ const ProductCard = () => {
         </div>
 
         <Link
-          href=""
+          href={`/product/${product.id}`}
           className="block text-lg font-semibold leading-tight text-gray-900 hover:underline"
         >
-          Apple iMac 27, 1TB HDD, Retina 5K Display, M3 Max
+          <p className="line-clamp-2">
+          {product.title}
+          </p>
         </Link>
 
         <div className="mt-2 flex items-center gap-1">
@@ -123,18 +121,18 @@ const ProductCard = () => {
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <p className="text-xl font-extrabold text-primary-600">$1,499</p>
-            <p className="text-sm line-through text-gray-500">$1,699</p>
+            <p className="text-xl font-extrabold text-primary-600">${product.price}</p>
+            {/* Assuming no discounts from the API */}
           </div>
         </div>
 
-          <button
-            type="button"
-            className="inline-flex w-full items-center justify-center mt-4 rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300"
-          >
-            <FaShoppingCart className="mr-2 h-5 w-5" />
-            Add to cart
-          </button>
+        <button
+          type="button"
+          className="inline-flex w-full items-center justify-center mt-4 rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300"
+        >
+          <FaShoppingCart className="mr-2 h-5 w-5" />
+          Add to cart
+        </button>
       </div>
     </div>
   );
