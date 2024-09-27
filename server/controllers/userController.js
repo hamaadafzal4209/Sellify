@@ -119,6 +119,52 @@ export const activateUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+// Resend OTP controller
+export const resendOtp = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user exists
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    // Generate a new activation token and code
+    const activationToken = createActivationToken({ 
+      name: user.name, 
+      email: user.email, 
+      password: user.password 
+    });
+
+    const data = {
+      user: { name: user.name },
+      activationCode: activationToken.activationCode,
+    };
+
+    // Render the HTML template for the OTP email
+    const html = await ejs.renderFile(
+      join(__dirname, "../mails/activation-mail.ejs"),
+      data
+    );
+
+    // Send the OTP email
+    await sendMail({
+      email: user.email,
+      subject: "Your new OTP code",
+      html,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `A new OTP has been sent to ${user.email}`,
+      activationToken: activationToken.token,
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Resending OTP failed: " + error.message, 500));
+  }
+});
+
 // Login user
 export const loginUser = catchAsyncErrors(async (req, res, next) => {
   try {

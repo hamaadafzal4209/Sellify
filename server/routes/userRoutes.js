@@ -5,7 +5,8 @@ import {
   loginUser,
   logoutUser,
   registrationUser,
-} from "../controllers/userController.js";
+  resendOtp,
+} from "../controllers/userController.js"; 
 import { isAuthenticated } from "../middleware/auth.js";
 
 const userRouter = express.Router();
@@ -13,7 +14,8 @@ const userRouter = express.Router();
 userRouter.post("/registration", registrationUser);
 userRouter.post("/activate-user", activateUser);
 userRouter.post("/login", loginUser);
+userRouter.post("/resend-otp", resendOtp); 
 userRouter.get("/getuser", isAuthenticated, getUser);
-userRouter.get("/logout", isAuthenticated,logoutUser);
+userRouter.get("/logout", isAuthenticated, logoutUser);
 
 export default userRouter;
