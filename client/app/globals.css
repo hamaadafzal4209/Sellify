@@ -68,7 +68,7 @@
   }
 
   .submit-full-button {
-    @apply flex items-center w-full justify-center rounded-md bg-primary-500 px-4 py-2 text-base font-semibold leading-6 text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 transition duration-150 ease-in-out;
+    @apply flex items-center w-full justify-center rounded-md bg-primary-500 px-4 py-2 text-base font-semibold leading-6 text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 transition-colors duration-150 ease-in-out;
   }
   .section-heading {
     @apply text-xl font-semibold text-gray-950 dark:text-white sm:text-2xl;
