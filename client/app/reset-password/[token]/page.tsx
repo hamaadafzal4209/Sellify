@@ -49,12 +49,17 @@ const ResetPassword = ({ params }) => {
   return (
     <div className="flex min-h-full sm:min-h-[70vh] flex-1 flex-col px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="section-heading text-center text-gray-900">Reset Password</h2>
+        <h2 className="section-heading text-center text-gray-900">
+          Reset Password
+        </h2>
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleResetPassword}>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-900"
+            >
               New Password
             </label>
             <div className="mt-1">
@@ -69,9 +74,11 @@ const ResetPassword = ({ params }) => {
               />
             </div>
           </div>
-
           <div className="mt-4">
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium text-gray-900"
+            >
               Confirm Password
             </label>
             <div className="mt-1">
@@ -86,9 +93,8 @@ const ResetPassword = ({ params }) => {
               />
             </div>
           </div>
-
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>} {/* Display error message */}
-
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}{" "}
+          {/* Display error message */}
           <div className="mt-6">
             <button type="submit" className="submit-full-button">
               Submit

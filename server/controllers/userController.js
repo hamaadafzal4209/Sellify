@@ -188,7 +188,10 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   }
 
   const resetToken = crypto.randomBytes(32).toString("hex");
-  const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
 
   user.resetPasswordToken = resetPasswordToken;
   user.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
@@ -201,7 +204,10 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   };
 
   try {
-    const html = await ejs.renderFile(join(__dirname, "../mails/reset-password.ejs"), data);
+    const html = await ejs.renderFile(
+      join(__dirname, "../mails/reset-password.ejs"),
+      data
+    );
     await sendMail({
       email: user.email,
       subject: "Password Reset Request",
@@ -222,7 +228,10 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
 // Reset Password Controller
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
-  const resetPasswordToken = crypto.createHash("sha256").update(req.body.token).digest("hex");
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.body.token)
+    .digest("hex");
 
   const user = await userModel.findOne({
     resetPasswordToken,
@@ -244,7 +253,8 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Password reset successful. You can now log in with your new password.",
+    message:
+      "Password reset successful. You can now log in with your new password.",
   });
 });
 
