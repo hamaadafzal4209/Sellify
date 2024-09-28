@@ -42,9 +42,9 @@ export default function RootLayout({
       <body className="font-poppins">
         <Toaster />
         <Header />
-        <div className="flex">
+        <div className="flex gap-4">
           {/* sidebar */}
-          <div className="w-[250px] hidden lg:block">
+          <div className="w-[250px] flex-shrink-0 hidden lg:block">
             <Sidebar />
           </div>
           {children}
