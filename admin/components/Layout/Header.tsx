@@ -79,6 +79,7 @@ const Header = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="!p-0 !pt-20 !w-[300px]">
+                    {/* sidebar component */}
                   <Sidebar />
                 </SheetContent>
               </Sheet>

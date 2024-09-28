@@ -9,7 +9,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="p-4 h-full shadow-md"
+      className="p-4 h-full shadow-md overflow-y-auto"
       style={{
         minHeight: "calc(100vh - 65px)",
       }}

@@ -4,6 +4,7 @@ import { Inter, Poppins } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Layout/Header";
+import Sidebar from "@/components/Layout/Sidebar";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -41,7 +42,13 @@ export default function RootLayout({
       <body className="font-poppins">
         <Toaster />
         <Header />
-        {children}
+        <div className="flex">
+          {/* sidebar */}
+          <div className="w-[250px] hidden lg:block">
+            <Sidebar />
+          </div>
+          {children}
+        </div>
       </body>
     </html>
   );
