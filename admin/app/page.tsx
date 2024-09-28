@@ -55,7 +55,7 @@ const sidebarItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: ShoppingCart, label: 'Orders', href: '/orders' },
   { icon: Package, label: 'Products', href: '/products' },
-  { icon: Users, label: 'Customers', href: '/customers' },
+  { icon: Users, label: 'Categories', href: '/categories' },
 ]
 
 function SidebarContent() {
