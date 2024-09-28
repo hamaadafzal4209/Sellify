@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -18,7 +18,12 @@ import {
   Users,
   AlignJustify,
 } from "lucide-react";
-import { Sheet, SheetTrigger, SheetContent, SheetHeader } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+} from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
 
 const Header = () => {
@@ -39,7 +44,10 @@ const Header = () => {
           <div className="flex items-center gap-6">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full"
+                >
                   <Avatar className="h-10 w-10">
                     <AvatarImage src="/assets/profile-avatar.png" alt="@user" />
                     <AvatarFallback>AD</AvatarFallback>
@@ -49,8 +57,12 @@ const Header = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">Admin User</p>
-                    <p className="text-xs leading-none text-muted-foreground">admin@example.com</p>
+                    <p className="text-sm font-medium leading-none">
+                      Admin User
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      admin@example.com
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -59,7 +71,7 @@ const Header = () => {
             </DropdownMenu>
 
             {/* Sheet Component with Links */}
-            <div>
+            <div className="block lg:hidden">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="outline">
@@ -67,7 +79,7 @@ const Header = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="!p-0 !pt-20 !w-[300px]">
-                <Sidebar/>
+                  <Sidebar />
                 </SheetContent>
               </Sheet>
             </div>

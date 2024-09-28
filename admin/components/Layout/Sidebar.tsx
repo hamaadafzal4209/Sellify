@@ -8,7 +8,12 @@ const Sidebar = () => {
   const pathname = usePathname(); // This will give you the current path
 
   return (
-    <div className="p-4 h-full shadow-md">
+    <div
+      className="p-4 h-full shadow-md"
+      style={{
+        minHeight: "calc(100vh - 65px)",
+      }}
+    >
       <div className="flex flex-col gap-4">
         <Link
           href="/"
