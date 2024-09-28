@@ -102,8 +102,8 @@ const page = () => {
   return (
     <>
       <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
-          <h2 className="text-3xl font-bold tracking-tight text-main-600">
+        <div className="flex flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
+          <h2 className="text-3xl text-main-600">
             Dashboard
           </h2>
           <Select value={dateFilter} onValueChange={handleDateFilterChange}>
