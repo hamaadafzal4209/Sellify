@@ -111,15 +111,15 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="max-w-5xl w-full px-4 py-8">
+    <div className="max-w-5xl w-full px-4 py-8 mx-auto">
       <h1 className="text-2xl font-bold mb-4">Categories</h1>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-2">
+      <div className="flex justify-between items-center mb-4 flex-col sm:flex-row">
+        <div className="flex items-center space-x-2 mb-4 sm:mb-0">
           <Input
             placeholder="Search categories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
+            className="w-full max-w-xs"
           />
           <Button
             size="icon"
@@ -150,7 +150,7 @@ export default function CategoriesPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-center gap-2">
                 <Label htmlFor="name" className="text-right">
                   Name
                 </Label>
@@ -161,7 +161,7 @@ export default function CategoriesPage() {
                   className="col-span-3"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-center gap-2">
                 <Label htmlFor="description" className="text-right">
                   Description
                 </Label>
@@ -178,6 +178,7 @@ export default function CategoriesPage() {
                 onClick={
                   currentCategory ? handleUpdateCategory : handleCreateCategory
                 }
+                className="bg-main-500 hover:bg-main-600"
               >
                 {currentCategory ? "Update" : "Create"}
               </Button>
@@ -185,7 +186,7 @@ export default function CategoriesPage() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-hidden">
         <ScrollArea className="h-[calc(100vh-250px)]">
           <Table>
             <TableHeader>
@@ -231,31 +232,34 @@ export default function CategoriesPage() {
         </ScrollArea>
       </div>
 
-      <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to delete this category?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              category "{currentCategory?.name}" and remove it from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteCategory}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <div className="p-4 ">
+        <AlertDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to delete this category?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                category "{currentCategory?.name}" and remove it from our
+                servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteCategory}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }
