@@ -3,7 +3,7 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, ShoppingCart, Package, Users, Menu, Plus, Pencil, Trash2 } from 'lucide-react'
+import { LayoutDashboard, ShoppingCart, Package, Users, Plus, Pencil, Trash2, Menu } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -15,7 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Dialog,
   DialogContent,
@@ -35,13 +34,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Label } from "@/components/ui/label"
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: ShoppingCart, label: 'Orders', href: '/orders' },
   { icon: Package, label: 'Products', href: '/products' },
-  { icon: Users, label: 'Customers', href: '/customers' },
+  { icon: Users, label: 'Categories', href: '/categories' },
 ]
 
 // Mock data for categories
@@ -132,52 +132,48 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
-      {/* Top Bar */}
-      <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-background px-6 sticky top-0 z-40">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="lg:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[80%] sm:w-[385px] p-0">
-            <div className="flex h-full flex-col">
-              <div className="flex h-14 items-center border-b px-4">
-                <Link href="/" className="flex items-center gap-2 font-semibold">
-                  <Package className="h-6 w-6" />
-                  <span className="">Acme Inc</span>
-                </Link>
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Sidebar for larger screens */}
+      <aside className="hidden w-64 border-r bg-muted/40 lg:block">
+        <div className="flex h-full flex-col">
+          <div className="flex h-14 items-center border-b px-4">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+              <Package className="h-6 w-6" />
+              <span className="">Acme Inc</span>
+            </Link>
+          </div>
+          <SidebarContent />
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        <div className="flex h-14 items-center border-b px-4 lg:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="mr-2">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <div className="flex h-full flex-col">
+                <div className="flex h-14 items-center border-b px-4">
+                  <Link href="/" className="flex items-center gap-2 font-semibold">
+                    <Package className="h-6 w-6" />
+                    <span className="">Acme Inc</span>
+                  </Link>
+                </div>
+                <SidebarContent />
               </div>
-              <SidebarContent />
-            </div>
-          </SheetContent>
-        </Sheet>
-        <div className="flex-1">
+            </SheetContent>
+          </Sheet>
           <h1 className="text-lg font-semibold">Categories</h1>
         </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar for larger screens */}
-        <aside className="hidden border-r bg-muted/40 lg:block lg:w-64">
-          <div className="flex h-full flex-col">
-            <div className="flex h-14 items-center border-b px-4">
-              <Link href="/" className="flex items-center gap-2 font-semibold">
-                <Package className="h-6 w-6" />
-                <span className="">Acme Inc</span>
-              </Link>
-            </div>
-            <SidebarContent />
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col space-y-4 p-4 md:p-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Categories</h2>
+              <h2 className="text-2xl font-bold hidden lg:block">Categories</h2>
               <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
                   <Button onClick={() => openEditDialog()}>
@@ -264,8 +260,8 @@ export default function CategoriesPage() {
               </Table>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

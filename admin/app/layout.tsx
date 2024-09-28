@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import Header from "@/components/Layout/Header";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -38,8 +39,9 @@ export default function RootLayout({
       )}
     >
       <body className="font-poppins">
-          <Toaster />
-          {children}
+        <Toaster />
+        <Header />
+        {children}
       </body>
     </html>
   );

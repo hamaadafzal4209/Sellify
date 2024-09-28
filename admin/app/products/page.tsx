@@ -46,21 +46,21 @@ const sidebarItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: ShoppingCart, label: 'Orders', href: '/orders' },
   { icon: Package, label: 'Products', href: '/products' },
-  { icon: Users, label: 'Categories', href: '/categories' },
+  { icon: Users, label: 'Customers', href: '/customers' },
 ]
 
 const products = [
-  { id: '1', name: 'Smartphone X', category: 'Electronics', price: 599.99, stock: 50, image: '/assets/dummy-image.webp' },
-  { id: '2', name: 'Laptop Pro', category: 'Electronics', price: 1299.99, stock: 30, image: '/assets/dummy-image.webp' },
-  { id: '3', name: 'Wireless Headphones', category: 'Audio', price: 149.99, stock: 100, image: '/assets/dummy-image.webp' },
-  { id: '4', name: 'Smartwatch', category: 'Wearables', price: 249.99, stock: 75, image: '/assets/dummy-image.webp' },
-  { id: '5', name: 'Digital Camera', category: 'Photography', price: 699.99, stock: 25, image: '/assets/dummy-image.webp' },
-  { id: '6', name: 'Gaming Console', category: 'Gaming', price: 499.99, stock: 40, image: '/assets/dummy-image.webp' },
-  { id: '7', name: 'Bluetooth Speaker', category: 'Audio', price: 79.99, stock: 120, image: '/assets/dummy-image.webp' },
-  { id: '8', name: 'Tablet', category: 'Electronics', price: 349.99, stock: 60, image: '/assets/dummy-image.webp' },
-  { id: '9', name: 'Fitness Tracker', category: 'Wearables', price: 99.99, stock: 90, image: '/assets/dummy-image.webp' },
-  { id: '10', name: 'Wireless Earbuds', category: 'Audio', price: 129.99, stock: 80, image: '/assets/dummy-image.webp' },
-]
+    { id: '1', name: 'Smartphone X', category: 'Electronics', price: 599.99, stock: 50, image: '/assets/dummy-image.webp' },
+    { id: '2', name: 'Laptop Pro', category: 'Electronics', price: 1299.99, stock: 30, image: '/assets/dummy-image.webp' },
+    { id: '3', name: 'Wireless Headphones', category: 'Audio', price: 149.99, stock: 100, image: '/assets/dummy-image.webp' },
+    { id: '4', name: 'Smartwatch', category: 'Wearables', price: 249.99, stock: 75, image: '/assets/dummy-image.webp' },
+    { id: '5', name: 'Digital Camera', category: 'Photography', price: 699.99, stock: 25, image: '/assets/dummy-image.webp' },
+    { id: '6', name: 'Gaming Console', category: 'Gaming', price: 499.99, stock: 40, image: '/assets/dummy-image.webp' },
+    { id: '7', name: 'Bluetooth Speaker', category: 'Audio', price: 79.99, stock: 120, image: '/assets/dummy-image.webp' },
+    { id: '8', name: 'Tablet', category: 'Electronics', price: 349.99, stock: 60, image: '/assets/dummy-image.webp' },
+    { id: '9', name: 'Fitness Tracker', category: 'Wearables', price: 99.99, stock: 90, image: '/assets/dummy-image.webp' },
+    { id: '10', name: 'Wireless Earbuds', category: 'Audio', price: 129.99, stock: 80, image: '/assets/dummy-image.webp' },
+  ]
 
 function SidebarContent() {
   const pathname = usePathname()
@@ -132,49 +132,45 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
-      {/* Top Bar */}
-      <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-background px-6 sticky top-0 z-40">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="lg:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[80%] sm:w-[385px] p-0">
-            <div className="flex h-full flex-col">
-              <div className="flex h-14 items-center border-b px-4">
-                <Link href="/" className="flex items-center gap-2 font-semibold">
-                  <Package className="h-6 w-6" />
-                  <span className="">Acme Inc</span>
-                </Link>
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Sidebar for larger screens */}
+      <aside className="hidden w-64 border-r bg-muted/40 lg:block">
+        <div className="flex h-full flex-col">
+          <div className="flex h-14 items-center border-b px-4">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+              <Package className="h-6 w-6" />
+              <span className="">Acme Inc</span>
+            </Link>
+          </div>
+          <SidebarContent />
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        <div className="flex h-14 items-center border-b px-4 lg:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="mr-2">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <div className="flex h-full flex-col">
+                <div className="flex h-14 items-center border-b px-4">
+                  <Link href="/" className="flex items-center gap-2 font-semibold">
+                    <Package className="h-6 w-6" />
+                    <span className="">Acme Inc</span>
+                  </Link>
+                </div>
+                <SidebarContent />
               </div>
-              <SidebarContent />
-            </div>
-          </SheetContent>
-        </Sheet>
-        <div className="flex-1">
+            </SheetContent>
+          </Sheet>
           <h1 className="text-lg font-semibold">Products</h1>
         </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar for larger screens */}
-        <aside className="hidden border-r bg-muted/40 lg:block lg:w-64">
-          <div className="flex h-full flex-col">
-            <div className="flex h-14 items-center border-b px-4">
-              <Link href="/" className="flex items-center gap-2 font-semibold">
-                <Package className="h-6 w-6" />
-                <span className="">Acme Inc</span>
-              </Link>
-            </div>
-            <SidebarContent />
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col space-y-4 p-4 md:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -321,8 +317,8 @@ export default function ProductsPage() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
