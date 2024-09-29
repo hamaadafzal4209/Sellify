@@ -176,19 +176,19 @@ const Page = () => {
               <BarChart data={data}>
                 <XAxis
                   dataKey="name"
-                  stroke="#1e40af"
+                  stroke="#FE426D"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#1e40af"
+                  stroke="#FE426D"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `$${value}`}
                 />
-                <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="total" fill="#FE426D" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
