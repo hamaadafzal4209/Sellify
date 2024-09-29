@@ -124,13 +124,13 @@ const CreateProduct = () => {
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-8 lg:px-8 bg-gray-50">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="section-heading text-center text-gray-900 text-2xl font-bold mb-4">
+      <div className="sm:mx-auto w-full sm:max-w-md">
+        <h2 className="section-heading text-center text-gray-900 text-2xl font-bold mb-2">
           Create New Product
         </h2>
       </div>
 
-      <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-6 sm:p-8 rounded-lg max-h-[70vh]">
+      <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-6 sm:p-8 rounded-lg max-h-[65vh]">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Product Name */}
           <div>
@@ -328,13 +328,13 @@ const CreateProduct = () => {
           <div>
             <Label
               htmlFor="images"
-              className="block text-sm font-medium text-gray-900 cursor-pointer"
+              className="block text-sm font-medium text-gray-900"
             >
               Product Images
             </Label>
             <div
               {...getRootProps()}
-              className={`mt-1 border-dashed border-2 p-4 rounded-lg transition-all ${
+              className={`mt-1 border-dashed border-2 p-4 rounded-lg transition-all cursor-pointer ${
                 isDragActive ? "border-main-500" : "border-gray-300"
               }`}
             >

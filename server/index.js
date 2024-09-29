@@ -6,6 +6,8 @@ import connectDatabase from "./db/Database.js";
 import dotenv from "dotenv";
 import { errorHandlerMiddleware } from "./middleware/error.js";
 import userRouter from "./routes/userRoutes.js";
+import cloudinary from "cloudinary";
+import productRouter from "./routes/productRoute.js";
 
 // config
 const app = express();
@@ -13,9 +15,16 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
   dotenv.config();
 }
 
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   })
 );
@@ -28,6 +37,7 @@ connectDatabase();
 
 // import routes
 app.use("/api/user/", userRouter);
+app.use("/api/product/", productRouter);
 
 // unhandled promise rejection
 process.on("unhandledRejection", (err) => {
