@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import React, { useState } from "react";
@@ -77,7 +76,7 @@ const recentOrders = [
   {
     id: "ORD005",
     customer: "David Wilson",
-    product: "maintooth Speaker",
+    product: "Bluetooth Speaker",
     total: "$79.99",
     status: "Processing",
   },
@@ -88,10 +87,10 @@ const topProducts = [
   { name: "Smartphone X", sales: 1000, revenue: "$699,990.00" },
   { name: "Laptop Pro", sales: 876, revenue: "$1,138,799.24" },
   { name: "Smartwatch", sales: 765, revenue: "$152,999.35" },
-  { name: "maintooth Speaker", sales: 654, revenue: "$52,319.46" },
+  { name: "Bluetooth Speaker", sales: 654, revenue: "$52,319.46" },
 ];
 
-const page = () => {
+const Page = () => {
   const [dateFilter, setDateFilter] = useState("7d");
 
   const handleDateFilterChange = (value: string) => {
@@ -100,109 +99,109 @@ const page = () => {
   };
 
   return (
-    <>
-      <main className="flex-1 space-y-4 p-4 md:p-8 md:px-6 pt-6">
-        <div className="flex flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
-          <h2 className="text-3xl font-semibold text-main-600">Dashboard</h2>
-          <Select value={dateFilter} onValueChange={handleDateFilterChange}>
-            <SelectTrigger className="max-w-[180px] w-full">
-              <SelectValue placeholder="Select date range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-              <SelectItem value="6m">Last 6 months</SelectItem>
-              <SelectItem value="1y">Last year</SelectItem>
-              <SelectItem value="all">All time</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-main-600">
-                Total Revenue
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-main-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-main-900">$45,231.89</div>
-              <p className="text-xs text-main-500">+20.1% from last month</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-main-600">
-                Orders
-              </CardTitle>
-              <ShoppingCart className="h-4 w-4 text-main-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-main-900">+2350</div>
-              <p className="text-xs text-main-500">+180.1% from last month</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-main-600">
-                Products
-              </CardTitle>
-              <Package className="h-4 w-4 text-main-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-main-900">+12,234</div>
-              <p className="text-xs text-main-500">+19% from last month</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-main-600">
-                Active Users
-              </CardTitle>
-              <Users className="h-4 w-4 text-main-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-main-900">+573,234</div>
-              <p className="text-xs text-main-500">+201 since last hour</p>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-full lg:col-span-4 bg-white">
-            <CardHeader>
-              <CardTitle className="text-main-600">Overview</CardTitle>
-            </CardHeader>
-            <CardContent className="pl-2">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={data}>
-                  <XAxis
-                    dataKey="name"
-                    stroke="#1e40af"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#1e40af"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
-                  />
-                  <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card className="col-span-full lg:col-span-3 bg-white">
-            <CardHeader>
-              <CardTitle className="text-main-600">Recent Orders</CardTitle>
-              <CardDescription className="text-main-500">
-                You have {recentOrders.length} orders this month.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+    <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
+        <h2 className="text-3xl font-semibold text-main-600">Dashboard</h2>
+        <Select value={dateFilter} onValueChange={handleDateFilterChange}>
+          <SelectTrigger className="max-w-[180px] w-full">
+            <SelectValue placeholder="Select date range" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="7d">Last 7 days</SelectItem>
+            <SelectItem value="30d">Last 30 days</SelectItem>
+            <SelectItem value="90d">Last 90 days</SelectItem>
+            <SelectItem value="6m">Last 6 months</SelectItem>
+            <SelectItem value="1y">Last year</SelectItem>
+            <SelectItem value="all">All time</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-main-600">
+              Total Revenue
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-main-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-main-900">$45,231.89</div>
+            <p className="text-xs text-main-500">+20.1% from last month</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-main-600">
+              Orders
+            </CardTitle>
+            <ShoppingCart className="h-4 w-4 text-main-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-main-900">+2350</div>
+            <p className="text-xs text-main-500">+180.1% from last month</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-main-600">
+              Products
+            </CardTitle>
+            <Package className="h-4 w-4 text-main-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-main-900">+12,234</div>
+            <p className="text-xs text-main-500">+19% from last month</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-main-600">
+              Active Users
+            </CardTitle>
+            <Users className="h-4 w-4 text-main-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-main-900">+573,234</div>
+            <p className="text-xs text-main-500">+201 since last hour</p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-full lg:col-span-4 bg-white">
+          <CardHeader>
+            <CardTitle className="text-main-600">Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={data}>
+                <XAxis
+                  dataKey="name"
+                  stroke="#1e40af"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#1e40af"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `$${value}`}
+                />
+                <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        <Card className="col-span-full lg:col-span-3 bg-white">
+          <CardHeader>
+            <CardTitle className="text-main-600">Recent Orders</CardTitle>
+            <CardDescription className="text-main-500">
+              You have {recentOrders.length} orders this month.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -235,20 +234,22 @@ const page = () => {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-full lg:col-span-4 bg-white">
-            <CardHeader>
-              <CardTitle className="text-main-600">
-                Top Selling Products
-              </CardTitle>
-              <CardDescription className="text-main-500">
-                Your top 5 products this month.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-full lg:col-span-4 bg-white">
+          <CardHeader>
+            <CardTitle className="text-main-600">
+              Top Selling Products
+            </CardTitle>
+            <CardDescription className="text-main-500">
+              Your top 5 products this month.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -269,47 +270,47 @@ const page = () => {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-          <Card className="col-span-full lg:col-span-3 bg-white">
-            <CardHeader>
-              <CardTitle className="text-main-600">Recent Customers</CardTitle>
-              <CardDescription className="text-main-500">
-                You have 265 customers this month.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-8">
-                {recentOrders.map((order) => (
-                  <div className="flex items-center" key={order.id}>
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage
-                        src={`/placeholder.svg?height=32&width=32`}
-                        alt="Avatar"
-                      />
-                      <AvatarFallback>
-                        {order.customer
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="ml-4 space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {order.customer}
-                      </p>
-                      <p className="text-sm text-main-500">{order.product}</p>
-                    </div>
-                    <div className="ml-auto font-medium">{order.total}</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-full lg:col-span-3 bg-white">
+          <CardHeader>
+            <CardTitle className="text-main-600">Recent Customers</CardTitle>
+            <CardDescription className="text-main-500">
+              You have 265 customers this month.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {recentOrders.map((order) => (
+                <div className="flex items-center" key={order.id}>
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage
+                      src={`/placeholder.svg?height=32&width=32`}
+                      alt="Avatar"
+                    />
+                    <AvatarFallback>
+                      {order.customer
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="ml-4 space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {order.customer}
+                    </p>
+                    <p className="text-sm text-main-500">{order.product}</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </>
+                  <div className="ml-auto font-medium">{order.total}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 };
 
-export default page;
+export default Page;
