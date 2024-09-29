@@ -19,6 +19,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import axios from "axios";
 
 // Define the validation schema with Zod
 const productSchema = z.object({
@@ -30,11 +31,7 @@ const productSchema = z.object({
   discountPrice: z
     .number()
     .positive("Discount price must be a positive number")
-    .optional()
-    .refine((value, ctx) => {
-      const originalPrice = ctx.parent.originalPrice;
-      return value <= originalPrice;
-    }, "Discount price cannot exceed original price"),
+    .optional(),
   stock: z
     .number()
     .int()
@@ -113,12 +110,24 @@ const CreateProduct = () => {
     };
 
     const toastId = toast.loading("Creating product...");
+
+    console.log("Submitting product data:", productData); // Log product data for debugging
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
-      toast.success("Product created successfully!", { id: toastId });
-      console.log(productData);
+      const response = await axios.post(
+        "http://localhost:8000/api/product/create-product",
+        productData
+      );
+
+      console.log("Response from API:", response);
+
+      if (response.status === 200) {
+        toast.success("Product created successfully!", { id: toastId });
+        console.log(response.data);
+      }
     } catch (error) {
       toast.error("Failed to create product", { id: toastId });
+      console.error("Error creating product:", error);
     }
   };
 
@@ -265,15 +274,22 @@ const CreateProduct = () => {
               >
                 Category
               </Label>
-              <Select onValueChange={(value) => setValue("category", value)}>
-                <SelectTrigger className="mt-1 p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <Select
+                onValueChange={(value) => setValue("category", value)}
+                defaultValue=""
+              >
+                <SelectTrigger
+                  className={`mt-1 ${
+                    errors.category ? "border-red-500" : "border-gray-300"
+                  }`}
+                >
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="electronics">Electronics</SelectItem>
                   <SelectItem value="fashion">Fashion</SelectItem>
-                  <SelectItem value="beauty">Beauty</SelectItem>
                   <SelectItem value="home">Home</SelectItem>
+                  {/* Add more categories as needed */}
                 </SelectContent>
               </Select>
               {errors.category && (
@@ -284,100 +300,81 @@ const CreateProduct = () => {
             </div>
           </div>
 
+          {/* Images Upload */}
+          <div>
+            <Label className="block text-sm font-medium text-gray-900">
+              Upload Images
+            </Label>
+            <div
+              {...getRootProps()}
+              className={`mt-1 border-dashed border-2 rounded-md p-4 transition-all ${
+                isDragActive ? "border-blue-500" : "border-gray-300"
+              }`}
+            >
+              <input {...getInputProps()} />
+              {images.length === 0 ? (
+                <p className="text-center text-gray-500">
+                  Drag & drop some files here, or click to select files
+                </p>
+              ) : (
+                <div className="flex gap-2 flex-wrap">
+                  {images.map((file, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={file.preview}
+                        alt={file.name}
+                        className="w-24 h-24 object-contain rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Features */}
           <div>
-            <Label
-              htmlFor="features"
-              className="block text-sm font-medium text-gray-900"
-            >
+            <Label className="block text-sm font-medium text-gray-900">
               Features
             </Label>
             {features.map((feature, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+              <div key={index} className="flex items-center mt-2">
                 <Input
                   type="text"
-                  placeholder={`Feature ${index + 1}`}
                   value={feature}
                   onChange={(e) => handleFeatureChange(index, e.target.value)}
-                  className="flex-1 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Feature"
+                  className={`p-2 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.features && errors.features[index]
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
                 />
                 <Button
                   type="button"
                   onClick={() => handleDeleteFeature(index)}
-                  className="bg-red-500 text-white rounded-full hover:bg-red-600"
+                  className="ml-2 rounded-full bg-red-500 hover:bg-red-600"
                 >
-                  <X className="w-4 h-4" />
+                  <X size={16} />
                 </Button>
               </div>
             ))}
-            <Button
-              type="button"
-              onClick={addFeature}
-              className="mt-2 bg-main-500 hover:bg-main-600 transition-all duration-300"
-            >
+            <Button type="button" onClick={addFeature} className="mt-2">
               Add Feature
             </Button>
-            {errors.features && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.features.message}
-              </p>
-            )}
-          </div>
-
-          {/* Upload Images */}
-          <div>
-            <Label
-              htmlFor="images"
-              className="block text-sm font-medium text-gray-900"
-            >
-              Product Images
-            </Label>
-            <div
-              {...getRootProps()}
-              className={`mt-1 border-dashed border-2 p-4 rounded-lg transition-all cursor-pointer ${
-                isDragActive ? "border-main-500" : "border-gray-300"
-              }`}
-            >
-              <input {...getInputProps()} />
-              <p className="text-center text-gray-500">
-                <Upload className="w-6 h-6 mx-auto mb-2" />
-                Drag 'n' drop some files here, or click to select files
-              </p>
-            </div>
-            {images.length > 0 && (
-              <div className="mt-2 flex items-center gap-2 flex-wrap">
-                {images.map((file, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={file.preview}
-                      alt="Preview"
-                      className="h-24 w-24 object-contain rounded-lg border border-gray-300 shadow-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteImage(index)}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition duration-200"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Submit Button */}
-          <div>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full py-3 bg-main-500 text-white rounded-lg hover:bg-main-600 transition ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {isSubmitting ? "Creating..." : "Create Product"}
-            </Button>
-          </div>
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? "Creating..." : "Create Product"}
+          </Button>
         </form>
       </ScrollArea>
     </div>
