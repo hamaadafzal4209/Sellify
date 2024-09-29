@@ -24,15 +24,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const productSchema = z.object({
   productName: z.string().nonempty("Product name is required"),
   productDescription: z.string().nonempty("Product description is required"),
-  price: z.number().positive("Price must be a positive number"),
-  oldPrice: z
+  originalPrice: z
     .number()
-    .nonnegative("Old price must be a non-negative number")
-    .optional(),
+    .positive("Original price must be a positive number"),
   discountPrice: z
     .number()
-    .nonnegative("Discount price must be a non-negative number")
-    .optional(),
+    .positive("Discount price must be a positive number")
+    .optional()
+    .refine((value, ctx) => {
+      const originalPrice = ctx.parent.originalPrice;
+      return value <= originalPrice;
+    }, "Discount price cannot exceed original price"),
   stock: z
     .number()
     .int()
@@ -41,15 +43,18 @@ const productSchema = z.object({
   images: z
     .array(
       z.object({
-        preview: z.string().url("Invalid image URL"),
+        public_url: z.string().url("Invalid public URL"),
+        url: z.string().url("Invalid image URL"),
       })
     )
     .nonempty("At least one image is required"),
+  features: z.array(z.string()),
 });
 
 const CreateProduct = () => {
   const [images, setImages] = useState([]);
   const [isDragActive, setIsDragActive] = useState(false);
+  const [features, setFeatures] = useState([""]);
 
   const {
     register,
@@ -69,38 +74,47 @@ const CreateProduct = () => {
       const newImages = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
+          public_url: "", // Replace with real public_url
         })
       );
       setImages((prevImages) => [...prevImages, ...newImages]);
       setIsDragActive(false);
     },
-    onDragEnter: () => {
-      setIsDragActive(true);
-    },
-    onDragLeave: () => {
-      setIsDragActive(false);
-    },
+    onDragEnter: () => setIsDragActive(true),
+    onDragLeave: () => setIsDragActive(false),
   });
 
   const handleDeleteImage = (index) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  const addFeature = () => setFeatures((prevFeatures) => [...prevFeatures, ""]);
+
+  const handleDeleteFeature = (index) => {
+    setFeatures((prevFeatures) => prevFeatures.filter((_, i) => i !== index));
+  };
+
+  const handleFeatureChange = (index, value) => {
+    const updatedFeatures = [...features];
+    updatedFeatures[index] = value;
+    setFeatures(updatedFeatures);
+  };
+
   const onSubmit = async (data) => {
     const productData = {
       ...data,
-      price: parseFloat(data.price),
-      oldPrice: data.oldPrice ? parseFloat(data.oldPrice) : undefined,
+      originalPrice: parseFloat(data.originalPrice),
       discountPrice: data.discountPrice
         ? parseFloat(data.discountPrice)
         : undefined,
       stock: parseInt(data.stock, 10),
       images,
+      features,
     };
 
     const toastId = toast.loading("Creating product...");
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
       toast.success("Product created successfully!", { id: toastId });
       console.log(productData);
     } catch (error) {
@@ -109,14 +123,14 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-8 lg:px-8">
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-8 lg:px-8 bg-gray-50">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="section-heading text-center text-gray-900 text-2xl font-bold">
+        <h2 className="section-heading text-center text-gray-900 text-2xl font-bold mb-4">
           Create New Product
         </h2>
       </div>
 
-      <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-4 sm:p-6 rounded-md overflow-y-auto max-h-[70vh]">
+      <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-6 sm:p-8 rounded-lg max-h-[70vh]">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Product Name */}
           <div>
@@ -131,7 +145,7 @@ const CreateProduct = () => {
               type="text"
               placeholder="Enter product name"
               {...register("productName")}
-              className={`mt-1 focus:ring-main-500 outline-none transition duration-200 p-3 rounded-md border ${
+              className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.productName ? "border-red-500" : "border-gray-300"
               }`}
             />
@@ -154,7 +168,7 @@ const CreateProduct = () => {
               id="productDescription"
               placeholder="Enter product description"
               {...register("productDescription")}
-              className={`mt-1 focus:ring-main-500 outline-none border transition duration-200 p-3 rounded-md ${
+              className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.productDescription ? "border-red-500" : "border-gray-300"
               }`}
             />
@@ -165,32 +179,33 @@ const CreateProduct = () => {
             )}
           </div>
 
-          {/* Price, Old Price, and Discount Price */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Prices */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label
-                htmlFor="oldPrice"
+                htmlFor="originalPrice"
                 className="block text-sm font-medium text-gray-900"
               >
-                Old Price ($)
+                Original Price ($)
               </Label>
               <Input
-                id="oldPrice"
+                id="originalPrice"
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Enter old price"
-                {...register("oldPrice", { valueAsNumber: true })}
-                className={`mt-1 focus:ring-main-500 outline-none border transition duration-200 p-3 rounded-md ${
-                  errors.oldPrice ? "border-red-500" : "border-gray-300"
+                placeholder="Enter original price"
+                {...register("originalPrice", { valueAsNumber: true })}
+                className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.originalPrice ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.oldPrice && (
+              {errors.originalPrice && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.oldPrice.message}
+                  {errors.originalPrice.message}
                 </p>
               )}
             </div>
+
             <div>
               <Label
                 htmlFor="discountPrice"
@@ -205,38 +220,13 @@ const CreateProduct = () => {
                 step="0.01"
                 placeholder="Enter discount price"
                 {...register("discountPrice", { valueAsNumber: true })}
-                className={`mt-1 focus:ring-main-500 outline-none border transition duration-200 p-3 rounded-md ${
+                className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.discountPrice ? "border-red-500" : "border-gray-300"
                 }`}
               />
               {errors.discountPrice && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.discountPrice.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label
-                htmlFor="price"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Price ($)
-              </Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Enter price"
-                {...register("price", { valueAsNumber: true })}
-                required
-                className={`mt-1 focus:ring-main-500 outline-none border transition duration-200 p-3 rounded-md ${
-                  errors.price ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.price && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.price.message}
                 </p>
               )}
             </div>
@@ -257,8 +247,7 @@ const CreateProduct = () => {
                 min="0"
                 placeholder="Enter stock quantity"
                 {...register("stock", { valueAsNumber: true })}
-                required
-                className={`mt-1 focus:ring-main-500 outline-none border transition duration-200 p-3 rounded-md ${
+                className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.stock ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -268,6 +257,7 @@ const CreateProduct = () => {
                 </p>
               )}
             </div>
+
             <div>
               <Label
                 htmlFor="category"
@@ -276,10 +266,7 @@ const CreateProduct = () => {
                 Category
               </Label>
               <Select onValueChange={(value) => setValue("category", value)}>
-                <SelectTrigger
-                  id="category"
-                  className="mt-1 focus:ring-main-500 outline-none border transition duration-200 border-gray-300 rounded-md p-3"
-                >
+                <SelectTrigger className="mt-1 p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -297,17 +284,57 @@ const CreateProduct = () => {
             </div>
           </div>
 
+          {/* Features */}
+          <div>
+            <Label
+              htmlFor="features"
+              className="block text-sm font-medium text-gray-900"
+            >
+              Features
+            </Label>
+            {features.map((feature, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <Input
+                  type="text"
+                  placeholder={`Feature ${index + 1}`}
+                  value={feature}
+                  onChange={(e) => handleFeatureChange(index, e.target.value)}
+                  className="flex-1 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <Button
+                  type="button"
+                  onClick={() => handleDeleteFeature(index)}
+                  className="bg-red-500 text-white rounded-full hover:bg-red-600"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              onClick={addFeature}
+              className="mt-2 bg-main-500 hover:bg-main-600 transition-all duration-300"
+            >
+              Add Feature
+            </Button>
+            {errors.features && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.features.message}
+              </p>
+            )}
+          </div>
+
           {/* Upload Images */}
           <div>
             <Label
               htmlFor="images"
-              className="block text-sm font-medium text-gray-900"
+              className="block text-sm font-medium text-gray-900 cursor-pointer"
             >
               Product Images
             </Label>
             <div
               {...getRootProps()}
-              className={`mt-1 border-dashed border-2 p-4 rounded-lg transition duration-200 ${
+              className={`mt-1 border-dashed border-2 p-4 rounded-lg transition-all ${
                 isDragActive ? "border-main-500" : "border-gray-300"
               }`}
             >
@@ -318,18 +345,18 @@ const CreateProduct = () => {
               </p>
             </div>
             {images.length > 0 && (
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
                 {images.map((file, index) => (
                   <div key={index} className="relative">
                     <img
                       src={file.preview}
                       alt="Preview"
-                      className="w-full h-32 object-cover rounded-lg border border-gray-300 shadow-sm"
+                      className="h-24 w-24 object-contain rounded-lg border border-gray-300 shadow-sm"
                     />
                     <button
                       type="button"
                       onClick={() => handleDeleteImage(index)}
-                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition duration-200"
+                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition duration-200"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -344,11 +371,11 @@ const CreateProduct = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className={`submit-full-button !hover:bg-main-600 ${
+              className={`w-full py-3 bg-main-500 text-white rounded-lg hover:bg-main-600 transition ${
                 isSubmitting ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              Create Product
+              {isSubmitting ? "Creating..." : "Create Product"}
             </Button>
           </div>
         </form>
