@@ -1,7 +1,29 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search } from "lucide-react"; // For table actions
+import {
+  FaHome,
+  FaUser,
+  FaCog,
+  FaSearch,
+  FaCamera,
+  FaEnvelope,
+  FaPhone,
+  FaBell,
+  FaGlobe,
+  FaHeart,
+  FaCar,
+  FaPlane,
+  FaStar,
+  FaMusic,
+  FaFilm,
+  FaBook,
+  FaShoppingCart,
+  FaMapMarkerAlt,
+  FaLightbulb,
+  FaWifi,
+} from "react-icons/fa"; // For category icons
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,12 +56,32 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const initialCategories = [
-  // Static example categories (if needed)
+// Define 20 commonly used icons
+const commonIcons = [
+  { name: "Home", component: <FaHome /> },
+  { name: "User", component: <FaUser /> },
+  { name: "Settings", component: <FaCog /> },
+  { name: "Search", component: <FaSearch /> },
+  { name: "Camera", component: <FaCamera /> },
+  { name: "Email", component: <FaEnvelope /> },
+  { name: "Phone", component: <FaPhone /> },
+  { name: "Bell", component: <FaBell /> },
+  { name: "World", component: <FaGlobe /> },
+  { name: "Heart", component: <FaHeart /> },
+  { name: "Car", component: <FaCar /> },
+  { name: "Plane", component: <FaPlane /> },
+  { name: "Star", component: <FaStar /> },
+  { name: "Music", component: <FaMusic /> },
+  { name: "Film", component: <FaFilm /> },
+  { name: "Book", component: <FaBook /> },
+  { name: "Cart", component: <FaShoppingCart /> },
+  { name: "Location", component: <FaMapMarkerAlt /> },
+  { name: "Light", component: <FaLightbulb /> },
+  { name: "Wifi", component: <FaWifi /> },
 ];
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState(initialCategories);
+  const [categories, setCategories] = useState([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false); // New state for icon dialog
@@ -48,31 +90,7 @@ export default function CategoriesPage() {
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [newCategoryIcon, setNewCategoryIcon] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [icons, setIcons] = useState([]);
   const [iconSearchTerm, setIconSearchTerm] = useState("");
-
-  // Fetch icons from Iconify API based on search term
-  useEffect(() => {
-    const fetchIcons = async () => {
-      if (iconSearchTerm.length > 2) {
-        try {
-          const response = await fetch(`https://api.iconify.design/icons.json?query=${iconSearchTerm}`);
-          if (!response.ok) throw new Error('Network response was not ok');
-          const data = await response.json();
-          setIcons(data.icons || []);
-        } catch (error) {
-          console.error("Failed to fetch icons:", error);
-          setIcons([]);
-        }
-      } else {
-        setIcons([]);
-      }
-    };
-
-    // Debouncing: Wait for 300ms after user stops typing
-    const debounceFetch = setTimeout(fetchIcons, 300);
-    return () => clearTimeout(debounceFetch);
-  }, [iconSearchTerm])
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -94,7 +112,12 @@ export default function CategoriesPage() {
   const handleUpdateCategory = () => {
     const updatedCategories = categories.map((cat) =>
       cat.id === currentCategory.id
-        ? { ...cat, name: newCategoryName, description: newCategoryDescription, icon: newCategoryIcon }
+        ? {
+            ...cat,
+            name: newCategoryName,
+            description: newCategoryDescription,
+            icon: newCategoryIcon,
+          }
         : cat
     );
     setCategories(updatedCategories);
@@ -115,7 +138,6 @@ export default function CategoriesPage() {
     setNewCategoryDescription("");
     setNewCategoryIcon("");
     setIconSearchTerm("");
-    setIcons([]);
     setIsEditDialogOpen(false);
   };
 
@@ -138,7 +160,7 @@ export default function CategoriesPage() {
   };
 
   const selectIcon = (icon) => {
-    setNewCategoryIcon(icon.body);
+    setNewCategoryIcon(icon.component);
     setIsIconDialogOpen(false);
   };
 
@@ -153,18 +175,14 @@ export default function CategoriesPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-xs"
           />
-          <Button
-            size="icon"
-            className="bg-main-500 hover:bg-main-600 transition-all duration-300"
-          >
+          <Button size="icon" className="bg-main-500 hover:bg-main-600">
             <Search className="h-4 w-4" />
-            <span className="sr-only">Search categories</span>
           </Button>
         </div>
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="bg-main-500 hover:bg-main-600 transition-all duration-300"
+              className="bg-main-500 hover:bg-main-600"
               onClick={() => openEditDialog()}
             >
               <Plus className="mr-2 h-4 w-4" /> Add Category
@@ -214,7 +232,7 @@ export default function CategoriesPage() {
                   readOnly
                   placeholder="Select an icon..."
                   className="col-span-3 cursor-pointer"
-                  onClick={openIconDialog} // Open icon dialog on click
+                  onClick={openIconDialog}
                 />
               </div>
             </div>
@@ -248,7 +266,7 @@ export default function CategoriesPage() {
               {filteredCategories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell className="font-medium">
-                    <span dangerouslySetInnerHTML={{ __html: category.icon }} />
+                    <span>{category.icon}</span>
                   </TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -281,18 +299,20 @@ export default function CategoriesPage() {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the category.
+              This action cannot be undone. This will permanently delete the
+              category.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => setIsDeleteDialogOpen(false)}
-            >
+            <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -311,30 +331,22 @@ export default function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>Select an Icon</DialogTitle>
             <DialogDescription>
-              Search for and select an icon for the category.
+              Choose an icon for the category.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <Input
-              placeholder="Search icons..."
-              value={iconSearchTerm}
-              onChange={(e) => setIconSearchTerm(e.target.value)}
-            />
-            <ScrollArea style={{ maxHeight: '300px' }}>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {icons.length > 0 && icons.map((icon) => (
-                  <Button
-                    key={icon.name}
-                    variant="outline"
-                    className="flex items-center"
-                    onClick={() => selectIcon(icon)}
-                  >
-                    <span dangerouslySetInnerHTML={{ __html: icon.body }} />
-                    <span className="ml-1">{icon.name}</span>
-                  </Button>
-                ))}
-              </div>
-            </ScrollArea>
+            <div className="flex flex-wrap gap-2">
+              {commonIcons.map((icon) => (
+                <Button
+                  key={icon.name}
+                  variant="outline"
+                  onClick={() => selectIcon(icon)}
+                >
+                  <span className="mr-2">{icon.component}</span>
+                  {icon.name}
+                </Button>
+              ))}
+            </div>
           </div>
           <DialogFooter>
             <Button onClick={() => setIsIconDialogOpen(false)}>Close</Button>
