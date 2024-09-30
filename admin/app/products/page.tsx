@@ -3,7 +3,12 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MoreHorizontal } from "lucide-react";
+import {
+  Search,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,12 +25,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const PRODUCTS_PER_PAGE_OPTIONS = [5,10, 20, 50];
 
 export default function ProductsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [productsPerPage, setProductsPerPage] = useState(10); // Default is 10 products per page
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -67,6 +84,16 @@ export default function ProductsPage() {
     setProductToDelete(null);
   };
 
+  // Filter products based on search query
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
   return (
     <div className="flex min-h-screen w-full overflow-hidden bg-background pb-10">
       <main className="flex-1 overflow-hidden">
@@ -76,6 +103,8 @@ export default function ProductsPage() {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Input
                   placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)} // Update search query
                   className="w-full md:w-[250px]"
                 />
                 <Button
@@ -86,17 +115,43 @@ export default function ProductsPage() {
                   <span className="hidden sm:inline">Search</span>
                 </Button>
               </div>
+
+              {/* Select number of products per page */}
+              <div className="flex items-center gap-2">
+                <Select
+                  onValueChange={(value) => {
+                    setProductsPerPage(Number(value));
+                    setCurrentPage(1); // Reset to the first page when changing items per page
+                  }}
+                  defaultValue="10"
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Items per page" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRODUCTS_PER_PAGE_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={String(option)}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="rounded-md border overflow-hidden">
-              <div className="relative max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+              <div className="relative max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
                 <table className="w-full text-sm text-left text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 ">
                     <tr>
-                      <th scope="col" className="px-6 py-3">
+                      <th scope="col" className="px-6 py-3 flex-shrink-0">
                         Image
                       </th>
-                      <th scope="col" className="px-6 py-3">
+                      <th
+                        scope="col"
+                        className="px-6 py-3"
+                        style={{ minWidth: "350px" }}
+                      >
                         Name
                       </th>
                       <th scope="col" className="px-6 py-3">
@@ -120,32 +175,35 @@ export default function ProductsPage() {
                           Loading products...
                         </td>
                       </tr>
-                    ) : products.length > 0 ? (
-                      products.map((product) => (
-                        <tr
-                          key={product.id}
-                          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                        >
+                    ) : paginatedProducts.length > 0 ? (
+                      paginatedProducts.map((product) => (
+                        <tr key={product.id} className="bg-white border-b">
                           <td className="px-6 py-4">
                             <Image
                               src={product.images[0].url}
                               alt={product.name}
                               width={50}
                               height={50}
-                              className="w-24 h-24 rounded-md object-contain"
+                              className="w-32 h-32 rounded-md object-contain flex-shrink-0"
                             />
                           </td>
-                          <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                          <td className="px-6 py-4 font-medium text-gray-900">
                             {product.name}
                           </td>
-                          <td className="px-6 py-4">{product.category}</td>
+                          <td className="px-6 py-4">
+                            <span className="px-3 py-1 rounded-full bg-main-500 text-white text-xs">
+                              {product.category}
+                            </span>
+                          </td>
                           <td className="px-6 py-4">
                             $
                             {product.discountPrice
                               ? product.discountPrice.toFixed(2)
                               : "N/A"}
                           </td>
-                          <td className="px-6 py-4 text-center">{product.stock}</td>
+                          <td className="px-6 py-4 text-center">
+                            {product.stock}
+                          </td>
                           <td className="px-6 text-center py-4">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -182,6 +240,29 @@ export default function ProductsPage() {
               </div>
             </div>
 
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                variant="outline"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                <ChevronLeft className="mr-2 h-4 w-4" />
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Next
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+
             {/* Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
               <DialogContent>
@@ -198,7 +279,10 @@ export default function ProductsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleDeleteConfirm} className="ml-2 bg-red-600 hover:bg-red-700">
+                  <Button
+                    onClick={handleDeleteConfirm}
+                    className="ml-2 bg-red-600 hover:bg-red-700"
+                  >
                     Confirm
                   </Button>
                 </DialogFooter>
