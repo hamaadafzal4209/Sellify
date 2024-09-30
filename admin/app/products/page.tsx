@@ -53,7 +53,9 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/product/get-all-products");
+        const response = await fetch(
+          "http://localhost:8000/api/product/get-all-products"
+        );
 
         // Check if the response is ok
         if (!response.ok) {
@@ -118,9 +120,13 @@ export default function ProductsPage() {
                     <TableRow>
                       <TableHead className="w-[100px]">Image</TableHead>
                       <TableHead>Name</TableHead>
-                      <TableHead className="hidden md:table-cell">Category</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Category
+                      </TableHead>
                       <TableHead>Price</TableHead>
-                      <TableHead className="hidden sm:table-cell">Stock</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Stock
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -140,15 +146,26 @@ export default function ProductsPage() {
                               alt={product.name}
                               width={50}
                               height={50}
-                              className="rounded-md object-cover"
+                              className="rounded-md w-32 h-32 object-contain"
                             />
                           </TableCell>
-                          <TableCell className="font-medium">{product.name}</TableCell>
-                          <TableCell className="table-cell">
-                            <Badge variant="secondary">{product.category}</Badge>
+                          <TableCell className="font-medium">
+                            {product.name}
                           </TableCell>
-                          <TableCell>${product.price ? product.price.toFixed(2) : 'N/A'}</TableCell>
-                          <TableCell className="table-cell">{product.stock}</TableCell>
+                          <TableCell className="table-cell">
+                            <Badge variant="secondary">
+                              {product.category}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            $
+                            {product.discountPrice
+                              ? product.discountPrice.toFixed(2)
+                              : "N/A"}
+                          </TableCell>
+                          <TableCell className="table-cell">
+                            {product.stock}
+                          </TableCell>
                           <TableCell className="text-right">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -163,7 +180,9 @@ export default function ProductsPage() {
                                 <DropdownMenuItem>Duplicate</DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>Archive</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleDeleteClick(product)}>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteClick(product)}
+                                >
                                   Delete
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -193,7 +212,10 @@ export default function ProductsPage() {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button onClick={handleDeleteConfirm} className="ml-2">
