@@ -65,5 +65,20 @@ export const createNewProduct = catchAsyncErrors(async (req, res, next) => {
     });
   } catch (error) {
     return next(new ErrorHandler(error.message || "Internal Server Error", 500));
-  }
+}
 });
+
+// get all products
+export const allProducts = catchAsyncErrors(async(req,res,next) => {
+    try {
+        const allProducts = await ProductModel.find();
+
+        res.json({
+            success: true,
+            allProducts
+        })
+        
+    } catch (error) {
+        return next(new ErrorHandler(error.message || "Internal Server Error", 500));
+    }
+})
