@@ -1,29 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Search } from "lucide-react"; // For table actions
-import {
-  FaHome,
-  FaUser,
-  FaCog,
-  FaSearch,
-  FaCamera,
-  FaEnvelope,
-  FaPhone,
-  FaBell,
-  FaGlobe,
-  FaHeart,
-  FaCar,
-  FaPlane,
-  FaStar,
-  FaMusic,
-  FaFilm,
-  FaBook,
-  FaShoppingCart,
-  FaMapMarkerAlt,
-  FaLightbulb,
-  FaWifi,
-} from "react-icons/fa"; // For category icons
+import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,42 +33,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-// Define 20 commonly used icons
-const commonIcons = [
-  { name: "Home", component: <FaHome /> },
-  { name: "User", component: <FaUser /> },
-  { name: "Settings", component: <FaCog /> },
-  { name: "Search", component: <FaSearch /> },
-  { name: "Camera", component: <FaCamera /> },
-  { name: "Email", component: <FaEnvelope /> },
-  { name: "Phone", component: <FaPhone /> },
-  { name: "Bell", component: <FaBell /> },
-  { name: "World", component: <FaGlobe /> },
-  { name: "Heart", component: <FaHeart /> },
-  { name: "Car", component: <FaCar /> },
-  { name: "Plane", component: <FaPlane /> },
-  { name: "Star", component: <FaStar /> },
-  { name: "Music", component: <FaMusic /> },
-  { name: "Film", component: <FaFilm /> },
-  { name: "Book", component: <FaBook /> },
-  { name: "Cart", component: <FaShoppingCart /> },
-  { name: "Location", component: <FaMapMarkerAlt /> },
-  { name: "Light", component: <FaLightbulb /> },
-  { name: "Wifi", component: <FaWifi /> },
-];
+import axios from "axios";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isIconDialogOpen, setIsIconDialogOpen] = useState(false); // New state for icon dialog
   const [currentCategory, setCurrentCategory] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
-  const [newCategoryIcon, setNewCategoryIcon] = useState("");
+  const [newCategoryImage, setNewCategoryImage] = useState(null); // Image state
   const [searchTerm, setSearchTerm] = useState("");
-  const [iconSearchTerm, setIconSearchTerm] = useState("");
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -98,25 +51,63 @@ export default function CategoriesPage() {
       category.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCreateCategory = () => {
+  const handleCreateCategory = async () => {
+    let imageUrl = "";
+
+    // Upload the image to Cloudinary
+    if (newCategoryImage) {
+      const formData = new FormData();
+      formData.append("file", newCategoryImage);
+      formData.append("upload_preset", "your_upload_preset"); // Replace with your upload preset
+
+      try {
+        const response = await axios.post(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          formData
+        );
+        imageUrl = response.data.secure_url; // Get the image URL from the response
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+
     const newCategory = {
       id: (categories.length + 1).toString(),
       name: newCategoryName,
       description: newCategoryDescription,
-      icon: newCategoryIcon,
+      image: imageUrl, // Store the image URL
     };
     setCategories([...categories, newCategory]);
     resetForm();
   };
 
-  const handleUpdateCategory = () => {
+  const handleUpdateCategory = async () => {
+    let imageUrl = newCategoryImage ? currentCategory.image : "";
+
+    // Upload new image if one is selected
+    if (newCategoryImage) {
+      const formData = new FormData();
+      formData.append("file", newCategoryImage);
+      formData.append("upload_preset", "your_upload_preset"); // Replace with your upload preset
+
+      try {
+        const response = await axios.post(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          formData
+        );
+        imageUrl = response.data.secure_url; // Get the new image URL from the response
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+
     const updatedCategories = categories.map((cat) =>
       cat.id === currentCategory.id
         ? {
             ...cat,
             name: newCategoryName,
             description: newCategoryDescription,
-            icon: newCategoryIcon,
+            image: imageUrl || cat.image, // Use the existing image if no new image is uploaded
           }
         : cat
     );
@@ -136,8 +127,7 @@ export default function CategoriesPage() {
   const resetForm = () => {
     setNewCategoryName("");
     setNewCategoryDescription("");
-    setNewCategoryIcon("");
-    setIconSearchTerm("");
+    setNewCategoryImage(null); // Reset image
     setIsEditDialogOpen(false);
   };
 
@@ -145,23 +135,13 @@ export default function CategoriesPage() {
     setCurrentCategory(category);
     setNewCategoryName(category ? category.name : "");
     setNewCategoryDescription(category ? category.description : "");
-    setNewCategoryIcon(category ? category.icon : "");
+    setNewCategoryImage(null); // Reset image on open
     setIsEditDialogOpen(true);
   };
 
   const openDeleteDialog = (category) => {
     setCurrentCategory(category);
     setIsDeleteDialogOpen(true);
-  };
-
-  const openIconDialog = () => {
-    setIsIconDialogOpen(true);
-    setIconSearchTerm("");
-  };
-
-  const selectIcon = (icon) => {
-    setNewCategoryIcon(icon.component);
-    setIsIconDialogOpen(false);
   };
 
   return (
@@ -223,17 +203,23 @@ export default function CategoriesPage() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-2">
-                <Label htmlFor="icon" className="text-right">
-                  Icon
+                <Label htmlFor="image" className="text-right">
+                  Image
                 </Label>
                 <Input
-                  id="icon"
-                  value={newCategoryIcon}
-                  readOnly
-                  placeholder="Select an icon..."
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setNewCategoryImage(e.target.files[0])}
                   className="col-span-3 cursor-pointer"
-                  onClick={openIconDialog}
                 />
+                {currentCategory && currentCategory.image && (
+                  <img
+                    src={currentCategory.image}
+                    alt="Category"
+                    className="col-span-1 h-10 w-10 object-cover rounded"
+                  />
+                )}
               </div>
             </div>
             <DialogFooter>
@@ -254,7 +240,7 @@ export default function CategoriesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Icon</TableHead>
+                <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead className="hidden md:table-cell">
                   Description
@@ -266,7 +252,11 @@ export default function CategoriesPage() {
               {filteredCategories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell className="font-medium">
-                    <span>{category.icon}</span>
+                    <img
+                      src={category.image}
+                      alt="Category"
+                      className="h-10 w-10 object-cover rounded"
+                    />
                   </TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -324,35 +314,6 @@ export default function CategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Icon Selection Dialog */}
-      <Dialog open={isIconDialogOpen} onOpenChange={setIsIconDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Select an Icon</DialogTitle>
-            <DialogDescription>
-              Choose an icon for the category.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="flex flex-wrap gap-2">
-              {commonIcons.map((icon) => (
-                <Button
-                  key={icon.name}
-                  variant="outline"
-                  onClick={() => selectIcon(icon)}
-                >
-                  <span className="mr-2">{icon.component}</span>
-                  {icon.name}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setIsIconDialogOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
