@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,165 +16,127 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 
+// Zod schema for form validation
+const productSchema = z.object({
+  productName: z.string().min(1, "Product name is required"),
+  productDescription: z.string().min(1, "Product description is required"),
+  originalPrice: z
+    .number()
+    .min(1, "Original price must be a positive number")
+    .nonnegative(),
+  discountPrice: z.number().optional(),
+  stock: z.number().nonnegative("Stock quantity must be a non-negative number"),
+  category: z.string().min(1, "Category is required"),
+  tags: z.array(z.string()).optional(),
+  features: z.array(z.string()).min(1, "At least one feature is required"),
+  images: z.array(z.any()).min(1, "At least one image is required"),
+});
+
 const CreateProduct = () => {
-  const [formData, setFormData] = useState({
-    productName: "",
-    productDescription: "",
-    originalPrice: "",
-    discountPrice: "",
-    stock: "",
-    category: "",
-    images: [],
-    features: [""],
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      productName: "",
+      productDescription: "",
+      originalPrice: 0,
+      discountPrice: 0,
+      stock: 0,
+      category: "",
+      tags: [],
+      features: [""],
+      images: [],
+    },
   });
 
-  const [errors, setErrors] = useState({});
-  const [isDragActive, setIsDragActive] = useState(false);
+  const images = watch("images");
+
+  const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/jpeg": [],
+      "image/jpg": [],
       "image/png": [],
     },
     onDrop: (acceptedFiles) => {
-      const newImages = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
-      setFormData((prevData) => ({
-        ...prevData,
-        images: [...prevData.images, ...newImages],
-      }));
-      setIsDragActive(false);
+      const newImages = acceptedFiles.map((file) => {
+        const previewUrl = URL.createObjectURL(file);
+        return Object.assign(file, { preview: previewUrl });
+      });
+      setValue("images", [...images, ...newImages]);
     },
-    onDragEnter: () => setIsDragActive(true),
-    onDragLeave: () => setIsDragActive(false),
   });
 
   const handleDeleteImage = (index) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      images: prevData.images.filter((_, i) => i !== index),
-    }));
+    URL.revokeObjectURL(images[index].preview);
+    setValue(
+      "images",
+      images.filter((_, i) => i !== index)
+    );
   };
 
-  const addFeature = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      features: [...prevData.features, ""],
-    }));
-  };
-
-  const handleDeleteFeature = (index) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      features: prevData.features.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleFeatureChange = (index, value) => {
-    const updatedFeatures = [...formData.features];
-    updatedFeatures[index] = value;
-    setFormData((prevData) => ({
-      ...prevData,
-      features: updatedFeatures,
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.productName)
-      newErrors.productName = "Product name is required";
-    if (!formData.productDescription)
-      newErrors.productDescription = "Product description is required";
-    if (!formData.originalPrice || Number(formData.originalPrice) <= 0) {
-      newErrors.originalPrice = "Original price must be a positive number";
-    }
-    if (formData.discountPrice && Number(formData.discountPrice) <= 0) {
-      newErrors.discountPrice = "Discount price must be a positive number";
-    }
-    if (
-      !formData.stock ||
-      Number.isNaN(Number(formData.stock)) ||
-      Number(formData.stock) < 0
-    ) {
-      newErrors.stock = "Stock quantity must be a non-negative integer";
-    }
-    if (!formData.category) newErrors.category = "Category is required";
-    if (formData.images.length === 0) {
-      newErrors.images = "At least one image is required.";
-    }
-    return newErrors;
-  };
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    const validationErrors = validateForm();
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    console.log("Form data before sending:", formData); // Debugging log
-
-    // Create a FormData object to handle the file upload
-    const formDataToSend = new FormData();
-
-    // Append other data
-    formDataToSend.append("name", formData.productName);
-    formDataToSend.append("description", formData.productDescription);
-    formDataToSend.append("originalPrice", formData.originalPrice);
-    formDataToSend.append("discountPrice", formData.discountPrice);
-    formDataToSend.append("stock", formData.stock);
-    formDataToSend.append("category", formData.category);
-    formDataToSend.append("features", JSON.stringify(formData.features)); // stringify features
-
-    // Append images to the FormData
-    formData.images.forEach((file) => {
-      formDataToSend.append("images[]", file);
-    });
-
-    // Log to see if images are present
-    console.log(
-      "Images to send:",
-      [...formDataToSend.entries()].filter(([key]) => key === "images[]")
-    ); // check what's being sent
-
+  const onSubmit = async (formData) => {
+    setIsLoading(true);
     const toastId = toast.loading("Creating product...");
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/product/create-product",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    const imageUrls = [];
 
-      if (response.status === 201) {
-        toast.success("Product created successfully!", { id: toastId });
+    try {
+      // Upload images to Cloudinary
+      for (const file of formData.images) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("file", file);
+        formDataToSend.append("upload_preset", "sellify");
+
+        const response = await axios.post(
+          `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+          formDataToSend
+        );
+        imageUrls.push(response.data.secure_url);
       }
+
+      // Send product data to backend
+      await axios.post("http://localhost:8000/api/product/create-product", {
+        name: formData.productName,
+        description: formData.productDescription,
+        originalPrice: formData.originalPrice,
+        discountPrice: formData.discountPrice,
+        stock: formData.stock,
+        category: formData.category,
+        features: formData.features,
+        tags: formData.tags,
+        images: imageUrls,
+      });
+
+      toast.success("Product created successfully!", { id: toastId });
+
+      // Redirect to /products after success
+      router.push("/products");
     } catch (error) {
       toast.error("Failed to create product", { id: toastId });
-      console.error(
-        "Error creating product:",
-        error.response?.data || error.message
-      );
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-8 lg:px-8 bg-gray-50">
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-8 lg:px-8">
       <div className="sm:mx-auto w-full sm:max-w-md">
         <h2 className="section-heading text-center text-gray-900 text-2xl font-bold mb-2">
           Create New Product
@@ -178,249 +144,203 @@ const CreateProduct = () => {
       </div>
 
       <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-6 sm:p-8 rounded-lg max-h-[65vh] max-w-xl">
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Product Name */}
           <div>
-            <Label
-              htmlFor="productName"
-              className="block text-sm font-medium text-gray-900"
-            >
-              Product Name
-            </Label>
+            <Label htmlFor="productName">Product Name</Label>
             <Input
               id="productName"
-              type="text"
-              placeholder="Enter product name"
-              value={formData.productName}
-              onChange={(e) =>
-                setFormData({ ...formData, productName: e.target.value })
-              }
-              className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-main-500 ${
-                errors.productName ? "border-red-500" : "border-gray-300"
-              }`}
+              {...register("productName")}
+              className={`${errors.productName ? "border-red-500" : ""}`}
             />
             {errors.productName && (
-              <p className="text-red-500 text-sm mt-1">{errors.productName}</p>
+              <p className="text-red-500 text-xs">
+                {errors.productName.message}
+              </p>
             )}
           </div>
 
           {/* Product Description */}
           <div>
-            <Label
-              htmlFor="productDescription"
-              className="block text-sm font-medium text-gray-900"
-            >
-              Product Description
-            </Label>
+            <Label htmlFor="productDescription">Product Description</Label>
             <Textarea
               id="productDescription"
-              placeholder="Enter product description"
-              value={formData.productDescription}
-              onChange={(e) =>
-                setFormData({ ...formData, productDescription: e.target.value })
-              }
-              className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-main-500 ${
-                errors.productDescription ? "border-red-500" : "border-gray-300"
-              }`}
+              {...register("productDescription")}
+              className={`${errors.productDescription ? "border-red-500" : ""}`}
             />
             {errors.productDescription && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.productDescription}
+              <p className="text-red-500 text-xs">
+                {errors.productDescription.message}
               </p>
-            )}
-          </div>
-
-          {/* Prices */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label
-                htmlFor="originalPrice"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Original Price ($)
-              </Label>
-              <Input
-                id="originalPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Enter original price"
-                value={formData.originalPrice}
-                onChange={(e) =>
-                  setFormData({ ...formData, originalPrice: e.target.value })
-                }
-                className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-main-500 ${
-                  errors.originalPrice ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.originalPrice && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.originalPrice}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label
-                htmlFor="discountPrice"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Discount Price ($)
-              </Label>
-              <Input
-                id="discountPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Enter discount price (optional)"
-                value={formData.discountPrice}
-                onChange={(e) =>
-                  setFormData({ ...formData, discountPrice: e.target.value })
-                }
-                className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-main-500 ${
-                  errors.discountPrice ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.discountPrice && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.discountPrice}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Stock */}
-          <div>
-            <Label
-              htmlFor="stock"
-              className="block text-sm font-medium text-gray-900"
-            >
-              Stock Quantity
-            </Label>
-            <Input
-              id="stock"
-              type="number"
-              min="0"
-              placeholder="Enter stock quantity"
-              value={formData.stock}
-              onChange={(e) =>
-                setFormData({ ...formData, stock: e.target.value })
-              }
-              className={`mt-1 p-3 rounded-md border transition-all focus:outline-none focus:ring-2 focus:ring-main-500 ${
-                errors.stock ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.stock && (
-              <p className="text-red-500 text-sm mt-1">{errors.stock}</p>
             )}
           </div>
 
           {/* Category */}
           <div>
-            <Label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-900"
-            >
-              Category
-            </Label>
-            <Select
-              onValueChange={(value) =>
-                setFormData({ ...formData, category: value })
-              }
-              value={formData.category}
-            >
-              <SelectTrigger
-                className={`mt-1 ${
-                  errors.category ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="clothing">Clothing</SelectItem>
-                <SelectItem value="electronics">Electronics</SelectItem>
-                <SelectItem value="home">Home</SelectItem>
-                <SelectItem value="toys">Toys</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="category">Category</Label>
+            <Controller
+              control={control}
+              name="category"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Electronics">Electronics</SelectItem>
+                    <SelectItem value="Clothing">Clothing</SelectItem>
+                    <SelectItem value="Home">Home</SelectItem>
+                    <SelectItem value="Sports">Sports</SelectItem>
+                    <SelectItem value="Toys">Toys</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.category && (
-              <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+              <p className="text-red-500 text-xs">{errors.category.message}</p>
             )}
           </div>
 
-          {/* Image Upload */}
-          <div
-            {...getRootProps()}
-            className="border-dashed border-2 border-gray-400 rounded-md p-4 flex flex-col items-center"
-          >
-            <input {...getInputProps()} />
-            <p className="text-center">
-              {isDragActive
-                ? "Drop the files here..."
-                : "Drag 'n' drop some images here, or click to select files"}
-            </p>
-            <Button className="mt-2" variant="outline">
-              <Upload className="mr-2" /> Upload Images
-            </Button>
-          </div>
-          {errors.images && (
-            <p className="text-red-500 text-sm mt-1">{errors.images}</p>
-          )}
-          <div className="mt-4 flex flex-wrap gap-2">
-            {formData.images.map((file, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={file.preview}
-                  alt="Preview"
-                  className="h-24 w-24 object-cover rounded-md"
+          {/* Tags */}
+          <div>
+            <Label htmlFor="tags">Tags</Label>
+            <Controller
+              control={control}
+              name="tags"
+              render={({ field }) => (
+                <Input
+                  id="tags"
+                  value={field.value.join(", ")}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.split(",").map((tag) => tag.trim())
+                    )
+                  }
+                  placeholder="Enter tags separated by commas"
                 />
-                <button
-                  type="button"
-                  onClick={() => handleDeleteImage(index)}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
+              )}
+            />
           </div>
 
           {/* Features */}
           <div>
-            <Label className="block text-sm font-medium text-gray-900">
-              Features
-            </Label>
-            {formData.features.map((feature, index) => (
-              <div key={index} className="flex items-center space-x-2 mt-2">
+            <Label>Features</Label>
+            {watch("features").map((feature, index) => (
+              <div key={index} className="flex items-center gap-2 mt-2">
                 <Input
-                  type="text"
                   value={feature}
-                  onChange={(e) => handleFeatureChange(index, e.target.value)}
-                  placeholder={`Feature ${index + 1}`}
-                  className="flex-1"
+                  onChange={(e) =>
+                    setValue(`features.${index}`, e.target.value)
+                  }
+                  className="w-full"
                 />
                 <Button
                   type="button"
-                  onClick={() => handleDeleteFeature(index)}
-                  variant="outline"
-                  className="text-red-500"
+                  variant="ghost"
+                  onClick={() =>
+                    setValue(
+                      "features",
+                      watch("features").filter((_, i) => i !== index)
+                    )
+                  }
                 >
-                  Remove
+                  <X size={16} />
                 </Button>
               </div>
             ))}
             <Button
               type="button"
-              onClick={addFeature}
-              variant="outline"
-              className="mt-2"
+              onClick={() => setValue("features", [...watch("features"), ""])}
+              className="mt-2 w-full bg-main-500 hover:bg-main-600"
             >
               Add Feature
             </Button>
           </div>
 
-          <Button type="submit" className="w-full" variant="primary">
-            Create Product
+          {/* Images Dropzone */}
+          <div
+            {...getRootProps()}
+            className="mt-2 border-dashed border-2 p-6 text-center rounded-md cursor-pointer"
+          >
+            <input {...getInputProps()} />
+            <p>Drag 'n' drop some images here, or click to select images</p>
+          </div>
+          {images.length > 0 && (
+            <div className="flex flex-wrap mt-4">
+              {images.map((image, index) => (
+                <div key={index} className="relative w-24 h-24 m-2">
+                  <img
+                    src={image.preview}
+                    alt="preview"
+                    className="object-cover w-full h-full rounded-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteImage(index)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Original Price */}
+          <div>
+            <Label htmlFor="originalPrice">Original Price</Label>
+            <Input
+              id="originalPrice"
+              type="number"
+              {...register("originalPrice", { valueAsNumber: true })}
+              className={`${errors.originalPrice ? "border-red-500" : ""}`}
+            />
+            {errors.originalPrice && (
+              <p className="text-red-500 text-xs">
+                {errors.originalPrice.message}
+              </p>
+            )}
+          </div>
+
+          {/* Discount Price */}
+          <div>
+            <Label htmlFor="discountPrice">Discount Price</Label>
+            <Input
+              id="discountPrice"
+              type="number"
+              {...register("discountPrice", { valueAsNumber: true })}
+            />
+          </div>
+
+          {/* Stock */}
+          <div>
+            <Label htmlFor="stock">Stock Quantity</Label>
+            <Input
+              id="stock"
+              type="number"
+              {...register("stock", { valueAsNumber: true })}
+              className={`${errors.stock ? "border-red-500" : ""}`}
+            />
+            {errors.stock && (
+              <p className="text-red-500 text-xs">{errors.stock.message}</p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full bg-main-500 hover:bg-main-600"
+            disabled={isLoading}
+            variant={isLoading ? "ghost" : "default"}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Product"
+            )}
           </Button>
         </form>
       </ScrollArea>

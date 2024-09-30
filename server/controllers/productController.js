@@ -30,21 +30,15 @@ export const createNewProduct = catchAsyncErrors(async (req, res, next) => {
     // Upload images to Cloudinary and get URLs
     const uploadedImages = await Promise.all(
       images.map(async (image) => {
-        const { path } = image;
-
-        // console.log("Uploading image:", path);
-
         try {
-          const result = await cloudinary.uploader.upload(path, {
+          const result = await cloudinary.uploader.upload(image, {
             folder: "products",
           });
-          //   console.log("Uploaded image result:", result);
           return {
             public_url: result.secure_url,
             url: result.secure_url,
           };
         } catch (uploadError) {
-          //   console.error("Error uploading image to Cloudinary:", uploadError);
           return next(new ErrorHandler("Error uploading image", 500));
         }
       })
@@ -70,9 +64,6 @@ export const createNewProduct = catchAsyncErrors(async (req, res, next) => {
       product: newProduct,
     });
   } catch (error) {
-    // console.error("Error in createNewProduct:", error);
-    return next(
-      new ErrorHandler(error.message || "Internal Server Error", 500)
-    );
+    return next(new ErrorHandler(error.message || "Internal Server Error", 500));
   }
 });
