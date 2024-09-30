@@ -1,31 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Package,
-  Users,
-  Menu,
-  Search,
-  ChevronDown,
-  Plus,
-  MoreHorizontal,
-  Trash2,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Search, MoreHorizontal } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,7 +34,6 @@ export default function ProductsPage() {
           "http://localhost:8000/api/product/get-all-products"
         );
 
-        // Check if the response is ok
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -65,7 +41,6 @@ export default function ProductsPage() {
         const data = await response.json();
         console.log("Fetched Products:", data);
 
-        // Check if the response indicates success
         if (data.success && Array.isArray(data.allProducts)) {
           setProducts(data.allProducts);
         } else {
@@ -114,59 +89,64 @@ export default function ProductsPage() {
             </div>
 
             <div className="rounded-md border overflow-hidden">
-              <ScrollArea className="h-[calc(100vh-250px)]">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[100px]">Image</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead className="hidden md:table-cell">
+              <div className="relative max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+                <table className="w-full text-sm text-left text-gray-500">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        Image
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Name
+                      </th>
+                      <th scope="col" className="px-6 py-3">
                         Category
-                      </TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead className="hidden sm:table-cell">
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Price
+                      </th>
+                      <th scope="col" className="px-6 py-3">
                         Stock
-                      </TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center">
+                      <tr>
+                        <td colSpan={6} className="text-center px-6 py-4">
                           Loading products...
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ) : products.length > 0 ? (
                       products.map((product) => (
-                        <TableRow key={product.id}>
-                          <TableCell>
+                        <tr
+                          key={product.id}
+                          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                        >
+                          <td className="px-6 py-4">
                             <Image
                               src={product.images[0].url}
                               alt={product.name}
                               width={50}
                               height={50}
-                              className="rounded-md w-32 h-32 object-contain"
+                              className="w-24 h-24 rounded-md object-contain"
                             />
-                          </TableCell>
-                          <TableCell className="font-medium">
+                          </td>
+                          <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                             {product.name}
-                          </TableCell>
-                          <TableCell className="table-cell">
-                            <Badge variant="secondary">
-                              {product.category}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
+                          </td>
+                          <td className="px-6 py-4">{product.category}</td>
+                          <td className="px-6 py-4">
                             $
                             {product.discountPrice
                               ? product.discountPrice.toFixed(2)
                               : "N/A"}
-                          </TableCell>
-                          <TableCell className="table-cell">
-                            {product.stock}
-                          </TableCell>
-                          <TableCell className="text-right">
+                          </td>
+                          <td className="px-6 py-4 text-center">{product.stock}</td>
+                          <td className="px-6 text-center py-4">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -187,19 +167,19 @@ export default function ProductsPage() {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
+                          </td>
+                        </tr>
                       ))
                     ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center">
+                      <tr>
+                        <td colSpan={6} className="text-center px-6 py-4">
                           No products found.
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     )}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Delete Confirmation Dialog */}
@@ -218,7 +198,7 @@ export default function ProductsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleDeleteConfirm} className="ml-2">
+                  <Button onClick={handleDeleteConfirm} className="ml-2 bg-red-600 hover:bg-red-700">
                     Confirm
                   </Button>
                 </DialogFooter>

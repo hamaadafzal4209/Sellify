@@ -143,8 +143,8 @@ const CreateProduct = () => {
         </h2>
       </div>
 
-      <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-6 sm:p-8 rounded-lg max-h-[65vh] max-w-xl">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <ScrollArea className="mt-6 sm:mx-auto shadow-md bg-white p-2 sm:p-4 rounded-lg max-h-[65vh] max-w-xl">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-2">
           {/* Product Name */}
           <div>
             <Label htmlFor="productName">Product Name</Label>
@@ -251,7 +251,7 @@ const CreateProduct = () => {
             <Button
               type="button"
               onClick={() => setValue("features", [...watch("features"), ""])}
-              className="mt-2 w-full bg-main-500 hover:bg-main-600"
+              className="mt-2 bg-main-500 hover:bg-main-600"
             >
               Add Feature
             </Button>
@@ -329,7 +329,7 @@ const CreateProduct = () => {
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-main-500 hover:bg-main-600"
+            className="submit-full-button hover:bg-main-600"
             disabled={isLoading}
             variant={isLoading ? "ghost" : "default"}
           >
