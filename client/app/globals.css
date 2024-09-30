@@ -85,9 +85,21 @@ body {
 }
 
 .range-slider .thumb {
-  background-color: #FE426D;
+  background-color: #fe426d;
 }
 
 .range-slider .track {
-  background-color: #FE426D;
+  background-color: #fe426d;
+}
+
+/* Hide the spin buttons in WebKit browsers */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spin buttons in Firefox */
+input[type="number"] {
+  --moz-appearance: textfield;
 }
