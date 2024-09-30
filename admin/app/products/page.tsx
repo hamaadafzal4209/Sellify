@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const PRODUCTS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
+const PRODUCTS_PER_PAGE_OPTIONS = [5,10, 20, 50];
 
 export default function ProductsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -42,9 +42,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [productsPerPage, setProductsPerPage] = useState(10);
-  const [selectedCategory, setSelectedCategory] = useState(""); // State for selected category
-  const [categories, setCategories] = useState<string[]>([]); // Array to hold unique categories
+  const [productsPerPage, setProductsPerPage] = useState(10); // Default is 10 products per page
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -62,11 +60,6 @@ export default function ProductsPage() {
 
         if (data.success && Array.isArray(data.allProducts)) {
           setProducts(data.allProducts);
-          // Extract unique categories from the fetched products
-          const uniqueCategories = Array.from(
-            new Set(data.allProducts.map((product) => product.category))
-          );
-          setCategories(uniqueCategories);
         } else {
           console.error("Unexpected data format:", data);
         }
@@ -91,15 +84,10 @@ export default function ProductsPage() {
     setProductToDelete(null);
   };
 
-  // Filter products based on search query and selected category
-  const filteredProducts = products.filter((product) => {
-    const matchesSearchQuery =
-      product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "" || product.category === selectedCategory;
-    return matchesSearchQuery && matchesCategory;
-  });
-
+  // Filter products based on search query
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * productsPerPage,
@@ -126,30 +114,6 @@ export default function ProductsPage() {
                   <Search className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Search</span>
                 </Button>
-              </div>
-
-              {/* Dropdown for filtering by categories */}
-              <div className="flex items-center gap-2">
-                <Select
-                  value={selectedCategory}
-                  onValueChange={(value) => {
-                    setSelectedCategory(value);
-                    setCurrentPage(1); // Reset to the first page when changing category
-                  }}
-                  defaultValue=""
-                >
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Filter by Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               {/* Select number of products per page */}
@@ -232,7 +196,8 @@ export default function ProductsPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            ${product.discountPrice
+                            $
+                            {product.discountPrice
                               ? product.discountPrice.toFixed(2)
                               : "N/A"}
                           </td>
@@ -296,31 +261,6 @@ export default function ProductsPage() {
                 Next
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
-            </div>
-
-            <div className="flex justify-between mt-4">
-              <span>
-                Show{" "}
-                <Select
-                  value={productsPerPage.toString()}
-                  onValueChange={(value) => {
-                    setProductsPerPage(Number(value));
-                    setCurrentPage(1); // Reset to the first page when changing items per page
-                  }}
-                >
-                  <SelectTrigger className="w-[70px]">
-                    <SelectValue placeholder="Items" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRODUCTS_PER_PAGE_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={String(option)}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>{" "}
-                entries
-              </span>
             </div>
 
             {/* Delete Confirmation Dialog */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,32 +34,45 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Mock data for categories
 const initialCategories = [
-  {
-    id: "1",
-    name: "Electronics",
-    description: "Electronic devices and gadgets",
-  },
-  { id: "2", name: "Clothing", description: "Apparel and fashion items" },
-  { id: "3", name: "Books", description: "Physical and digital books" },
-  { id: "4", name: "Home & Garden", description: "Items for home and garden" },
-  {
-    id: "5",
-    name: "Sports & Outdoors",
-    description: "Sporting goods and outdoor equipment",
-  },
+  // Static example categories (if needed)
 ];
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = React.useState(initialCategories);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-  const [currentCategory, setCurrentCategory] = React.useState(null);
-  const [newCategoryName, setNewCategoryName] = React.useState("");
-  const [newCategoryDescription, setNewCategoryDescription] =
-    React.useState("");
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [categories, setCategories] = useState(initialCategories);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isIconDialogOpen, setIsIconDialogOpen] = useState(false); // New state for icon dialog
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = useState("");
+  const [newCategoryIcon, setNewCategoryIcon] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [icons, setIcons] = useState([]);
+  const [iconSearchTerm, setIconSearchTerm] = useState("");
+
+  // Fetch icons from Iconify API based on search term
+  useEffect(() => {
+    const fetchIcons = async () => {
+      if (iconSearchTerm.length > 2) {
+        try {
+          const response = await fetch(`https://api.iconify.design/icons.json?query=${iconSearchTerm}`);
+          if (!response.ok) throw new Error('Network response was not ok');
+          const data = await response.json();
+          setIcons(data.icons || []);
+        } catch (error) {
+          console.error("Failed to fetch icons:", error);
+          setIcons([]);
+        }
+      } else {
+        setIcons([]);
+      }
+    };
+
+    // Debouncing: Wait for 300ms after user stops typing
+    const debounceFetch = setTimeout(fetchIcons, 300);
+    return () => clearTimeout(debounceFetch);
+  }, [iconSearchTerm])
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -72,21 +85,20 @@ export default function CategoriesPage() {
       id: (categories.length + 1).toString(),
       name: newCategoryName,
       description: newCategoryDescription,
+      icon: newCategoryIcon,
     };
     setCategories([...categories, newCategory]);
-    setNewCategoryName("");
-    setNewCategoryDescription("");
-    setIsEditDialogOpen(false);
+    resetForm();
   };
 
   const handleUpdateCategory = () => {
     const updatedCategories = categories.map((cat) =>
       cat.id === currentCategory.id
-        ? { ...cat, name: newCategoryName, description: newCategoryDescription }
+        ? { ...cat, name: newCategoryName, description: newCategoryDescription, icon: newCategoryIcon }
         : cat
     );
     setCategories(updatedCategories);
-    setIsEditDialogOpen(false);
+    resetForm();
   };
 
   const handleDeleteCategory = () => {
@@ -98,16 +110,36 @@ export default function CategoriesPage() {
     setCurrentCategory(null);
   };
 
+  const resetForm = () => {
+    setNewCategoryName("");
+    setNewCategoryDescription("");
+    setNewCategoryIcon("");
+    setIconSearchTerm("");
+    setIcons([]);
+    setIsEditDialogOpen(false);
+  };
+
   const openEditDialog = (category = null) => {
     setCurrentCategory(category);
     setNewCategoryName(category ? category.name : "");
     setNewCategoryDescription(category ? category.description : "");
+    setNewCategoryIcon(category ? category.icon : "");
     setIsEditDialogOpen(true);
   };
 
   const openDeleteDialog = (category) => {
     setCurrentCategory(category);
     setIsDeleteDialogOpen(true);
+  };
+
+  const openIconDialog = () => {
+    setIsIconDialogOpen(true);
+    setIconSearchTerm("");
+  };
+
+  const selectIcon = (icon) => {
+    setNewCategoryIcon(icon.body);
+    setIsIconDialogOpen(false);
   };
 
   return (
@@ -172,6 +204,19 @@ export default function CategoriesPage() {
                   className="col-span-3"
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-2">
+                <Label htmlFor="icon" className="text-right">
+                  Icon
+                </Label>
+                <Input
+                  id="icon"
+                  value={newCategoryIcon}
+                  readOnly
+                  placeholder="Select an icon..."
+                  className="col-span-3 cursor-pointer"
+                  onClick={openIconDialog} // Open icon dialog on click
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button
@@ -191,6 +236,7 @@ export default function CategoriesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Icon</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead className="hidden md:table-cell">
                   Description
@@ -201,6 +247,9 @@ export default function CategoriesPage() {
             <TableBody>
               {filteredCategories.map((category) => (
                 <TableRow key={category.id}>
+                  <TableCell className="font-medium">
+                    <span dangerouslySetInnerHTML={{ __html: category.icon }} />
+                  </TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {category.description}
@@ -219,7 +268,6 @@ export default function CategoriesPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => openDeleteDialog(category)}
-                      className="text-red-600"
                     >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Delete {category.name}</span>
@@ -232,34 +280,67 @@ export default function CategoriesPage() {
         </ScrollArea>
       </div>
 
-      <div className="p-4 ">
-        <AlertDialog
-          open={isDeleteDialogOpen}
-          onOpenChange={setIsDeleteDialogOpen}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Are you sure you want to delete this category?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                category "{currentCategory?.name}" and remove it from our
-                servers.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteCategory}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the category.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCategory}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Icon Selection Dialog */}
+      <Dialog open={isIconDialogOpen} onOpenChange={setIsIconDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Select an Icon</DialogTitle>
+            <DialogDescription>
+              Search for and select an icon for the category.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Input
+              placeholder="Search icons..."
+              value={iconSearchTerm}
+              onChange={(e) => setIconSearchTerm(e.target.value)}
+            />
+            <ScrollArea style={{ maxHeight: '300px' }}>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {icons.length > 0 && icons.map((icon) => (
+                  <Button
+                    key={icon.name}
+                    variant="outline"
+                    className="flex items-center"
+                    onClick={() => selectIcon(icon)}
+                  >
+                    <span dangerouslySetInnerHTML={{ __html: icon.body }} />
+                    <span className="ml-1">{icon.name}</span>
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsIconDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
