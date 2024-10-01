@@ -15,7 +15,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -26,10 +25,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -43,7 +42,6 @@ export default function CategoriesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [newCategoryImage, setNewCategoryImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,30 +63,28 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleCreateCategory = async () => {
     setLoading(true);
-    toast.loading("Creating category...");
+    const toastId = toast.loading("Creating category...");
     try {
       const response = await axios.post(
         "http://localhost:8000/api/category/create-category",
         {
           name: newCategoryName,
-          imageBase64: await convertToBase64(newCategoryImage),
+          imageBase64: await convertToBase64(newCategoryImage), // Convert to Base64
         }
       );
 
       const newCategory = response.data.category;
       setCategories([...categories, newCategory]);
-      toast.success("Category created successfully!");
+      toast.success("Category created successfully!", { id: toastId });
       resetForm();
     } catch (error) {
-      toast.error("Error creating category.");
+      toast.error("Error creating category.", { id: toastId });
       console.error("Error creating category:", error);
     } finally {
       setLoading(false);
@@ -97,17 +93,17 @@ export default function CategoriesPage() {
 
   const handleUpdateCategory = async () => {
     setLoading(true);
+    const toastId = toast.loading("Updating category...");
     try {
-      const imageUrl = newCategoryImage
-        ? await uploadImage(newCategoryImage)
-        : currentCategory.image;
+      const imageBase64 = newCategoryImage
+        ? await convertToBase64(newCategoryImage)
+        : null; // Convert to Base64 if new image is provided
 
       const response = await axios.put(
         `http://localhost:8000/api/category/update-category/${currentCategory._id}`,
         {
           name: newCategoryName,
-          description: newCategoryDescription,
-          image: imageUrl,
+          imageBase64: imageBase64,
         }
       );
 
@@ -115,10 +111,10 @@ export default function CategoriesPage() {
         cat._id === currentCategory._id ? response.data.category : cat
       );
       setCategories(updatedCategories);
-      toast.success("Category updated successfully!");
+      toast.success("Category updated successfully!", { id: toastId });
       resetForm();
     } catch (error) {
-      toast.error("Error updating category.");
+      toast.error("Error updating category.", { id: toastId });
       console.error("Error updating category:", error);
     } finally {
       setLoading(false);
@@ -127,7 +123,7 @@ export default function CategoriesPage() {
 
   const handleDeleteCategory = async () => {
     setLoading(true);
-    toast.loading("Deleting category...");
+    const toastId = toast.loading("Deleting category...");
     try {
       await axios.delete(
         `http://localhost:8000/api/category/delete-category/${currentCategory._id}`
@@ -137,30 +133,14 @@ export default function CategoriesPage() {
         (cat) => cat._id !== currentCategory._id
       );
       setCategories(updatedCategories);
-      toast.success("Category deleted successfully!");
+      toast.success("Category deleted successfully!", { id: toastId });
       setIsDeleteDialogOpen(false);
       setCurrentCategory(null);
     } catch (error) {
-      toast.error("Error deleting category.");
+      toast.error("Error deleting category.", { id: toastId });
       console.error("Error deleting category:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Helper function to upload image to Cloudinary
-  const uploadImage = async (image) => {
-    const formData = new FormData();
-    formData.append("file", image);
-
-    try {
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        formData
-      );
-      return response.data.secure_url;
-    } catch (error) {
-      throw new Error("Error uploading image.");
     }
   };
 
@@ -176,7 +156,6 @@ export default function CategoriesPage() {
 
   const resetForm = () => {
     setNewCategoryName("");
-    setNewCategoryDescription("");
     setNewCategoryImage(null);
     setIsEditDialogOpen(false);
   };
@@ -184,7 +163,6 @@ export default function CategoriesPage() {
   const openEditDialog = (category = null) => {
     setCurrentCategory(category);
     setNewCategoryName(category ? category.name : "");
-    setNewCategoryDescription(category ? category.description : "");
     setNewCategoryImage(null);
     setIsEditDialogOpen(true);
   };
@@ -195,9 +173,9 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="max-w-5xl w-full px-4 py-8 mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Categories</h1>
-      <div className="flex justify-between items-center mb-4 flex-col sm:flex-row">
+    <div className="max-w-4xl w-full px-6 py-10 mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Categories</h1>
+      <div className="flex justify-between items-center mb-6 flex-col sm:flex-row">
         <div className="flex items-center space-x-2 mb-4 sm:mb-0">
           <Input
             placeholder="Search categories..."
@@ -223,11 +201,6 @@ export default function CategoriesPage() {
               <DialogTitle>
                 {currentCategory ? "Edit Category" : "Add New Category"}
               </DialogTitle>
-              <DialogDescription>
-                {currentCategory
-                  ? "Edit the details of the category."
-                  : "Add a new category to your store."}
-              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-2">
@@ -238,17 +211,6 @@ export default function CategoriesPage() {
                   id="name"
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-2">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Input
-                  id="description"
-                  value={newCategoryDescription}
-                  onChange={(e) => setNewCategoryDescription(e.target.value)}
                   className="col-span-3"
                 />
               </div>
@@ -279,93 +241,81 @@ export default function CategoriesPage() {
                 onClick={
                   currentCategory ? handleUpdateCategory : handleCreateCategory
                 }
-                className={`bg-main-500 hover:bg-main-600 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className="w-full bg-main-500 hover:bg-main-600"
                 disabled={loading}
               >
-                {loading
-                  ? "Processing..."
-                  : currentCategory
-                  ? "Update"
-                  : "Create"}
+                {loading ? "Saving..." : currentCategory ? "Update" : "Create"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
-      <ScrollArea>
+      <ScrollArea className="h-[500px]">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead className="w-[80px]">ID</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Image</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredCategories.map((category) => (
               <TableRow key={category._id}>
-                <TableCell className="font-medium">{category.name}</TableCell>
+                <TableCell>{category._id}</TableCell>
+                <TableCell>{category.name}</TableCell>
                 <TableCell>
-                  <Image
-                    src={category.image[0].url}
-                    alt={category.name}
-                    width={50}
-                    height={50}
-                    className="object-cover rounded"
-                  />
+                  {category.image && (
+                    <Image
+                      width={40}
+                      height={40}
+                      src={category.image[0].url}
+                      alt={category.name}
+                      className="h-10 w-10 rounded"
+                    />
+                  )}
                 </TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell>
                   <Button
-                    size="icon"
-                    variant="outline"
                     onClick={() => openEditDialog(category)}
+                    className="bg-yellow-500 hover:bg-yellow-600 mr-2"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => openDeleteDialog(category)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        className="bg-red-500 hover:bg-red-600"
+                        onClick={() => openDeleteDialog(category)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you sure you want to delete this category?
+                        </AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel
+                          onClick={() => setIsDeleteDialogOpen(false)}
+                        >
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteCategory}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </ScrollArea>
-      <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to delete this category?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className={`bg-red-600 hover:bg-red-700 ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handleDeleteCategory}
-              disabled={loading}
-            >
-              {loading ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

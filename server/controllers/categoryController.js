@@ -28,6 +28,7 @@ export const createCategory = catchAsyncErrors(async (req, res, next) => {
       name,
       image: [
         {
+          public_id: result.public_id,
           public_url: result.secure_url,
           url: result.url,
         },
@@ -58,7 +59,7 @@ export const getAllCategories = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Update Category (new)
+// Update Category
 export const updateCategory = catchAsyncErrors(async (req, res, next) => {
   const { name, imageBase64 } = req.body;
   const { id } = req.params;
@@ -69,11 +70,14 @@ export const updateCategory = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Category not found", 404));
   }
 
+  // Update name if provided
   if (name) {
     category.name = name;
   }
 
+  // Update image if provided
   if (imageBase64) {
+    // Delete the old image from Cloudinary
     if (category.image && category.image[0]) {
       await cloudinary.v2.uploader.destroy(category.image[0].public_id);
     }
@@ -86,12 +90,14 @@ export const updateCategory = catchAsyncErrors(async (req, res, next) => {
 
     category.image = [
       {
+        public_id: result.public_id,
         public_url: result.secure_url,
         url: result.url,
       },
     ];
   }
 
+  // Save the updated category
   await category.save();
 
   res.status(200).json({
@@ -101,7 +107,7 @@ export const updateCategory = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Delete Category (new)
+// Delete Category
 export const deleteCategory = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
 
@@ -111,11 +117,13 @@ export const deleteCategory = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Category not found", 404));
   }
 
+  // Delete the image from Cloudinary
   if (category.image && category.image[0]) {
     await cloudinary.v2.uploader.destroy(category.image[0].public_id);
   }
 
-  await category.remove();
+  // Use the deleteOne method instead of remove
+  await Category.deleteOne({ _id: id });
 
   res.status(200).json({
     success: true,
