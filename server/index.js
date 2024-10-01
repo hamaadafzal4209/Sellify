@@ -8,6 +8,7 @@ import { errorHandlerMiddleware } from "./middleware/error.js";
 import userRouter from "./routes/userRoutes.js";
 import cloudinary from "cloudinary";
 import productRouter from "./routes/productRoute.js";
+import categoryRouter from "./routes/categoryRoute.js";
 
 // config
 const app = express();
@@ -38,6 +39,7 @@ connectDatabase();
 // import routes
 app.use("/api/user/", userRouter);
 app.use("/api/product/", productRouter);
+app.use("/api/category/", categoryRouter);
 
 // unhandled promise rejection
 process.on("unhandledRejection", (err) => {
