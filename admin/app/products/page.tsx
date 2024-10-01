@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,46 +33,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getAllProducts } from "../redux/Features/product/productAction";
 
-const PRODUCTS_PER_PAGE_OPTIONS = [5,10, 20, 50];
+const PRODUCTS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
 
 export default function ProductsPage() {
+  const dispatch = useDispatch();
+  const { allProducts, isLoading } = useSelector((state) => state.product);
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [productsPerPage, setProductsPerPage] = useState(10); // Default is 10 products per page
+  const [productsPerPage, setProductsPerPage] = useState(10);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8000/api/product/get-all-products"
-        );
+    dispatch(getAllProducts());
+  }, [dispatch]);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Fetched Products:", data);
-
-        if (data.success && Array.isArray(data.allProducts)) {
-          setProducts(data.allProducts);
-        } else {
-          console.error("Unexpected data format:", data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    console.log("All Products State:", allProducts);
+  }, [allProducts]);
 
   const handleDeleteClick = (product) => {
     setProductToDelete(product);
@@ -84,10 +66,13 @@ export default function ProductsPage() {
     setProductToDelete(null);
   };
 
-  // Filter products based on search query
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = Array.isArray(allProducts)
+    ? allProducts.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
+  console.log("Filtered Products:", filteredProducts);
+
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * productsPerPage,
@@ -169,7 +154,7 @@ export default function ProductsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {loading ? (
+                    {isLoading ? (
                       <tr>
                         <td colSpan={6} className="text-center px-6 py-4">
                           Loading products...

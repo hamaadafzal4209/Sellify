@@ -21,13 +21,11 @@ export const createNewProduct = catchAsyncErrors(async (req, res, next) => {
   console.log("Received data:", req.body);
 
   try {
-    // Validate if images are provided
     if (!images || images.length === 0) {
       console.error("No images provided");
       return next(new ErrorHandler("Please upload at least one image", 400));
-    }
+    }    
 
-    // Upload images to Cloudinary and get URLs
     const uploadedImages = await Promise.all(
       images.map(async (image) => {
         try {
