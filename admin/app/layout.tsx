@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Layout/Header";
 import Sidebar from "@/components/Layout/Sidebar";
+import StoreProvider from "./redux/Provider";
 
 // Load the Inter font for body text
 const inter = Inter({
@@ -40,15 +41,17 @@ export default function RootLayout({
       )}
     >
       <body className="font-poppins">
-        <Toaster />
-        <Header />
-        <div className="flex gap-4">
-          {/* sidebar */}
-          <div className="w-[250px] flex-shrink-0 hidden lg:block">
-            <Sidebar />
+        <StoreProvider>
+          <Toaster />
+          <Header />
+          <div className="flex gap-4">
+            {/* sidebar */}
+            <div className="w-[250px] flex-shrink-0 hidden lg:block">
+              <Sidebar />
+            </div>
+            {children}
           </div>
-          {children}
-        </div>
+        </StoreProvider>
       </body>
     </html>
   );
