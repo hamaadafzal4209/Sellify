@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -22,6 +22,8 @@ import toast from "react-hot-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { fetchAllCategories } from "../redux/Features/category/categoryAction";
+import { useDispatch } from "react-redux";
 
 // Zod schema for form validation
 const productSchema = z.object({
@@ -41,8 +43,16 @@ const productSchema = z.object({
 
 const CreateProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { allCategories = [],isLoading: isCategoriesLoading } = useSelector((state) => state.category);
+  const { allCategories = [], isLoading: isCategoriesLoading } = useSelector(
+    (state) => state.category
+  );
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
+  
 
   const {
     register,
@@ -201,7 +211,9 @@ const CreateProduct = () => {
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem disabled>No categories available</SelectItem>
+                        <SelectItem disabled>
+                          No categories available
+                        </SelectItem>
                       )}
                     </SelectContent>
                   </Select>
