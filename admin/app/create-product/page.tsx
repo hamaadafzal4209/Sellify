@@ -21,6 +21,7 @@ import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 // Zod schema for form validation
 const productSchema = z.object({
@@ -40,6 +41,7 @@ const productSchema = z.object({
 
 const CreateProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { allCategories = [],isLoading: isCategoriesLoading } = useSelector((state) => state.category);
   const router = useRouter();
 
   const {
@@ -178,24 +180,34 @@ const CreateProduct = () => {
           {/* Category */}
           <div>
             <Label htmlFor="category">Category</Label>
-            <Controller
-              control={control}
-              name="category"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Electronics">Electronics</SelectItem>
-                    <SelectItem value="Clothing">Clothing</SelectItem>
-                    <SelectItem value="Home">Home</SelectItem>
-                    <SelectItem value="Sports">Sports</SelectItem>
-                    <SelectItem value="Toys">Toys</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
+            {isCategoriesLoading ? (
+              <div className="flex justify-center items-center h-12">
+                <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+              </div>
+            ) : (
+              <Controller
+                control={control}
+                name="category"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allCategories && allCategories.length > 0 ? (
+                        allCategories.map((category) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem disabled>No categories available</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            )}
             {errors.category && (
               <p className="text-red-500 text-xs">{errors.category.message}</p>
             )}
