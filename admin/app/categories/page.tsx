@@ -34,6 +34,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
+import Image from "next/image";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -44,6 +45,20 @@ export default function CategoriesPage() {
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [newCategoryImage, setNewCategoryImage] = useState(null); // Image state
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Fetch all categories from the API on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/category/get-all-categories");
+        setCategories(response.data.categories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -221,8 +236,10 @@ export default function CategoriesPage() {
                   className="col-span-3 cursor-pointer"
                 />
                 {currentCategory && currentCategory.image && (
-                  <img
-                    src={currentCategory.image}
+                  <Image
+                  width={20}
+                  height={20}
+                    src={currentCategory.image[0].url}
                     alt="Category"
                     className="col-span-1 h-10 w-10 object-cover rounded"
                   />
@@ -259,8 +276,10 @@ export default function CategoriesPage() {
               {filteredCategories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell className="font-medium">
-                    <img
-                      src={category.image}
+                    <Image
+                    width={20}
+                    height={20}
+                      src={category.image[0].url}
                       alt="Category"
                       className="h-10 w-10 object-cover rounded"
                     />
