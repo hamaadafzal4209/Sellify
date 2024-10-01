@@ -35,6 +35,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import Image from "next/image";
+import { toast } from "react-hot-toast";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -43,16 +44,20 @@ export default function CategoriesPage() {
   const [currentCategory, setCurrentCategory] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
-  const [newCategoryImage, setNewCategoryImage] = useState(null); // Image state
+  const [newCategoryImage, setNewCategoryImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all categories from the API on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/category/get-all-categories");
+        const response = await axios.get(
+          "http://localhost:8000/api/category/get-all-categories"
+        );
         setCategories(response.data.categories);
       } catch (error) {
+        toast.error("Error fetching categories.");
         console.error("Error fetching categories:", error);
       }
     };
@@ -63,33 +68,99 @@ export default function CategoriesPage() {
   const filteredCategories = categories.filter(
     (category) =>
       category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchTerm.toLowerCase())
+      category.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleCreateCategory = async () => {
-    let imageUrl = "";
+    setLoading(true);
+    toast.loading("Creating category...");
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/category/create-category",
+        {
+          name: newCategoryName,
+          imageBase64: await convertToBase64(newCategoryImage),
+        }
+      );
 
-    // Upload the image to Cloudinary (via the backend API)
-    if (newCategoryImage) {
-      const formData = new FormData();
-      formData.append("file", newCategoryImage);
+      const newCategory = response.data.category;
+      setCategories([...categories, newCategory]);
+      toast.success("Category created successfully!");
+      resetForm();
+    } catch (error) {
+      toast.error("Error creating category.");
+      console.error("Error creating category:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      try {
-        const response = await axios.post(
-          "http://localhost:8000/api/category/create-category",
-          {
-            name: newCategoryName,
-            imageBase64: await convertToBase64(newCategoryImage),
-          }
-        );
+  const handleUpdateCategory = async () => {
+    setLoading(true);
+    try {
+      const imageUrl = newCategoryImage
+        ? await uploadImage(newCategoryImage)
+        : currentCategory.image;
 
-        // Handle the response (success)
-        const newCategory = response.data.category;
-        setCategories([...categories, newCategory]); // Update category state
-        resetForm();
-      } catch (error) {
-        console.error("Error creating category:", error);
-      }
+      const response = await axios.put(
+        `http://localhost:8000/api/category/update-category/${currentCategory._id}`,
+        {
+          name: newCategoryName,
+          description: newCategoryDescription,
+          image: imageUrl,
+        }
+      );
+
+      const updatedCategories = categories.map((cat) =>
+        cat._id === currentCategory._id ? response.data.category : cat
+      );
+      setCategories(updatedCategories);
+      toast.success("Category updated successfully!");
+      resetForm();
+    } catch (error) {
+      toast.error("Error updating category.");
+      console.error("Error updating category:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCategory = async () => {
+    setLoading(true);
+    toast.loading("Deleting category...");
+    try {
+      await axios.delete(
+        `http://localhost:8000/api/category/delete-category/${currentCategory._id}`
+      );
+
+      const updatedCategories = categories.filter(
+        (cat) => cat._id !== currentCategory._id
+      );
+      setCategories(updatedCategories);
+      toast.success("Category deleted successfully!");
+      setIsDeleteDialogOpen(false);
+      setCurrentCategory(null);
+    } catch (error) {
+      toast.error("Error deleting category.");
+      console.error("Error deleting category:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to upload image to Cloudinary
+  const uploadImage = async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      throw new Error("Error uploading image.");
     }
   };
 
@@ -103,53 +174,10 @@ export default function CategoriesPage() {
     });
   };
 
-  const handleUpdateCategory = async () => {
-    let imageUrl = newCategoryImage ? currentCategory.image : "";
-
-    // Upload new image if one is selected
-    if (newCategoryImage) {
-      const formData = new FormData();
-      formData.append("file", newCategoryImage);
-      formData.append("upload_preset", "sellify");
-
-      try {
-        const response = await axios.post(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          formData
-        );
-        imageUrl = response.data.secure_url; // Get the new image URL from the response
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-    }
-
-    const updatedCategories = categories.map((cat) =>
-      cat.id === currentCategory.id
-        ? {
-            ...cat,
-            name: newCategoryName,
-            description: newCategoryDescription,
-            image: imageUrl || cat.image, // Use the existing image if no new image is uploaded
-          }
-        : cat
-    );
-    setCategories(updatedCategories);
-    resetForm();
-  };
-
-  const handleDeleteCategory = () => {
-    const updatedCategories = categories.filter(
-      (cat) => cat.id !== currentCategory.id
-    );
-    setCategories(updatedCategories);
-    setIsDeleteDialogOpen(false);
-    setCurrentCategory(null);
-  };
-
   const resetForm = () => {
     setNewCategoryName("");
     setNewCategoryDescription("");
-    setNewCategoryImage(null); // Reset image
+    setNewCategoryImage(null);
     setIsEditDialogOpen(false);
   };
 
@@ -157,7 +185,7 @@ export default function CategoriesPage() {
     setCurrentCategory(category);
     setNewCategoryName(category ? category.name : "");
     setNewCategoryDescription(category ? category.description : "");
-    setNewCategoryImage(null); // Reset image on open
+    setNewCategoryImage(null);
     setIsEditDialogOpen(true);
   };
 
@@ -237,8 +265,8 @@ export default function CategoriesPage() {
                 />
                 {currentCategory && currentCategory.image && (
                   <Image
-                  width={20}
-                  height={20}
+                    width={20}
+                    height={20}
                     src={currentCategory.image[0].url}
                     alt="Category"
                     className="col-span-1 h-10 w-10 object-cover rounded"
@@ -251,80 +279,75 @@ export default function CategoriesPage() {
                 onClick={
                   currentCategory ? handleUpdateCategory : handleCreateCategory
                 }
-                className="bg-main-500 hover:bg-main-600"
+                className={`bg-main-500 hover:bg-main-600 ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={loading}
               >
-                {currentCategory ? "Update" : "Create"}
+                {loading
+                  ? "Processing..."
+                  : currentCategory
+                  ? "Update"
+                  : "Create"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
-      <div className="rounded-md border overflow-hidden">
-        <ScrollArea className="h-[calc(100vh-250px)]">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Description
-                </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+      <ScrollArea>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead>Image</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCategories.map((category) => (
+              <TableRow key={category._id}>
+                <TableCell className="font-medium">{category.name}</TableCell>
+                <TableCell>
+                  <Image
+                    src={category.image[0].url}
+                    alt={category.name}
+                    width={50}
+                    height={50}
+                    className="object-cover rounded"
+                  />
+                </TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => openEditDialog(category)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => openDeleteDialog(category)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCategories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell className="font-medium">
-                    <Image
-                    width={20}
-                    height={20}
-                      src={category.image[0].url}
-                      alt="Category"
-                      className="h-10 w-10 object-cover rounded"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{category.name}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {category.description}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openEditDialog(category)}
-                      className="mr-2"
-                    >
-                      <Pencil className="h-4 w-4" />
-                      <span className="sr-only">Edit {category.name}</span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openDeleteDialog(category)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Delete {category.name}</span>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-      </div>
-
-      {/* Delete Confirmation Dialog */}
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Are you sure you want to delete this category?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              category.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -332,10 +355,13 @@ export default function CategoriesPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
+              className={`bg-red-600 hover:bg-red-700 ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={handleDeleteCategory}
-              className="bg-red-600 hover:bg-red-700"
+              disabled={loading}
             >
-              Delete
+              {loading ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
