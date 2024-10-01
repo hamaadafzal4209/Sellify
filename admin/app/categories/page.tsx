@@ -173,7 +173,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="max-w-4xl w-full px-6 py-10 mx-auto">
+    <div className="max-w-2xl w-full px-6 py-10 mx-auto">
       <h1 className="text-3xl font-bold mb-6">Categories</h1>
       <div className="flex justify-between items-center mb-6 flex-col sm:flex-row">
         <div className="flex items-center space-x-2 mb-4 sm:mb-0">
@@ -254,7 +254,6 @@ export default function CategoriesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[80px]">ID</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Image</TableHead>
               <TableHead>Actions</TableHead>
@@ -263,7 +262,6 @@ export default function CategoriesPage() {
           <TableBody>
             {filteredCategories.map((category) => (
               <TableRow key={category._id}>
-                <TableCell>{category._id}</TableCell>
                 <TableCell>{category.name}</TableCell>
                 <TableCell>
                   {category.image && (
@@ -272,14 +270,14 @@ export default function CategoriesPage() {
                       height={40}
                       src={category.image[0].url}
                       alt={category.name}
-                      className="h-10 w-10 rounded"
+                      className="h-10 w-10 object-contain rounded"
                     />
                   )}
                 </TableCell>
                 <TableCell>
                   <Button
                     onClick={() => openEditDialog(category)}
-                    className="bg-yellow-500 hover:bg-yellow-600 mr-2"
+                    className="bg-green-500 hover:bg-green-600 mr-2"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
