@@ -54,31 +54,38 @@ export default function CategoriesPage() {
   const handleCreateCategory = async () => {
     let imageUrl = "";
 
-    // Upload the image to Cloudinary
+    // Upload the image to Cloudinary (via the backend API)
     if (newCategoryImage) {
       const formData = new FormData();
       formData.append("file", newCategoryImage);
-      formData.append("upload_preset", "your_upload_preset"); // Replace with your upload preset
 
       try {
         const response = await axios.post(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          formData
+          "http://localhost:8000/api/category/create-category",
+          {
+            name: newCategoryName,
+            imageBase64: await convertToBase64(newCategoryImage),
+          }
         );
-        imageUrl = response.data.secure_url; // Get the image URL from the response
+
+        // Handle the response (success)
+        const newCategory = response.data.category;
+        setCategories([...categories, newCategory]); // Update category state
+        resetForm();
       } catch (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error creating category:", error);
       }
     }
+  };
 
-    const newCategory = {
-      id: (categories.length + 1).toString(),
-      name: newCategoryName,
-      description: newCategoryDescription,
-      image: imageUrl, // Store the image URL
-    };
-    setCategories([...categories, newCategory]);
-    resetForm();
+  // Helper function to convert image file to Base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleUpdateCategory = async () => {
@@ -88,7 +95,7 @@ export default function CategoriesPage() {
     if (newCategoryImage) {
       const formData = new FormData();
       formData.append("file", newCategoryImage);
-      formData.append("upload_preset", "your_upload_preset"); // Replace with your upload preset
+      formData.append("upload_preset", "sellify");
 
       try {
         const response = await axios.post(
