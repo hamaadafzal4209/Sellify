@@ -13,7 +13,9 @@ const BestSellingProducts = () => {
   }, [dispatch]);
 
   // Sort products by ratings in descending order
-  const sortedProducts = [...allProducts].sort((a, b) => b.sold_out - a.sold_out).slice(0,8);
+  const sortedProducts = [...allProducts]
+    .sort((a, b) => b.sold_out - a.sold_out)
+    .slice(0, 8);
 
   return (
     <section className="main-container py-12">

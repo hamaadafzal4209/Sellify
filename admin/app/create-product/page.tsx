@@ -52,7 +52,6 @@ const CreateProduct = () => {
   useEffect(() => {
     dispatch(fetchAllCategories());
   }, [dispatch]);
-  
 
   const {
     register,
