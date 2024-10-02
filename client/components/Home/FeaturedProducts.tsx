@@ -1,23 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import ProductCard from "../Products/ProductCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProducts } from "@/app/redux/Features/product/productAction";
 
 const FeaturedProducts = () => {
-  const [products, setProducts] = useState([]);
+  const dispatch = useDispatch();
+  const { allProducts, isLoading } = useSelector((state) => state.product);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("https://fakestoreapi.com/products?limit=4"); 
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+    dispatch(getAllProducts());
+  }, [dispatch]);
 
   return (
     <section className="main-container py-12">
@@ -27,7 +20,7 @@ const FeaturedProducts = () => {
 
       {/* Product Grid */}
       <div className="card-container gap-6">
-        {products.map((product) => (
+        {allProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
