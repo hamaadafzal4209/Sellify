@@ -19,14 +19,31 @@ const ProductCard = ({ product }) => {
     return null;
   }
 
-  // Sample conditions for stock, discount, and new status
-  const isInStock = true;
-  const hasDiscount = false;
-  const isNew = true;
+  const isInStock = true; // Placeholder for stock condition
+  const hasDiscount = false; // Placeholder for discount condition
+  const isNew = true; // Placeholder for new product condition
 
-  // Function to toggle the favorite status
   const handleFavoriteToggle = () => {
     setIsFavorited((prev) => !prev);
+  };
+
+  // Dynamic star rating rendering
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <>
+        {Array.from({ length: fullStars }).map((_, index) => (
+          <AiFillStar key={index} className="h-4 w-4 text-yellow-400" />
+        ))}
+        {halfStar && <AiOutlineStar className="h-4 w-4 text-yellow-400" />}
+        {Array.from({ length: emptyStars }).map((_, index) => (
+          <AiOutlineStar key={index + fullStars} className="h-4 w-4 text-yellow-400" />
+        ))}
+      </>
+    );
   };
 
   return (
@@ -42,7 +59,6 @@ const ProductCard = ({ product }) => {
           />
         </Link>
 
-        {/* New Tag */}
         {isNew && (
           <span className="absolute top-2 left-2 rounded-full bg-primary-500 px-2 py-1 text-xs font-semibold text-white">
             New
@@ -53,19 +69,15 @@ const ProductCard = ({ product }) => {
       <div className="pt-4">
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {/* Discount Condition */}
             {hasDiscount && (
               <span className="rounded bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-600">
                 35% off
               </span>
             )}
 
-            {/* Stock Condition */}
             <span
               className={`rounded px-2 py-0.5 text-xs font-semibold ${
-                isInStock
-                  ? "bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-600"
+                isInStock ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
               }`}
             >
               {isInStock ? "In Stock" : "Out of Stock"}
@@ -100,9 +112,7 @@ const ProductCard = ({ product }) => {
             </button>
             <Tooltip
               id="tooltip-favorite"
-              content={
-                isFavorited ? "Remove from Favorites" : "Add to Favorites"
-              }
+              content={isFavorited ? "Remove from Favorites" : "Add to Favorites"}
             />
           </div>
         </div>
@@ -115,16 +125,9 @@ const ProductCard = ({ product }) => {
         </Link>
 
         <div className="mt-2 flex items-center gap-1">
-          <div className="flex items-center">
-            <AiFillStar className="h-4 w-4 text-yellow-400" />
-            <AiFillStar className="h-4 w-4 text-yellow-400" />
-            <AiFillStar className="h-4 w-4 text-yellow-400" />
-            <AiFillStar className="h-4 w-4 text-yellow-400" />
-            <AiOutlineStar className="h-4 w-4 text-yellow-400" />
-          </div>
-
-          <p className="text-sm font-medium text-gray-900">5.0</p>
-          <p className="text-sm font-medium text-gray-500">(455)</p>
+          <div className="flex items-center">{renderStars(product.ratings)}</div>
+          <p className="text-sm font-medium text-gray-900">{product.ratings}</p>
+          <p className="text-sm font-medium text-gray-500">({product.reviews?.length})</p>
         </div>
 
         <div className="mt-4 flex items-center justify-between">
@@ -132,9 +135,7 @@ const ProductCard = ({ product }) => {
             <p className="text-xl font-extrabold text-primary-600">
               ${product.discountPrice}
             </p>
-            <p className="text-sm text-gray-500 line-through">
-              ${product.originalPrice}
-            </p>
+            <p className="text-sm text-gray-500 line-through">${product.originalPrice}</p>
           </div>
         </div>
 
