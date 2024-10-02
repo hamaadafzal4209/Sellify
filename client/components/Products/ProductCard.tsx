@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
   return (
     <div className="relative rounded-lg border border-gray-100 bg-white p-4 shadow hover:shadow-lg transition-shadow duration-300">
       <div className="h-56 w-full relative">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${product._id}`}>
           <Image
             width={1000}
             height={1000}
@@ -108,7 +108,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         <Link
-          href={`/product/${product.id}`}
+          href={`/product/${product._id}`}
           className="block text-lg font-semibold leading-tight text-gray-900 hover:underline"
         >
           <p className="line-clamp-2">{product.name}</p>
