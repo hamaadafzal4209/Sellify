@@ -18,40 +18,27 @@ import {
 import { Menu } from "lucide-react";
 import ProductCard from "@/components/Products/ProductCard";
 import RangeSlider from "react-range-slider-input";
-import "react-range-slider-input/dist/style.css"; // Import the slider styles
+import "react-range-slider-input/dist/style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import { getAllProducts } from "../redux/Features/product/productAction";
-
-const categoriesData = [
-  "Electronics",
-  "Clothing",
-  "Books",
-  "Home & Kitchen",
-  "Beauty",
-  "Sports",
-  "Toys",
-  "Automotive",
-  "Health",
-  "Groceries",
-  "Furniture",
-  "Office Supplies",
-];
+import { fetchAllCategories } from "../redux/Features/category/categoryAction";
 
 export default function ProductPage() {
   const dispatch = useDispatch();
   const { allProducts, isLoading } = useSelector((state) => state.product);
+  const { allCategories, isLoading: isCategoriesLoading } = useSelector(
+    (state) => state.category
+  );
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isSelectOpen, setSelectOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
   useEffect(() => {
     dispatch(getAllProducts());
+    dispatch(fetchAllCategories());
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log("All Products State:", allProducts);
-  }, [allProducts]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -61,52 +48,62 @@ export default function ProductPage() {
     );
   };
 
-  const CategoryFilter = () => (
-    <div className="space-y-4">
-      {/* Price Range Slider */}
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-4">Price Range</h3>
-        <RangeSlider
-          min={0}
-          max={1000}
-          step={10}
-          value={priceRange}
-          onInput={(value: [number, number]) => setPriceRange(value)}
-          className="range-slider"
-        />
-        <div className="flex justify-between mt-2 text-sm">
-          <span>${priceRange[0]}</span>
-          <span>${priceRange[1]}</span>
-        </div>
-      </div>
-
-      {/* Categories */}
-      <h3 className="text-lg font-semibold">Categories</h3>
-      {categoriesData.map((category) => (
-        <div key={category} className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id={category}
-            checked={selectedCategories.includes(category)}
-            onChange={() => toggleCategory(category)}
-            className="w-4 h-4 bg-gray-100 border-gray-300 rounded accent-primary-500 focus:ring-primary-500 dark:focus:ring-primary-600 focus:ring-2"
+  const CategoryFilter = () => {
+    return (
+      <div className="space-y-4">
+        {/* Price Range Slider */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-4">Price Range</h3>
+          <RangeSlider
+            min={0}
+            max={1000}
+            step={1} // Smoother range
+            value={priceRange}
+            onInput={(value: [number, number]) => setPriceRange(value)}
+            className="range-slider"
+            style={{
+              "--range-thumb-background": "#3b82f6", // primary-500
+              "--range-track-active-background": "#3b82f6", // primary-500
+            }}
           />
-          <label
-            htmlFor={category}
-            className="flex items-center cursor-pointer"
-          >
-            {category}
-          </label>
+          <div className="flex justify-between mt-2 text-sm">
+            <span>${priceRange[0]}</span>
+            <span>${priceRange[1]}</span>
+          </div>
         </div>
-      ))}
-    </div>
-  );
+
+        {/* Categories */}
+        <h3 className="text-lg font-semibold">Categories</h3>
+        {isCategoriesLoading ? (
+          <p>Loading categories...</p>
+        ) : (
+          allCategories.map((category) => (
+            <div key={category.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={category.name}
+                checked={selectedCategories.includes(category.name)}
+                onChange={() => toggleCategory(category.name)}
+                className="w-4 h-4 bg-gray-100 border-gray-300 rounded accent-primary-500 focus:ring-primary-500 dark:focus:ring-primary-600 focus:ring-2"
+              />
+              <label
+                htmlFor={category.name}
+                className="flex items-center cursor-pointer"
+              >
+                {category.name}
+              </label>
+            </div>
+          ))
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen">
       <main className="main-container py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="hidden lg:block w-64">
+          <aside className="hidden lg:block max-w-[300px]">
             <div className="p-6 bg-white rounded-md shadow">
               <h2 className="text-xl font-poppins font-semibold">Filter By</h2>
               <CategoryFilter />
