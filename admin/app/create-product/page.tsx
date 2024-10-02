@@ -206,7 +206,7 @@ const CreateProduct = () => {
                     <SelectContent>
                       {allCategories && allCategories.length > 0 ? (
                         allCategories.map((category) => (
-                          <SelectItem key={category._id} value={category._id}>
+                          <SelectItem key={category._id} value={category.name}>
                             {category.name}
                           </SelectItem>
                         ))
