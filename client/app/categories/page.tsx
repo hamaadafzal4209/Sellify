@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -19,6 +19,9 @@ import { Menu } from "lucide-react";
 import ProductCard from "@/components/Products/ProductCard";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css"; // Import the slider styles
+import { useDispatch, useSelector } from "react-redux";
+import {ClipLoader} from 'react-spinners'
+import { getAllProducts } from "../redux/Features/product/productAction";
 
 const categoriesData = [
   "Electronics",
@@ -36,9 +39,19 @@ const categoriesData = [
 ];
 
 export default function ProductPage() {
+  const dispatch = useDispatch();
+  const { allProducts, isLoading } = useSelector((state) => state.product);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isSelectOpen, setSelectOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+
+  useEffect(() => {
+    dispatch(getAllProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log("All Products State:", allProducts);
+  }, [allProducts]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -167,11 +180,19 @@ export default function ProductPage() {
               </Sheet>
             </div>
 
-            <div className="card-container gap-6">
-              <ProductCard />
-              <ProductCard />
-              <ProductCard />
-              <ProductCard />
+            {/* Product Cards */}
+            <div className="card-container grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {isLoading ? (
+  <p className="flex items-center justify-center">
+    <ClipLoader />
+  </p>
+) : allProducts.length ? (
+  allProducts.map((product) => (
+    <ProductCard key={product.id} product={product} />
+  ))
+) : (
+  <p>No products found</p>
+)}
             </div>
           </div>
         </div>
