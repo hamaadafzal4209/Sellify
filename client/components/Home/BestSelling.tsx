@@ -18,7 +18,7 @@ const BestSellingProducts = () => {
   return (
     <section className="main-container py-12">
       <div className="flex items-center justify-between gap-4 mb-6">
-        <h2 className="section-heading">Featured Products</h2>
+        <h2 className="section-heading">Best Selling</h2>
       </div>
 
       {/* Product Grid */}

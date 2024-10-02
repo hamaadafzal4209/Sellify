@@ -6,7 +6,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your product name!"],
       trim: true,
-      maxlength: [100, "Product name cannot exceed 100 characters"],
     },
     description: {
       type: String,
@@ -111,9 +110,7 @@ const productSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 const ProductModel = mongoose.model("Product", productSchema);

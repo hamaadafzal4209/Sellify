@@ -169,13 +169,13 @@ export default function ProductsPage() {
                               alt={product.name}
                               width={50}
                               height={50}
-                              className="w-32 h-32 rounded-md object-contain flex-shrink-0"
+                              className="min-w-20 max-w-20 rounded-md object-contain flex-shrink-0"
                             />
                           </td>
                           <td className="px-6 py-4 font-medium text-gray-900">
                             {product.name}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <span className="px-3 py-1 rounded-full bg-main-500 text-white text-xs">
                               {product.category}
                             </span>
