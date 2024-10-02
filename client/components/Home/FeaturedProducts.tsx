@@ -6,7 +6,7 @@ import { getAllProducts } from "@/app/redux/Features/product/productAction";
 
 const FeaturedProducts = () => {
   const dispatch = useDispatch();
-  const { allProducts, isLoading } = useSelector((state) => state.product);
+  const { allProducts } = useSelector((state) => state.product);
 
   useEffect(() => {
     dispatch(getAllProducts());
