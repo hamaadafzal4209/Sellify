@@ -20,7 +20,7 @@ import ProductCard from "@/components/Products/ProductCard";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css"; // Import the slider styles
 import { useDispatch, useSelector } from "react-redux";
-import {ClipLoader} from 'react-spinners'
+import { ClipLoader } from "react-spinners";
 import { getAllProducts } from "../redux/Features/product/productAction";
 
 const categoriesData = [
@@ -181,18 +181,18 @@ export default function ProductPage() {
             </div>
 
             {/* Product Cards */}
-            <div className="card-container grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {isLoading ? (
-  <p className="flex items-center justify-center">
-    <ClipLoader />
-  </p>
-) : allProducts.length ? (
-  allProducts.map((product) => (
-    <ProductCard key={product.id} product={product} />
-  ))
-) : (
-  <p>No products found</p>
-)}
+            <div className="card-container gap-6">
+              {isLoading ? (
+                <p className="flex items-center justify-center">
+                  <ClipLoader />
+                </p>
+              ) : allProducts.length ? (
+                allProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <p>No products found</p>
+              )}
             </div>
           </div>
         </div>

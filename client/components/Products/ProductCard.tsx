@@ -1,22 +1,28 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { AiFillStar, AiOutlineEye, AiOutlineHeart, AiOutlineStar, AiFillHeart } from "react-icons/ai";
+import {
+  AiFillStar,
+  AiOutlineEye,
+  AiOutlineHeart,
+  AiOutlineStar,
+  AiFillHeart,
+} from "react-icons/ai";
 import { FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
 const ProductCard = ({ product }) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
-  // Validate product data before proceeding
   if (!product) {
-    return null; // Or a loading state
+    return null;
   }
 
   // Sample conditions for stock, discount, and new status
-  const isInStock = true; // You can customize this based on your data
-  const hasDiscount = false; // You can customize this based on your data
-  const isNew = true; // You can customize this based on your data
+  const isInStock = true;
+  const hasDiscount = false;
+  const isNew = true;
 
   // Function to toggle the favorite status
   const handleFavoriteToggle = () => {
@@ -27,10 +33,12 @@ const ProductCard = ({ product }) => {
     <div className="relative rounded-lg border border-gray-100 bg-white p-4 shadow hover:shadow-lg transition-shadow duration-300">
       <div className="h-56 w-full relative">
         <Link href={`/product/${product.id}`}>
-          <img
+          <Image
+            width={1000}
+            height={1000}
             className="h-full w-full rounded-lg object-contain shadow"
-            src={product.image} // Using the product image from the API
-            alt={product.title} // Using the product title for alt text
+            src={product.images[0].url}
+            alt={product.name}
           />
         </Link>
 
@@ -92,7 +100,9 @@ const ProductCard = ({ product }) => {
             </button>
             <Tooltip
               id="tooltip-favorite"
-              content={isFavorited ? "Remove from Favorites" : "Add to Favorites"}
+              content={
+                isFavorited ? "Remove from Favorites" : "Add to Favorites"
+              }
             />
           </div>
         </div>
@@ -101,9 +111,7 @@ const ProductCard = ({ product }) => {
           href={`/product/${product.id}`}
           className="block text-lg font-semibold leading-tight text-gray-900 hover:underline"
         >
-          <p className="line-clamp-2">
-          {product.title}
-          </p>
+          <p className="line-clamp-2">{product.name}</p>
         </Link>
 
         <div className="mt-2 flex items-center gap-1">
@@ -120,9 +128,13 @@ const ProductCard = ({ product }) => {
         </div>
 
         <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-extrabold text-primary-600">${product.price}</p>
-            {/* Assuming no discounts from the API */}
+          <div className="flex items-start gap-2">
+            <p className="text-xl font-extrabold text-primary-600">
+              ${product.discountPrice}
+            </p>
+            <p className="text-sm text-gray-500 line-through">
+              ${product.originalPrice}
+            </p>
           </div>
         </div>
 
