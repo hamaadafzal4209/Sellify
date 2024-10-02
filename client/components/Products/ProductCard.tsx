@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
             width={1000}
             height={1000}
             className="h-full w-full rounded-lg object-contain shadow"
-            src={product.images[0].url}
+            src={product.images?.[0]?.url}
             alt={product.name}
           />
         </Link>

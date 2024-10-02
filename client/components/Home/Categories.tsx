@@ -1,29 +1,20 @@
 "use client";
+import { fetchAllCategories } from "@/app/redux/Features/category/categoryAction";
+import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import {
-  FaLaptop,
-  FaMobileAlt,
-  FaTshirt,
-  FaCouch,
-  FaAppleAlt,
-  FaBook,
-  FaGamepad,
-  FaHeadphones,
-} from "react-icons/fa";
-
-const categories = [
-  { name: "Laptops", icon: FaLaptop },
-  { name: "Mobiles", icon: FaMobileAlt },
-  { name: "Clothing", icon: FaTshirt },
-  { name: "Furniture", icon: FaCouch },
-  { name: "Groceries", icon: FaAppleAlt },
-  { name: "Books", icon: FaBook },
-  { name: "Gaming", icon: FaGamepad },
-  { name: "Headphones", icon: FaHeadphones },
-];
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const CategoriesSection = () => {
+  const dispatch = useDispatch();
+  const { allCategories, isLoading: isCategoriesLoading } = useSelector(
+    (state) => state.category
+  );
+
+  useEffect(() => {
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
+
   return (
     <section className="main-container pt-12 pb-4">
       <div className="flex items-center justify-between gap-4 mb-6">
@@ -33,13 +24,19 @@ const CategoriesSection = () => {
         </button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {categories.map((category) => (
+        {allCategories.map((category) => (
           <div
             key={category.name}
             className="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
           >
             <div className="text-primary-500 mb-4">
-              <category.icon className="h-12 w-12" />
+              <Image
+                height={20}
+                width={20}
+                src={category.image?.[0]?.url}
+                alt={category.name}
+                className="h-12 w-12"
+              />
             </div>
             <h3 className="text-lg font-semibold text-gray-900">
               {category.name}
