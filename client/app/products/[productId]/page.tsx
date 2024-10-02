@@ -249,7 +249,7 @@ export default function ProductDetails() {
       {/* Related Products */}
       <div>
         <h2 className="text-2xl font-semibold mb-6">Related Products</h2>
-        <div className="card-container grid grid-cols-2 gap-6 md:grid-cols-3">
+        <div className="card-container">
           {product.relatedProducts.map((relatedProduct) => (
             <ProductCard key={relatedProduct.id} product={relatedProduct} />
           ))}

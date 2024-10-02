@@ -17,8 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Menu } from "lucide-react";
 import ProductCard from "@/components/Products/ProductCard";
-import RangeSlider from "react-range-slider-input";
-import "react-range-slider-input/dist/style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import { getAllProducts } from "../redux/Features/product/productAction";
@@ -33,7 +31,6 @@ export default function ProductPage() {
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isSelectOpen, setSelectOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -41,39 +38,37 @@ export default function ProductPage() {
   }, [dispatch]);
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
+    setSelectedCategories((prev) => {
+      const newSelectedCategories = prev.includes(category)
         ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
+        : [...prev, category];
+
+      console.log("Selected Categories:", newSelectedCategories);
+      return newSelectedCategories;
+    });
   };
+
+  useEffect(() => {
+    console.log("All Products:", allProducts);
+    console.log("All Categories:", allCategories);
+  }, [allProducts, allCategories]);
+
+  const filteredProducts = allProducts.filter((product) => {
+    const inSelectedCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(product.category);
+
+    console.log("Product:", product);
+    console.log("In Selected Category:", inSelectedCategory);
+
+    return inSelectedCategory;
+  });
+
+  console.log("Filtered Products:", filteredProducts); // Log the filtered results
 
   const CategoryFilter = () => {
     return (
       <div className="space-y-4">
-        {/* Price Range Slider */}
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-4">Price Range</h3>
-          <RangeSlider
-            min={0}
-            max={1000}
-            step={1} // Smoother range
-            value={priceRange}
-            onInput={(value: [number, number]) => setPriceRange(value)}
-            className="range-slider"
-            style={{
-              "--range-thumb-background": "#3b82f6", // primary-500
-              "--range-track-active-background": "#3b82f6", // primary-500
-            }}
-          />
-          <div className="flex justify-between mt-2 text-sm">
-            <span>${priceRange[0]}</span>
-            <span>${priceRange[1]}</span>
-          </div>
-        </div>
-
-        {/* Categories */}
-        <h3 className="text-lg font-semibold">Categories</h3>
         {isCategoriesLoading ? (
           <p>Loading categories...</p>
         ) : (
@@ -105,7 +100,9 @@ export default function ProductPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block max-w-[300px]">
             <div className="p-6 bg-white rounded-md shadow">
-              <h2 className="text-xl font-poppins font-semibold">Filter By</h2>
+              <h2 className="text-xl font-poppins mb-4 font-semibold">
+                Filter By Category
+              </h2>
               <CategoryFilter />
             </div>
           </aside>
@@ -183,8 +180,8 @@ export default function ProductPage() {
                 <p className="flex items-center justify-center">
                   <ClipLoader />
                 </p>
-              ) : allProducts.length ? (
-                allProducts.map((product) => (
+              ) : filteredProducts.length ? (
+                filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))
               ) : (
