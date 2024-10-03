@@ -33,8 +33,8 @@ const CartSidebar = () => {
           </SheetHeader>
 
           {/* Scrollable area for cart items */}
-          <ScrollArea className="h-[73vh] max-h-[73vh] overflow-y-auto">
-            <div className="space-y-4">
+          <ScrollArea className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
+            <div className="space-y-6 bg-white">
               <SideCartItem />
               <SideCartItem />
               <SideCartItem />

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 const SideCartItem = () => {
@@ -15,7 +16,7 @@ const SideCartItem = () => {
   };
 
   return (
-    <div className="flex py-6">
+    <div className="flex">
       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
         <Image
           width={20}
@@ -30,7 +31,7 @@ const SideCartItem = () => {
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>
-              <a href="#">Throwback Hip Bag</a>
+              <Link href="" className='line-clamp-2'>Throwback Hip Bag</Link>
             </h3>
             <p className="ml-4">$90.00</p>
           </div>
