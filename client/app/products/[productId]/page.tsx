@@ -1,85 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductCard from "@/components/Products/ProductCard";
-import { StarFilledIcon } from "@radix-ui/react-icons";
-
-// Mock data for the product
-const product = {
-  id: 1,
-  name: "Classic Leather Jacket",
-  price: 299.99,
-  description:
-    "The Classic Leather Jacket offers a timeless design, crafted from premium full-grain leather. Featuring a modern fit with robust durability, it's an essential piece for any wardrobe. This jacket is fully lined, with two interior pockets, and a comfortable fit that works for any occasion, whether formal or casual.",
-  images: [
-    "/assets/apple-logo.jpg",
-    "/assets/apple-watch-1.jpg",
-    "/assets/apple-watch-2.jpg",
-    "/assets/apple-watch-3.jpg",
-  ],
-  reviews: [
-    {
-      id: 1,
-      author: "John D.",
-      rating: 5,
-      comment:
-        "Excellent quality and fit! The leather feels premium, and it's perfect for both casual and formal occasions.",
-    },
-    {
-      id: 2,
-      author: "Sarah M.",
-      rating: 4,
-      comment:
-        "Great jacket, but runs a bit small. I would recommend ordering one size up.",
-    },
-    {
-      id: 3,
-      author: "Mike R.",
-      rating: 5,
-      comment:
-        "Exactly what I was looking for. The jacket looks and feels amazing, definitely worth the price.",
-    },
-  ],
-  relatedProducts: [
-    {
-      id: 2,
-      name: "Vintage Denim Jacket",
-      price: 199.99,
-      image: "/assets/denim-jacket.jpg",
-    },
-    {
-      id: 3,
-      name: "Modern Wool Coat",
-      price: 349.99,
-      image: "/assets/wool-coat.jpg",
-    },
-    {
-      id: 4,
-      name: "Leather Gloves",
-      price: 59.99,
-      image: "/assets/leather-gloves.jpg",
-    },
-  ],
-};
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProducts } from "@/app/redux/Features/product/productAction";
+import { useRouter } from "next/navigation";
 
 export default function ProductDetails() {
   const [quantity, setQuantity] = useState<number>(1);
   const [mainImageIndex, setMainImageIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const { allProducts } = useSelector((state) => state.product);
+  const router = useRouter();
+
+  // Ensure that the query is defined before destructuring
+  const productId = router.query?.productId;
+
+  // Find the product by ID from the allProducts state
+  const product = allProducts.find((prod) => prod._id === productId);
+
+  useEffect(() => {
+    // Fetch all products if they haven't been fetched yet
+    if (!allProducts.length) {
+      dispatch(getAllProducts());
+    }
+  }, [dispatch, allProducts.length]);
 
   const handleAddToCart = () => {
     try {
@@ -102,83 +54,104 @@ export default function ProductDetails() {
     setIsLoading(false);
   };
 
+  // Handle loading state
+  if (!product) {
+    return <div>Loading product details...</div>;
+  }
+
   return (
     <div className="main-container py-8">
-      <div className="grid gap-8 md:grid-cols-2">
-        {/* Product Image Section */}
-        <div className="space-y-4">
-          <Carousel className="w-full max-w-xs mx-auto">
-            <CarouselContent>
-              <CarouselItem>
-                <Image
-                  src={product.images[mainImageIndex]}
-                  alt={`${product.name} - Image`}
-                  onLoad={handleImageLoad}
-                  width={600}
-                  height={600}
-                  className={`rounded-lg h-[400px] w-[400px] object-contain ${
-                    isLoading ? "hidden" : "block"
-                  }`}
-                  loading="lazy"
-                />
-                {isLoading && <p>Loading image...</p>}
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-          <div className="flex justify-center space-x-2">
-            {product.images.map((image, index) => (
-              <Image
+      <div className="flex flex-col md:flex-row items-start gap-4">
+        <div className="relative w-full md:w-1/2 flex flex-col items-center">
+          <Image
+            width={1000}
+            height={1000}
+            src={product.images?.[mainImageIndex]?.url}
+            alt={product.name}
+            className="w-full mt-8 max-w-sm p-6 object-contain"
+            onLoad={handleImageLoad}
+          />
+          <div className="flex gap-2 mx-6 no-scrollbar mt-4 max-w-md overflow-x-auto">
+            {product.images?.map((image, index) => (
+              <div
                 key={index}
-                src={image}
-                alt={`${product.name} - Thumbnail ${index + 1}`}
-                width={60}
-                height={60}
-                className="rounded-md w-24 h-24 object-cover cursor-pointer"
+                className={`cursor-pointer rounded-md overflow-hidden flex-shrink-0 px-1 ${
+                  index === mainImageIndex
+                    ? "border-2 border-main-500"
+                    : "border border-black"
+                }`}
                 onClick={() => handleImageChange(index)}
-              />
+              >
+                <Image
+                  src={image.url}
+                  alt={`Thumbnail ${index + 1}`}
+                  width={60}
+                  height={60}
+                  className="object-contain w-20 h-20 flex-shrink-0"
+                />
+              </div>
             ))}
           </div>
         </div>
 
         {/* Product Info Section */}
-        <div className="space-y-6">
+        <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{product.name}</h1>
-            <div className="flex gap-2">
-              <p className="text-2xl font-semibold text-main-500">
-                ${product.price.toFixed(2)}
-              </p>
-              <p className="text-base text-gray-600 line-through">250.00$</p>
+            <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
+            <p className="text-gray-600 mb-4">{product.description}</p>
+            <div className="flex items-center mb-4">
+              <span className="text-3xl font-bold text-main-500 mr-2">
+                ${product.discountPrice}
+              </span>
+              <span className="text-xl text-gray-500 line-through">
+                ${product.originalPrice}
+              </span>
+              {product.discountPrice && (
+                <Badge variant="secondary" className="ml-2">
+                  Save ${product.originalPrice - product.discountPrice}
+                </Badge>
+              )}
             </div>
-            <div className="flex items-center">
-              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
-              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
-              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
-              <StarFilledIcon className="h-5 w-5 text-yellow-400" />
-               <Star className="h-5 w-5 text-yellow-400" />
-              <span className="ml-2">{product.reviews.length} Reviews</span>
+            <div className="flex items-center space-x-4">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-5 h-5 ${
+                      i < Math.floor(product.ratings)
+                        ? "text-yellow-400 fill-yellow-400"
+                        : "text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-gray-600">
+                {product.ratings} ({product.reviews?.length} reviews)
+              </span>
+              <span className="text-sm text-gray-600">
+                {product.sold_out} (Sold)
+              </span>
             </div>
           </div>
-          <p className="text-gray-600">{product.description}</p>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <Button
-              className="bg-main-500 text-white hover:bg-main-600"
-              size="lg"
+              className="flex-1 bg-main-500 hover:bg-main-600 text-white"
               onClick={handleAddToCart}
             >
               Add to Cart
             </Button>
             <Button
-              className="border border-gray-300 bg-white hover:bg-gray-100"
-              size="lg"
+              variant="outline"
+              className={`flex-1 ${
+                isWishlisted ? "text-red-500" : "text-gray-700"
+              }`}
             >
-              <Heart className="mr-2" />
-              Add to Wishlist
+              <Heart
+                className={`mr-2 h-4 w-4 ${isWishlisted ? "fill-red-500" : ""}`}
+              />
+              {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
             </Button>
           </div>
-          {error && <p className="text-red-500">{error}</p>}
         </div>
       </div>
 
@@ -210,12 +183,7 @@ export default function ProductDetails() {
         </TabsList>
         <TabsContent value="description" className="mt-6">
           <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
-          <p className="text-gray-600">
-            {product.description}
-            This jacket is crafted with a tailored fit to ensure comfort and
-            style. The high-quality leather is designed to last and only gets
-            better with age.
-          </p>
+          <p className="text-gray-600">{product.description}</p>
         </TabsContent>
         <TabsContent value="reviews" className="mt-6">
           <h2 className="text-2xl font-semibold mb-4">Customer Reviews</h2>
