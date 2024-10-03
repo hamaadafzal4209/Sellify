@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -19,7 +19,9 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import {ShoppingCart} from 'lucide-react'
+import { ShoppingCart } from "lucide-react";
+import { getAllProducts } from "@/app/redux/Features/product/productAction";
+import Image from "next/image";
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -27,15 +29,20 @@ export default function Header() {
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { allProducts } = useSelector((state) => state.product);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    dispatch(getAllProducts());
+  }, [dispatch]);
 
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
     if (query) {
-      const filtered = productData.filter((product) =>
+      const filtered = allProducts.filter((product) =>
         product.name.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredProducts(filtered);
@@ -56,7 +63,7 @@ export default function Header() {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold text-primary-500">
+            <Link href="/" className="text-xl font-bold text-main-500">
               Sellify
             </Link>
           </div>
@@ -77,7 +84,7 @@ export default function Header() {
                 <Input
                   id="search"
                   name="search"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 sm:text-sm"
                   placeholder="Search for products"
                   type="search"
                   value={searchQuery}
@@ -94,14 +101,16 @@ export default function Header() {
                           key={product.id}
                           className="flex items-center gap-4"
                         >
-                          <img
-                            src={product.image_Url[0]?.url}
+                          <Image
+                            width={20}
+                            height={20}
+                            src={product.images?.[0]?.url}
                             alt={product.name}
-                            className="h-12 w-12 object-cover rounded-md"
+                            className="h-12 w-12 object-contain rounded-md"
                           />
                           <Link
-                            href={`/products/${product.id}`}
-                            className="text-base font-medium text-gray-900 hover:text-primary-500 line-clamp-2"
+                            href={`/products/${product._id}`}
+                            className="text-base font-medium text-gray-900 hover:text-main-500 line-clamp-2"
                           >
                             {product.name}
                           </Link>
@@ -120,13 +129,13 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-10">
             <Link
               href="/"
-              className="text-base font-medium text-gray-900 hover:text-primary-600"
+              className="text-base font-medium text-gray-900 hover:text-main-600"
             >
               Home
             </Link>
             <Link
               href="/categories"
-              className="text-base font-medium text-gray-900 hover:text-primary-600"
+              className="text-base font-medium text-gray-900 hover:text-main-600"
             >
               Categories
             </Link>
@@ -139,7 +148,7 @@ export default function Header() {
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="text-primary-500 bg-gray-100"
+                    className="text-main-500 bg-gray-100"
                     aria-label="Open menu"
                   >
                     <Menu className="h-6 w-6" />
@@ -156,13 +165,13 @@ export default function Header() {
                     <nav className="flex flex-col gap-4">
                       <Link
                         href="/"
-                        className="text-base font-medium text-gray-900 hover:text-primary-500"
+                        className="text-base font-medium text-gray-900 hover:text-main-500"
                       >
                         Home
                       </Link>
                       <Link
                         href="/categories"
-                        className="text-base font-medium text-gray-900 hover:text-primary-500"
+                        className="text-base font-medium text-gray-900 hover:text-main-500"
                       >
                         Categories
                       </Link>
@@ -172,7 +181,7 @@ export default function Header() {
                         <Link href="/login" passHref>
                           <Button
                             variant="ghost"
-                            className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
+                            className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600"
                           >
                             Login
                           </Button>
@@ -188,11 +197,11 @@ export default function Header() {
               {isAuthenticated && (
                 <div className="md:ml-8 flex items-center gap-4 md:gap-8">
                   <Button variant="outline" size="icon" className="relative">
-                 <ShoppingCart className="h-4 w-4" />
-                 <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                   0
-                 </span>
-               </Button>
+                    <ShoppingCart className="h-4 w-4" />
+                    <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-main-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      0
+                    </span>
+                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -241,7 +250,7 @@ export default function Header() {
               <Link href="/login" passHref>
                 <Button
                   variant="ghost"
-                  className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-500 hover:bg-primary-600"
+                  className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600"
                 >
                   Login
                 </Button>
@@ -258,7 +267,7 @@ export default function Header() {
             <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
           <Input
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 sm:text-sm"
             placeholder="Search for products"
             type="search"
             value={searchQuery}
@@ -271,14 +280,16 @@ export default function Header() {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <li key={product.id} className="flex items-center gap-4">
-                    <img
-                      src={product.image_Url[0]?.url}
+                    <Image
+                      width={20}
+                      height={20}
+                      src={product.images?.[0]?.url}
                       alt={product.name}
                       className="h-12 w-12 object-cover rounded-md"
                     />
                     <Link
-                      href={`/products/${product.id}`}
-                      className="text-base font-medium text-gray-900 hover:text-primary-500 line-clamp-2"
+                      href={`/products/${product._id}`}
+                      className="text-base font-medium text-gray-900 hover:text-main-500 line-clamp-2"
                     >
                       {product.name}
                     </Link>

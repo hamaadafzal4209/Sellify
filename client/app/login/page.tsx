@@ -108,7 +108,7 @@ const SignInPage = () => {
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-primary-500 focus:outline-none"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-main-500 focus:outline-none"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -121,7 +121,7 @@ const SignInPage = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
+                className="h-4 w-4 text-main-500 border-gray-300 rounded focus:ring-main-500"
               />
               <label
                 htmlFor="remember-me"
@@ -134,7 +134,7 @@ const SignInPage = () => {
             <div className="text-sm">
               <Link
                 href="/forgot-password"
-                className="font-semibold text-primary-500 hover:text-[#e63b61]"
+                className="font-semibold text-main-500 hover:text-[#e63b61]"
               >
                 Forgot password?
               </Link>
@@ -173,7 +173,7 @@ const SignInPage = () => {
           Not a member?{" "}
           <Link
             href="/register"
-            className="font-semibold leading-6 text-primary-500 hover:text-[#e63b61]"
+            className="font-semibold leading-6 text-main-500 hover:text-[#e63b61]"
           >
             Create an account
           </Link>

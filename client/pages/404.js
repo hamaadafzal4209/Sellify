@@ -18,7 +18,7 @@ export default function Custom404() {
       </p>
       <Link 
         href="/" 
-        className="mt-6 inline-block px-6 py-3 bg-primary-500 text-white rounded-lg shadow-lg transition duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-400"
+        className="mt-6 inline-block px-6 py-3 bg-main-500 text-white rounded-lg shadow-lg transition duration-200 hover:bg-main-600 focus:outline-none focus:ring-2 focus:ring-main-400"
       >
         Go Back Home
       </Link>

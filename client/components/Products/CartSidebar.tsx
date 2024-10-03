@@ -39,7 +39,7 @@ function CartItem({ item, onUpdateQuantity, onRemove }: {
       </div>
       <div className="flex-1 space-y-1">
         <h3 className="font-medium">{item.name}</h3>
-        <p className="text-sm font-medium text-primary">${item.price.toFixed(2)}</p>
+        <p className="text-sm font-medium text-main-500">${item.price.toFixed(2)}</p>
       </div>
       <div className="flex flex-col items-center space-y-1">
         <Button 

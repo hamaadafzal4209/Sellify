@@ -47,9 +47,9 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div className="relative rounded-lg border border-gray-100 bg-white p-4 shadow hover:shadow-lg transition-shadow duration-300">
+    <div className="relative max-w-sm w-full rounded-lg border border-gray-100 bg-white p-4 shadow hover:shadow-lg transition-shadow duration-300">
       <div className="h-56 w-full relative">
-        <Link href={`/product/${product._id}`}>
+        <Link href={`/products/${product._id}`}>
           <Image
             width={1000}
             height={1000}
@@ -60,7 +60,7 @@ const ProductCard = ({ product }) => {
         </Link>
 
         {isNew && (
-          <span className="absolute top-2 left-2 rounded-full bg-primary-500 px-2 py-1 text-xs font-semibold text-white">
+          <span className="absolute top-2 left-2 rounded-full bg-main-500 px-2 py-1 text-xs font-semibold text-white">
             New
           </span>
         )}
@@ -70,7 +70,7 @@ const ProductCard = ({ product }) => {
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {hasDiscount && (
-              <span className="rounded bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-600">
+              <span className="rounded bg-main-100 px-2 py-0.5 text-xs font-semibold text-main-600">
                 35% off
               </span>
             )}
@@ -118,7 +118,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         <Link
-          href={`/product/${product._id}`}
+          href={`/products/${product._id}`}
           className="block text-lg font-semibold leading-tight text-gray-900 hover:underline"
         >
           <p className="line-clamp-2">{product.name}</p>
@@ -132,7 +132,7 @@ const ProductCard = ({ product }) => {
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-start gap-2">
-            <p className="text-xl font-extrabold text-primary-600">
+            <p className="text-xl font-extrabold text-main-600">
               ${product.discountPrice}
             </p>
             <p className="text-sm text-gray-500 line-through">${product.originalPrice}</p>
@@ -141,7 +141,7 @@ const ProductCard = ({ product }) => {
 
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center mt-4 rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300"
+          className="inline-flex w-full items-center justify-center mt-4 rounded-lg bg-main-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-main-600 focus:outline-none focus:ring-4 focus:ring-main-300"
         >
           <FaShoppingCart className="mr-2 h-5 w-5" />
           Add to cart

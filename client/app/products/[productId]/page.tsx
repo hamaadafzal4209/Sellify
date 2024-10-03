@@ -147,7 +147,7 @@ export default function ProductDetails() {
           <div>
             <h1 className="text-3xl font-bold">{product.name}</h1>
             <div className="flex gap-2">
-              <p className="text-2xl font-semibold text-primary-500">
+              <p className="text-2xl font-semibold text-main-500">
                 ${product.price.toFixed(2)}
               </p>
               <p className="text-base text-gray-600 line-through">250.00$</p>
@@ -164,7 +164,7 @@ export default function ProductDetails() {
           <p className="text-gray-600">{product.description}</p>
           <div className="flex space-x-2">
             <Button
-              className="bg-primary-500 text-white hover:bg-primary-600"
+              className="bg-main-500 text-white hover:bg-main-600"
               size="lg"
               onClick={handleAddToCart}
             >
@@ -191,7 +191,7 @@ export default function ProductDetails() {
             value="description"
             className={({ active }) =>
               `px-4 py-2 font-semibold transition-colors ${
-                active ? "bg-primary-500 text-white" : "text-gray-600"
+                active ? "bg-main-500 text-white" : "text-gray-600"
               }`
             }
           >
@@ -201,7 +201,7 @@ export default function ProductDetails() {
             value="reviews"
             className={({ active }) =>
               `px-4 py-2 font-semibold transition-colors ${
-                active ? "bg-primary-500 text-white" : "text-gray-600"
+                active ? "bg-main-500 text-white" : "text-gray-600"
               }`
             }
           >

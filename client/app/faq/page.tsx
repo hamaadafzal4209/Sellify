@@ -61,7 +61,7 @@ const FAQs = () => {
                   type="button"
                   className={`flex items-center justify-between w-full p-5 font-medium border-b rounded-t-md transition-transform duration-300 ease-in-out ${
                     activeIndex === index
-                      ? "bg-primary-500 text-white"
+                      ? "bg-main-500 text-white"
                       : "text-gray-500 border-gray-200 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   onClick={() => toggleFAQ(index)}

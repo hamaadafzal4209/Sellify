@@ -79,7 +79,7 @@ export default function ProductPage() {
                 id={category.name}
                 checked={selectedCategories.includes(category.name)}
                 onChange={() => toggleCategory(category.name)}
-                className="w-4 h-4 bg-gray-100 border-gray-300 rounded accent-primary-500 focus:ring-primary-500 dark:focus:ring-primary-600 focus:ring-2"
+                className="w-4 h-4 bg-gray-100 border-gray-300 rounded accent-main-500 focus:ring-main-500 dark:focus:ring-main-600 focus:ring-2"
               />
               <label
                 htmlFor={category.name}

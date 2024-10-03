@@ -150,7 +150,7 @@ const SignUpPage = () => {
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-primary-500 focus:outline-none"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-main-500 focus:outline-none"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -180,7 +180,7 @@ const SignUpPage = () => {
               <button
                 type="button"
                 onClick={toggleConfirmPasswordVisibility}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-primary-500 focus:outline-none"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-main-500 focus:outline-none"
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -199,7 +199,7 @@ const SignUpPage = () => {
                 id="terms"
                 type="checkbox"
                 {...register("terms")}
-                className="h-4 w-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
+                className="h-4 w-4 text-main-500 border-gray-300 rounded focus:ring-main-500"
               />
               <label
                 htmlFor="terms"
@@ -208,7 +208,7 @@ const SignUpPage = () => {
                 I agree to the{" "}
                 <Link
                   href=""
-                  className="text-primary-500 hover:text-primary-600"
+                  className="text-main-500 hover:text-main-600"
                 >
                   terms and conditions
                 </Link>
@@ -253,7 +253,7 @@ const SignUpPage = () => {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-semibold leading-6 text-primary-500 hover:text-primary-600"
+            className="font-semibold leading-6 text-main-500 hover:text-main-600"
           >
             Sign in
           </Link>

@@ -70,7 +70,7 @@ const Testimonial = () => {
                       height={1000}
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-20 h-20 rounded-full border-4 border-primary-500 object-cover"
+                      className="w-20 h-20 rounded-full border-4 border-main-500 object-cover"
                     />
                   </div>
                   <p className="text-gray-700 dark:text-gray-300 text-lg italic mb-4">
@@ -86,10 +86,10 @@ const Testimonial = () => {
 
           {/* Custom Navigation Arrows Below the Testimonial */}
           <div className="flex justify-center gap-6 mt-8">
-            <button className="custom-prev bg-primary-500 text-white p-3 rounded-full hover:bg-primary-600 transition duration-300 shadow-lg">
+            <button className="custom-prev bg-main-500 text-white p-3 rounded-full hover:bg-main-600 transition duration-300 shadow-lg">
               <AiOutlineLeft size={24} />
             </button>
-            <button className="custom-next bg-primary-500 text-white p-3 rounded-full hover:bg-primary-600 transition duration-300 shadow-lg">
+            <button className="custom-next bg-main-500 text-white p-3 rounded-full hover:bg-main-600 transition duration-300 shadow-lg">
               <AiOutlineRight size={24} />
             </button>
           </div>

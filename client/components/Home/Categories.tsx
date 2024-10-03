@@ -19,7 +19,7 @@ const CategoriesSection = () => {
     <section className="main-container pt-12 pb-4">
       <div className="flex items-center justify-between gap-4 mb-6">
         <h2 className="section-heading">Shop by Category</h2>
-        <button className="hidden sm:block py-2.5 px-5 text-sm font-medium text-primary-600 bg-white border border-primary-500 rounded-lg hover:bg-primary-50 hover:text-white transition-colors hover:bg-primary-500">
+        <button className="hidden sm:block py-2.5 px-5 text-sm font-medium text-main-600 bg-white border border-main-500 rounded-lg hover:bg-main-50 hover:text-white transition-colors hover:bg-main-500">
           <Link href="/categories">See all categories</Link>
         </button>
       </div>
@@ -29,7 +29,7 @@ const CategoriesSection = () => {
             key={category.name}
             className="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
           >
-            <div className="text-primary-500 mb-4">
+            <div className="text-main-500 mb-4">
               <Image
                 height={20}
                 width={20}
@@ -45,7 +45,7 @@ const CategoriesSection = () => {
         ))}
       </div>
       <div className="mt-6 flex items-center justify-center  sm:hidden">
-        <button className="py-2.5 px-5 text-sm font-medium text-primary-600 bg-white border border-primary-500 rounded-lg hover:bg-primary-50 hover:text-white transition-colors hover:bg-primary-500">
+        <button className="py-2.5 px-5 text-sm font-medium text-main-600 bg-white border border-main-500 rounded-lg hover:bg-main-50 hover:text-white transition-colors hover:bg-main-500">
           See all categories
         </button>
       </div>

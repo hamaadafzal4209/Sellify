@@ -54,7 +54,7 @@ const OtpInput = ({ length, onChange }) => {
           onPaste={handlePaste}
           ref={(el) => (inputsRef.current[index] = el)}
           maxLength="1"
-          className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+          className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-main-400 focus:ring-2 focus:ring-main-100"
         />
       ))}
     </div>
@@ -164,7 +164,7 @@ const VerifyOtpPage = ({ email }) => {
       <div className="text-sm text-slate-500 mt-4">
         {"Didn't receive code?"}{" "}
         <button
-          className={`font-medium text-primary-500 hover:text-primary-600 ${
+          className={`font-medium text-main-500 hover:text-main-600 ${
             resendLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           onClick={handleResend}
