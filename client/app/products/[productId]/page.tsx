@@ -157,7 +157,7 @@ export default function ProductDetails() {
               <StarFilledIcon className="h-5 w-5 text-yellow-400" />
               <StarFilledIcon className="h-5 w-5 text-yellow-400" />
               <StarFilledIcon className="h-5 w-5 text-yellow-400" />
-              <Star className="h-5 w-5 text-yellow-400" />
+               <Star className="h-5 w-5 text-yellow-400" />
               <span className="ml-2">{product.reviews.length} Reviews</span>
             </div>
           </div>

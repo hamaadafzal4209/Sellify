@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Heart } from "lucide-react";
@@ -8,23 +8,48 @@ import { useState } from "react";
 
 const ProductDetailPopup = ({ isOpen, onClose, product }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   if (!product) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[900px] w-full h-[80vh] overflow-y-auto p-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative aspect-square flex items-center justify-center">
+        <div className="flex flex-col md:flex-row items-start gap-4">
+          <div className="relative w-full md:w-1/2 flex flex-col items-center">
             <Image
               width={1000}
               height={1000}
-              src={product.images?.[0]?.url}
+              src={product.images?.[selectedImage]?.url}
               alt={product.name}
-              className="w-full max-w-sm p-6 object-contain"
+              className="w-full mt-8 max-w-sm p-6 object-contain"
             />
+
+            <div className="flex gap-2 mx-6 no-scrollbar mt-4 max-w-md overflow-x-auto">
+              {product.images?.map((image, index) => (
+                <div
+                  key={index}
+                  className={`cursor-pointer rounded-md overflow-hidden flex-shrink-0 px-1 ${
+                    index === selectedImage
+                      ? "border-2 border-main-500"
+                      : "border border-black "
+                  }`}
+                  onClick={() => setSelectedImage(index)}
+                >
+                  <Image
+                    src={image.url}
+                    alt={`Thumbnail ${index + 1}`}
+                    width={60}
+                    height={60}
+                    className="object-contain w-20 h-20 flex-shrink-0"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="p-6 flex flex-col justify-between">
+
+          {/* Product Info Section */}
+          <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
               <p className="text-gray-600 mb-4">{product.description}</p>
@@ -41,8 +66,8 @@ const ProductDetailPopup = ({ isOpen, onClose, product }) => {
                   </Badge>
                 )}
               </div>
-              <div className="flex items-center mb-4">
-                <div className="flex mr-2">
+              <div className="flex items-center space-x-4">
+                <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
@@ -56,6 +81,9 @@ const ProductDetailPopup = ({ isOpen, onClose, product }) => {
                 </div>
                 <span className="text-sm text-gray-600">
                   {product.ratings} ({product.reviews?.length} reviews)
+                </span>
+                <span className="text-sm text-gray-600">
+                  {product.sold_out} (Sold)
                 </span>
               </div>
             </div>
