@@ -2,10 +2,15 @@
 import { useEffect, useState } from "react";
 import { Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { productData } from "../../static/data";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { logoutUser } from "@/app/redux/Features/user/userAction";
@@ -19,9 +24,9 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ShoppingCart } from "lucide-react";
 import { getAllProducts } from "@/app/redux/Features/product/productAction";
 import Image from "next/image";
+import CartSidebar from "../Cart/CartSidebar";
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -196,12 +201,7 @@ export default function Header() {
             <div>
               {isAuthenticated && (
                 <div className="md:ml-8 flex items-center gap-4 md:gap-8">
-                  <Button variant="outline" size="icon" className="relative">
-                    <ShoppingCart className="h-4 w-4" />
-                    <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-main-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      0
-                    </span>
-                  </Button>
+                <CartSidebar/>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
