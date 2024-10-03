@@ -4,19 +4,17 @@ import FeaturedProducts from "@/components/Home/FeaturedProducts";
 import Hero from "@/components/Home/Hero";
 import NewArrivalProducts from "@/components/Home/NewArrivals";
 import Testimonial from "@/components/Home/Testimonial";
-import ProductDetailPopup from "@/components/Products/ProductDetailsPopup";
 import React from "react";
 
 const Home = () => {
   return (
     <div>
-      <ProductDetailPopup/>
       <Hero />
       <CategoriesSection />
-      <FeaturedProducts/>
-      <NewArrivalProducts/>
+      <FeaturedProducts />
+      <NewArrivalProducts />
       <BestSellingProducts />
-      <Testimonial/>
+      <Testimonial />
     </div>
   );
 };

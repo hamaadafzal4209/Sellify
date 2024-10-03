@@ -37,7 +37,7 @@ const CategoriesSection = () => {
                   className="h-12 w-12"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-center text-gray-900">
                 {category.name}
               </h3>
             </div>
