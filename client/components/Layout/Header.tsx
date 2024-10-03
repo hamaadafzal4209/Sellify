@@ -134,10 +134,10 @@ export default function Header() {
               Home
             </Link>
             <Link
-              href="/categories"
+              href="/products"
               className="text-base font-medium text-gray-900 hover:text-main-600"
             >
-              Categories
+              Products
             </Link>
           </nav>
 
@@ -170,10 +170,10 @@ export default function Header() {
                         Home
                       </Link>
                       <Link
-                        href="/categories"
+                        href="/products"
                         className="text-base font-medium text-gray-900 hover:text-main-500"
                       >
-                        Categories
+                        Products
                       </Link>
                     </nav>
                     <div className="mt-6">

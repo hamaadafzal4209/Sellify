@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation"; // useSearchParams for query params
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -22,7 +23,7 @@ import { ClipLoader } from "react-spinners";
 import { getAllProducts } from "../redux/Features/product/productAction";
 import { fetchAllCategories } from "../redux/Features/category/categoryAction";
 
-export default function ProductPage() {
+export default function Products() {
   const dispatch = useDispatch();
   const { allProducts, isLoading } = useSelector((state) => state.product);
   const { allCategories, isLoading: isCategoriesLoading } = useSelector(
@@ -32,10 +33,28 @@ export default function ProductPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isSelectOpen, setSelectOpen] = useState(false);
 
+  const searchParams = useSearchParams(); // Use useSearchParams for URL parameters
+  const router = useRouter(); // To push updated query params
+
+  // Fetch products and categories on component mount
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(fetchAllCategories());
-  }, [dispatch]);
+
+    // Sync initial URL query params with selected categories
+    const categoryParam = searchParams.getAll("category"); // Get all instances of the "category" query parameter
+    if (categoryParam.length > 0) {
+      setSelectedCategories(categoryParam); // Set the selected categories from the URL
+    }
+  }, [dispatch, searchParams]);
+
+  const updateCategoryInUrl = (categories: string[]) => {
+    const queryString = categories.length
+      ? categories.map((category) => `category=${encodeURIComponent(category)}`).join("&")
+      : "";
+
+    router.push(`/products${queryString ? `?${queryString}` : ""}`);
+  };
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) => {
@@ -43,7 +62,7 @@ export default function ProductPage() {
         ? prev.filter((c) => c !== category)
         : [...prev, category];
 
-      console.log("Selected Categories:", newSelectedCategories);
+      updateCategoryInUrl(newSelectedCategories); // Update URL with selected categories
       return newSelectedCategories;
     });
   };
@@ -58,13 +77,8 @@ export default function ProductPage() {
       selectedCategories.length === 0 ||
       selectedCategories.includes(product.category);
 
-    console.log("Product:", product);
-    console.log("In Selected Category:", inSelectedCategory);
-
     return inSelectedCategory;
   });
-
-  console.log("Filtered Products:", filteredProducts); // Log the filtered results
 
   const CategoryFilter = () => {
     return (
@@ -177,7 +191,7 @@ export default function ProductPage() {
             {/* Product Cards */}
             <div className="card-container gap-6">
               {isLoading ? (
-                <p className="flex items-center justify-center">
+                <p className="flex items-center justify-center h-[70vh]">
                   <ClipLoader />
                 </p>
               ) : filteredProducts.length ? (

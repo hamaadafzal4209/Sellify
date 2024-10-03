@@ -7,9 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const CategoriesSection = () => {
   const dispatch = useDispatch();
-  const { allCategories, isLoading: isCategoriesLoading } = useSelector(
-    (state) => state.category
-  );
+  const { allCategories } = useSelector((state: any) => state.category);
 
   useEffect(() => {
     dispatch(fetchAllCategories());
@@ -20,28 +18,30 @@ const CategoriesSection = () => {
       <div className="flex items-center justify-between gap-4 mb-6">
         <h2 className="section-heading">Shop by Category</h2>
         <button className="hidden sm:block py-2.5 px-5 text-sm font-medium text-main-600 bg-white border border-main-500 rounded-lg hover:bg-main-50 hover:text-white transition-colors hover:bg-main-500">
-          <Link href="/categories">See all categories</Link>
+          <Link href="/products">See all categories</Link>
         </button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {allCategories.map((category) => (
-          <div
+        {allCategories.map((category: any) => (
+          <Link
+            href={`/products?category=${encodeURIComponent(category.name)}`}
             key={category.name}
-            className="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
           >
-            <div className="text-main-500 mb-4">
-              <Image
-                height={20}
-                width={20}
-                src={category.image?.[0]?.url}
-                alt={category.name}
-                className="h-12 w-12"
-              />
+            <div className="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer">
+              <div className="text-main-500 mb-4">
+                <Image
+                  height={20}
+                  width={20}
+                  src={category.image?.[0]?.url}
+                  alt={category.name}
+                  className="h-12 w-12"
+                />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {category.name}
+              </h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              {category.name}
-            </h3>
-          </div>
+          </Link>
         ))}
       </div>
       <div className="mt-6 flex items-center justify-center  sm:hidden">

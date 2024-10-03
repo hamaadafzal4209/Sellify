@@ -53,7 +53,7 @@ const ProductCard = ({ product }) => {
           <Image
             width={1000}
             height={1000}
-            className="h-full w-full rounded-lg object-contain shadow"
+            className="h-full w-full p-2 rounded-lg object-contain shadow"
             src={product.images?.[0]?.url}
             alt={product.name}
           />
