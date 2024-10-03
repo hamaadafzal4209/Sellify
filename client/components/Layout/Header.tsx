@@ -181,7 +181,7 @@ export default function Header() {
                         <Link href="/login" passHref>
                           <Button
                             variant="ghost"
-                            className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600"
+                            className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600 hover:text-white"
                           >
                             Login
                           </Button>
@@ -250,7 +250,7 @@ export default function Header() {
               <Link href="/login" passHref>
                 <Button
                   variant="ghost"
-                  className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600"
+                  className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600 hover:text-white"
                 >
                   Login
                 </Button>
