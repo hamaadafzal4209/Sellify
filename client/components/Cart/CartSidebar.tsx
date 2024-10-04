@@ -10,7 +10,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { ScrollArea } from "../ui/scroll-area";
 import Link from "next/link";
 
 const CartSidebar = () => {

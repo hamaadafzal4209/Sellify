@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect
 import {
   AiFillStar,
   AiOutlineEye,
@@ -13,21 +13,52 @@ import { FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 import ProductDetailPopup from "./ProductDetailsPopup";
 import { useDispatch, useSelector } from "react-redux";
-import { addTocartAction } from "@/app/redux/Features/cart/cartAction";
+import { addTocartAction, removeFromCartAction } from "@/app/redux/Features/cart/cartAction";
+import { addToWishlistAction, removeFromWishlistAction } from "@/app/redux/Features/wishlist/wishlistAction"; // Adjust the import path accordingly
 
 const ProductCard = ({ product }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const dispatch = useDispatch(); 
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const dispatch = useDispatch();
 
   // Ensure product exists
   if (!product || !product._id) {
     return null;
   }
 
+  // Load initial state from local storage
+  useEffect(() => {
+    const cartProducts = JSON.parse(localStorage.getItem("cartProducts")) || [];
+    const isProductInCart = cartProducts.some((item) => item._id === product._id);
+    setIsAddedToCart(isProductInCart);
+  }, [product._id]);
+
+  // Load initial state for wishlist
+  useEffect(() => {
+    const wishlistProducts = JSON.parse(localStorage.getItem("wishlistProducts")) || [];
+    const isProductInWishlist = wishlistProducts.some((item) => item._id === product._id);
+    setIsFavorited(isProductInWishlist);
+  }, [product._id]);
+
   const handleFavoriteToggle = () => {
-    setIsFavorited((prev) => !prev);
+    if (isFavorited) {
+      dispatch(removeFromWishlistAction(product._id));
+      setIsFavorited(false);
+
+      // Update local storage
+      const wishlistProducts = JSON.parse(localStorage.getItem("wishlistProducts")) || [];
+      const updatedWishlist = wishlistProducts.filter((item) => item._id !== product._id);
+      localStorage.setItem("wishlistProducts", JSON.stringify(updatedWishlist));
+    } else {
+      dispatch(addToWishlistAction(product));
+      setIsFavorited(true);
+
+      // Save to local storage
+      const wishlistProducts = JSON.parse(localStorage.getItem("wishlistProducts")) || [];
+      localStorage.setItem("wishlistProducts", JSON.stringify([...wishlistProducts, product]));
+    }
   };
 
   const handleQuickView = () => {
@@ -58,6 +89,21 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = () => {
     dispatch(addTocartAction(product));
+    setIsAddedToCart(true);
+
+    // Save to local storage
+    const cartProducts = JSON.parse(localStorage.getItem("cartProducts")) || [];
+    localStorage.setItem("cartProducts", JSON.stringify([...cartProducts, product]));
+  };
+
+  const handleRemoveFromCart = () => {
+    dispatch(removeFromCartAction(product._id));
+    setIsAddedToCart(false);
+
+    // Update local storage
+    const cartProducts = JSON.parse(localStorage.getItem("cartProducts")) || [];
+    const updatedCartProducts = cartProducts.filter((item) => item._id !== product._id);
+    localStorage.setItem("cartProducts", JSON.stringify(updatedCartProducts));
   };
 
   return (
@@ -135,11 +181,15 @@ const ProductCard = ({ product }) => {
 
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center mt-4 rounded-lg bg-main-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-main-600"
-          onClick={handleAddToCart}
+          className={`inline-flex w-full items-center justify-center mt-4 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-300 ${
+            isAddedToCart
+              ? 'bg-green-600 text-white hover:bg-green-700' // Styling when added to cart
+              : 'bg-main-500 text-white hover:bg-main-600' // Default styling
+          }`}
+          onClick={isAddedToCart ? handleRemoveFromCart : handleAddToCart} // Toggle between add and remove
         >
           <FaShoppingCart className="mr-2 h-5 w-5" />
-          Add to cart
+          {isAddedToCart ? 'Remove from Cart' : 'Add to Cart'}
         </button>
       </div>
 
