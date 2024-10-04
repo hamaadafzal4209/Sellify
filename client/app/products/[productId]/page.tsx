@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -44,12 +44,16 @@ export default function ProductDetails() {
     }
   }, [isLoading, allProducts, productId]);
 
-  // Ensure product is not null before accessing its properties
   const relatedProducts = product
     ? allProducts.filter(
-        (item) => item.category === product.category && item._id !== product._id // Exclude the current product
+        (item) => item.category === product.category && item._id !== product._id
       )
-    : []; // Return an empty array if product is null
+    : [];
+
+  useEffect(() => {
+    console.log("Product:", product);
+    console.log("All Products:", allProducts);
+  }, [product, allProducts]);
 
   const handleAddToCart = () => {
     if (product) {
@@ -255,10 +259,7 @@ export default function ProductDetails() {
                         />
                       ))}
                       {[...Array(5 - review.rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 text-gray-300"
-                        />
+                        <Star key={i} className="w-4 h-4 text-gray-300" />
                       ))}
                     </div>
                     <p className="mt-2 text-gray-600">{review.comment}</p>
@@ -276,7 +277,7 @@ export default function ProductDetails() {
       {relatedProducts.length > 0 && (
         <div className="mt-12">
           <h3 className="text-2xl font-semibold">Related Products</h3>
-          <RelatedProducts products={relatedProducts} />
+          <RelatedProducts relatedProducts={relatedProducts} />
         </div>
       )}
     </div>
