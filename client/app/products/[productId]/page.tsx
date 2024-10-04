@@ -116,7 +116,7 @@ export default function ProductDetails() {
         <div className="space-y-6">
           <div>
             <h2 className="text-2xl font-bold">{product.name}</h2>
-
+            
             {/* Description with Show More / Less */}
             <p className="text-gray-500 mt-2">
               {isDescriptionExpanded
@@ -185,11 +185,12 @@ export default function ProductDetails() {
 
       {/* Tabs for Product Details, Features, and Reviews */}
       <div className="mt-12">
-        <Tabs defaultValue="details">
+        <Tabs defaultValue="features">
           <TabsList>
             <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
+
 
           {/* Product Features */}
           <TabsContent value="features" className="mt-6">
