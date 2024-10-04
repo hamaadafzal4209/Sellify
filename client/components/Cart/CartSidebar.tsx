@@ -14,6 +14,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import Link from "next/link";
 
 const CartSidebar = () => {
+  const { cart } = useSelector((state) => state.cart);
   const { isAuthenticated } = useSelector((state) => state.user);
 
   return (
@@ -23,7 +24,7 @@ const CartSidebar = () => {
           <Button variant="outline" size="icon" className="relative">
             <ShoppingCart className="h-4 w-4" />
             <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-main-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              0
+              {cart.length}
             </span>
           </Button>
         </SheetTrigger>
@@ -36,21 +37,19 @@ const CartSidebar = () => {
           {/* Scrollable area for cart items */}
           <ScrollArea className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
             <div className="space-y-6 bg-white">
-              <SideCartItem />
-              <SideCartItem />
-              <SideCartItem />
-              <SideCartItem />
-              <SideCartItem />
-              <SideCartItem />
-              <SideCartItem />
-              <SideCartItem />
+              {cart.length > 0 ? (
+                cart.map((item) => (
+                  <SideCartItem key={item._id} item={item} />
+                ))
+              ) : (
+                <p className="text-center text-gray-500">Your cart is empty.</p>
+              )}
             </div>
           </ScrollArea>
 
           {/* Checkout and View Cart buttons */}
           <div className="mt-4">
             <Link href="/cart">
-              {" "}
               <Button className="w-full bg-main-500 hover:bg-main-600 text-white">
                 View Cart
               </Button>

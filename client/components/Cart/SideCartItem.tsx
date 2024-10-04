@@ -2,8 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-const SideCartItem = () => {
-  const [quantity, setQuantity] = useState(1);
+const SideCartItem = ({ item }) => {
+  const [quantity, setQuantity] = useState(item.quantity || 1); // Get quantity from the item
 
   const increaseQty = () => {
     setQuantity((prevQty) => prevQty + 1);
@@ -21,9 +21,9 @@ const SideCartItem = () => {
         <Image
           width={20}
           height={20}
-          src={'/assets/image.jpg'}
-          alt="image"
-          className="h-full w-full object-cover object-center"
+          src={item.images?.[0]?.url || '/assets/image.jpg'}
+          alt={item.name}
+          className="h-full w-full object-contain object-center"
         />
       </div>
 
@@ -31,9 +31,9 @@ const SideCartItem = () => {
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>
-              <Link href="" className='line-clamp-2'>Throwback Hip Bag</Link>
+              <Link href={`/products/${item._id}`} className='line-clamp-2'>{item.name}</Link>
             </h3>
-            <p className="ml-4">$90.00</p>
+            <p className="ml-4">${item.discountPrice?.toFixed(2)}</p>
           </div>
         </div>
 
