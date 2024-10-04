@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Menu, Search } from "lucide-react";
+import { CircleUser, Menu, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -56,8 +56,8 @@ export default function Header() {
     }
   };
 
-  const handleLogout = async () => {
-    await dispatch(logoutUser());
+  const handleLogout = () => {
+    dispatch(logoutUser());
     router.push("/");
     toast.success("Logout Successful");
   };
@@ -130,23 +130,22 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Desktop Links */}
-          <nav className="hidden md:flex items-center space-x-10">
-            <Link
-              href="/"
-              className="text-base font-medium text-gray-900 hover:text-main-600"
-            >
-              Home
-            </Link>
-            <Link
-              href="/products"
-              className="text-base font-medium text-gray-900 hover:text-main-600"
-            >
-              Products
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            {/* Desktop Links */}
+            <nav className="hidden md:flex items-center gap-8">
+              <Link
+                href="/"
+                className="text-base font-medium text-gray-900 hover:text-main-600"
+              >
+                Home
+              </Link>
+              <Link
+                href="/products"
+                className="text-base font-medium text-gray-900 hover:text-main-600"
+              >
+                Products
+              </Link>
+            </nav>
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center">
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -181,27 +180,15 @@ export default function Header() {
                         Products
                       </Link>
                     </nav>
-                    <div className="mt-6">
-                      {!isAuthenticated && (
-                        <Link href="/login" passHref>
-                          <Button
-                            variant="ghost"
-                            className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600 hover:text-white"
-                          >
-                            Login
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
             </div>
             {/* Profile Dropdown */}
-            <div>
-              {isAuthenticated && (
-                <div className="md:ml-8 flex items-center gap-4 md:gap-8">
-                <CartSidebar/>
+            <div className="flex items-center">
+              {isAuthenticated ? (
+                <div className="md:ml-8 flex items-center gap-6 md:gap-8">
+                  <CartSidebar />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -240,22 +227,12 @@ export default function Header() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
+              ) : (
+                <Link href="/login" passHref>
+                  <CircleUser className="hover:text-main-500" />
+                </Link>
               )}
             </div>
-          </div>
-
-          {/* Login Button for Desktop */}
-          <div className="hidden md:flex items-center ml-8">
-            {!isAuthenticated && (
-              <Link href="/login" passHref>
-                <Button
-                  variant="ghost"
-                  className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-main-500 hover:bg-main-600 hover:text-white"
-                >
-                  Login
-                </Button>
-              </Link>
-            )}
           </div>
         </div>
       </div>
