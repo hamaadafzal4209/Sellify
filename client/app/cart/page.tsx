@@ -1,18 +1,21 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import CartItem from "@/components/Cart/CartItem"; // Assuming CartItem is located in this path
 import React from "react";
+import { useSelector } from "react-redux";
+import CartItem from "@/components/Cart/CartItem";
 
-const CartPage = () => {
-  const cartItems = useSelector((state) => state.cart.items) || []; 
+const CartPage: React.FC = () => {
+  const cartItems = useSelector((state: any) => state.cart.items) || [];
 
   // Calculate total price
-  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0); 
+  const totalPrice = cartItems.reduce(
+    (total: number, item: any) => total + item.price * item.quantity,
+    0
+  );
   const savings = 299; // Example savings
   const storePickup = 99; // Example store pickup fee
   const tax = totalPrice * 0.1; // Example tax calculation (10% of total price)
-  const finalTotal = totalPrice - savings + storePickup + tax;
+  const finalTotal = totalPrice - savings + storePickup + tax; // Final total calculation
 
   return (
     <div>
@@ -26,8 +29,8 @@ const CartPage = () => {
             <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-3xl">
               <div className="space-y-6">
                 {cartItems.length > 0 ? (
-                  cartItems.map((item) => (
-                    <CartItem key={item.id} item={item} />  {/* Ensure to match the prop names */}
+                  cartItems.map((item: any) => (
+                    <CartItem key={item.id} item={item} />
                   ))
                 ) : (
                   <p>Your cart is empty.</p>
