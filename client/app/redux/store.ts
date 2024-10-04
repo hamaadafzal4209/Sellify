@@ -5,12 +5,14 @@ import { combineReducers } from "redux";
 import userReducer from "./Features/user/userSlice";
 import productReducer from "./Features/product/productSlice";
 import categoryReducer from "./Features/category/categorySlice";
+import cartReducer from "./Features/cart/cartSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
   user: userReducer,
   product: productReducer,
   category: categoryReducer,
+  cart: cartReducer,
 });
 
 // Persist configuration
