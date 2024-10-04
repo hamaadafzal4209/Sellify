@@ -63,7 +63,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-md z-50">
       <div className="main-container">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}

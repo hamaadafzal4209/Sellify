@@ -10,7 +10,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { ScrollArea } from "../ui/scroll-area"; // Import ScrollArea component from ShadCN
+import { ScrollArea } from "../ui/scroll-area";
+import Link from "next/link";
 
 const CartSidebar = () => {
   const { isAuthenticated } = useSelector((state) => state.user);
@@ -48,9 +49,12 @@ const CartSidebar = () => {
 
           {/* Checkout and View Cart buttons */}
           <div className="mt-4">
-            <Button className="w-full bg-main-500 hover:bg-main-600 text-white">
-              View Cart
-            </Button>
+            <Link href="/cart">
+              {" "}
+              <Button className="w-full bg-main-500 hover:bg-main-600 text-white">
+                View Cart
+              </Button>
+            </Link>
             {isAuthenticated ? (
               <Button variant="outline" className="w-full mt-2">
                 Checkout
