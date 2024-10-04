@@ -12,13 +12,17 @@ import {
 import { FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 import ProductDetailPopup from "./ProductDetailsPopup";
+import { useDispatch, useSelector } from "react-redux";
+import { addTocartAction } from "@/app/redux/Features/cart/cartAction";
 
 const ProductCard = ({ product }) => {
   const [isFavorited, setIsFavorited] = useState(false);
-  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false); // State to track modal visibility
-  const [selectedProduct, setSelectedProduct] = useState(null); // State to hold selected product data
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const dispatch = useDispatch(); 
 
-  if (!product) {
+  // Ensure product exists
+  if (!product || !product._id) {
     return null;
   }
 
@@ -26,13 +30,11 @@ const ProductCard = ({ product }) => {
     setIsFavorited((prev) => !prev);
   };
 
-  // Open the quick view modal with the selected product data
   const handleQuickView = () => {
-    setSelectedProduct(product); // Set the selected product
-    setIsQuickViewOpen(true); // Open the modal
+    setSelectedProduct(product);
+    setIsQuickViewOpen(true);
   };
 
-  // Dynamic star rating rendering
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 !== 0;
@@ -52,6 +54,10 @@ const ProductCard = ({ product }) => {
         ))}
       </>
     );
+  };
+
+  const handleAddToCart = () => {
+    dispatch(addTocartAction(product));
   };
 
   return (
@@ -81,7 +87,7 @@ const ProductCard = ({ product }) => {
               type="button"
               data-tooltip-id="tooltip-quick-view"
               className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-              onClick={handleQuickView} // Open the quick view modal
+              onClick={handleQuickView}
             >
               <AiOutlineEye className="h-5 w-5" />
               <span className="sr-only">Quick view</span>
@@ -120,9 +126,7 @@ const ProductCard = ({ product }) => {
         </Link>
 
         <div className="mt-2 flex items-center gap-1">
-          <div className="flex items-center">
-            {renderStars(product.ratings)}
-          </div>
+          <div className="flex items-center">{renderStars(product.ratings)}</div>
           <p className="text-sm font-medium text-gray-900">{product.ratings}</p>
           <p className="text-sm font-medium text-gray-500">
             ({product.reviews?.length})
@@ -132,13 +136,13 @@ const ProductCard = ({ product }) => {
         <button
           type="button"
           className="inline-flex w-full items-center justify-center mt-4 rounded-lg bg-main-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-main-600"
+          onClick={handleAddToCart}
         >
           <FaShoppingCart className="mr-2 h-5 w-5" />
           Add to cart
         </button>
       </div>
 
-      {/* Product Quick View Popup */}
       {selectedProduct && (
         <ProductDetailPopup
           isOpen={isQuickViewOpen}

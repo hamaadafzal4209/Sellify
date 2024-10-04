@@ -2,8 +2,12 @@ import { addToCart, clearCart, removeFromCart } from "./cartSlice";
 
 // Add to cart action
 export const addTocartAction = (data) => (dispatch, getState) => {
-  dispatch(addToCart(data));
-  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cart));
+  if (data && data._id) {
+    dispatch(addToCart(data));
+    localStorage.setItem("cartItems", JSON.stringify(getState().cart.cart));
+  } else {
+    console.error('Invalid product data:', data);
+  }
 };
 
 // Remove from cart action

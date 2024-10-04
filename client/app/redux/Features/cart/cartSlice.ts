@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  cart: JSON.parse(localStorage.getItem("cartItems")) || [],
+  cart: Array.isArray(JSON.parse(localStorage.getItem("cartItems")))
+    ? JSON.parse(localStorage.getItem("cartItems"))
+    : [],
 };
 
 const cartSlice = createSlice({
@@ -10,6 +12,13 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const item = action.payload;
+      console.log("Current cart:", state.cart);
+
+      if (!Array.isArray(state.cart)) {
+        console.error("Cart is not an array:", state.cart);
+        state.cart = [];
+      }
+
       const isItemExist = state.cart.find((i) => i._id === item._id);
       if (isItemExist) {
         state.cart = state.cart.map((i) =>
