@@ -1,7 +1,19 @@
-import CartItem from "@/components/Cart/CartItem";
+"use client";
+
+import { useSelector } from "react-redux";
+import CartItem from "@/components/Cart/CartItem"; // Assuming CartItem is located in this path
 import React from "react";
 
-const cartPage = () => {
+const CartPage = () => {
+  const cartItems = useSelector((state) => state.cart.items) || []; 
+
+  // Calculate total price
+  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0); 
+  const savings = 299; // Example savings
+  const storePickup = 99; // Example store pickup fee
+  const tax = totalPrice * 0.1; // Example tax calculation (10% of total price)
+  const finalTotal = totalPrice - savings + storePickup + tax;
+
   return (
     <div>
       <section className="py-8 antialiased md:py-8">
@@ -13,27 +25,30 @@ const cartPage = () => {
           <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
             <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-3xl">
               <div className="space-y-6">
-                <CartItem />
-                <CartItem />
-                <CartItem />
-                <CartItem />
+                {cartItems.length > 0 ? (
+                  cartItems.map((item) => (
+                    <CartItem key={item.id} item={item} />  {/* Ensure to match the prop names */}
+                  ))
+                ) : (
+                  <p>Your cart is empty.</p>
+                )}
               </div>
             </div>
 
             <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
               <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
                 <p className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Order summary
+                  Order Summary
                 </p>
 
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <dl className="flex items-center justify-between gap-4">
                       <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                        Original price
+                        Original Price
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        $7,592.00
+                        ${totalPrice.toFixed(2)}
                       </dd>
                     </dl>
 
@@ -42,7 +57,7 @@ const cartPage = () => {
                         Savings
                       </dt>
                       <dd className="text-base font-medium text-green-600">
-                        -$299.00
+                        -${savings.toFixed(2)}
                       </dd>
                     </dl>
 
@@ -51,7 +66,7 @@ const cartPage = () => {
                         Store Pickup
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        $99
+                        ${storePickup.toFixed(2)}
                       </dd>
                     </dl>
 
@@ -60,7 +75,7 @@ const cartPage = () => {
                         Tax
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        $799
+                        ${tax.toFixed(2)}
                       </dd>
                     </dl>
                   </div>
@@ -70,7 +85,7 @@ const cartPage = () => {
                       Total
                     </dt>
                     <dd className="text-base font-bold text-gray-900 dark:text-white">
-                      $8,191.00
+                      ${finalTotal.toFixed(2)}
                     </dd>
                   </dl>
                 </div>
@@ -84,12 +99,10 @@ const cartPage = () => {
 
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                    {" "}
-                    or{" "}
+                    or
                   </span>
                   <a
                     href="#"
-                    title=""
                     className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
                   >
                     Continue Shopping
@@ -102,9 +115,9 @@ const cartPage = () => {
                     >
                       <path
                         stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="M19 12H5m14 0-4 4m4-4-4-4"
                       />
                     </svg>
@@ -116,11 +129,10 @@ const cartPage = () => {
                 <form className="space-y-4">
                   <div>
                     <label
-                      for="voucher"
+                      htmlFor="voucher"
                       className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      {" "}
-                      Do you have a voucher or gift card?{" "}
+                      Do you have a voucher or gift card?
                     </label>
                     <input
                       type="text"
@@ -146,4 +158,4 @@ const cartPage = () => {
   );
 };
 
-export default cartPage;
+export default CartPage;

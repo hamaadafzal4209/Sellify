@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -56,9 +57,7 @@ const SideCartItem = ({ item }) => {
           </div>
 
           <div className="flex">
-            <button type="button" className="font-medium text-red-600 hover:text-red-500">
-              Remove
-            </button>
+              <Trash2/>
           </div>
         </div>
       </div>
