@@ -3,19 +3,20 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import CartItem from "@/components/Cart/CartItem";
+import Link from "next/link";
 
 const CartPage: React.FC = () => {
-  const cartItems = useSelector((state: any) => state.cart.items) || [];
+    const { cart } = useSelector((state) => state.cart);
 
   // Calculate total price
-  const totalPrice = cartItems.reduce(
+  const totalPrice = cart.reduce(
     (total: number, item: any) => total + item.price * item.quantity,
     0
   );
-  const savings = 299; // Example savings
-  const storePickup = 99; // Example store pickup fee
-  const tax = totalPrice * 0.1; // Example tax calculation (10% of total price)
-  const finalTotal = totalPrice - savings + storePickup + tax; // Final total calculation
+  const savings = 299;
+  const storePickup = 99;
+  const tax = totalPrice * 0.1;
+  const finalTotal = totalPrice - savings + storePickup + tax;
 
   return (
     <div>
@@ -28,8 +29,8 @@ const CartPage: React.FC = () => {
           <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
             <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-3xl">
               <div className="space-y-6">
-                {cartItems.length > 0 ? (
-                  cartItems.map((item: any) => (
+                {cart.length > 0 ? (
+                  cart.map((item: any) => (
                     <CartItem key={item.id} item={item} />
                   ))
                 ) : (
@@ -51,7 +52,7 @@ const CartPage: React.FC = () => {
                         Original Price
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        ${totalPrice.toFixed(2)}
+                        ${totalPrice?.toFixed(2)}
                       </dd>
                     </dl>
 
@@ -60,7 +61,7 @@ const CartPage: React.FC = () => {
                         Savings
                       </dt>
                       <dd className="text-base font-medium text-green-600">
-                        -${savings.toFixed(2)}
+                        -${savings?.toFixed(2)}
                       </dd>
                     </dl>
 
@@ -69,7 +70,7 @@ const CartPage: React.FC = () => {
                         Store Pickup
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        ${storePickup.toFixed(2)}
+                        ${storePickup?.toFixed(2)}
                       </dd>
                     </dl>
 
@@ -78,7 +79,7 @@ const CartPage: React.FC = () => {
                         Tax
                       </dt>
                       <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        ${tax.toFixed(2)}
+                        ${tax?.toFixed(2)}
                       </dd>
                     </dl>
                   </div>
@@ -88,17 +89,17 @@ const CartPage: React.FC = () => {
                       Total
                     </dt>
                     <dd className="text-base font-bold text-gray-900 dark:text-white">
-                      ${finalTotal.toFixed(2)}
+                      ${finalTotal?.toFixed(2)}
                     </dd>
                   </dl>
                 </div>
 
-                <a
-                  href="#"
+                <Link
+                  href="/checkout"
                   className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                 >
                   Proceed to Checkout
-                </a>
+                </Link>
 
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-normal text-gray-500 dark:text-gray-400">

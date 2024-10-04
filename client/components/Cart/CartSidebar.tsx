@@ -24,7 +24,7 @@ const CartSidebar = () => {
           <Button variant="outline" size="icon" className="relative">
             <ShoppingCart className="h-4 w-4" />
             <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-main-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {cart.length}
+              {cart.length || 0}
             </span>
           </Button>
         </SheetTrigger>
@@ -38,11 +38,9 @@ const CartSidebar = () => {
           <ScrollArea className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
             <div className="space-y-6 bg-white">
               {cart.length > 0 ? (
-                cart.map((item) => (
-                  <SideCartItem key={item._id} item={item} />
-                ))
+                cart.map((item) => <SideCartItem key={item._id} item={item} />)
               ) : (
-                <p className="text-center text-gray-500">Your cart is empty.</p>
+                <p className="text-center text-gray-500">Your cart is empty</p>
               )}
             </div>
           </ScrollArea>

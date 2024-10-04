@@ -1,20 +1,13 @@
-import { Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Trash2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const SideCartItem = ({ item }) => {
-  const [quantity, setQuantity] = useState(item.quantity || 1); // Get quantity from the item
+  const [quantity, setQuantity] = useState(item.quantity || 1);
 
-  const increaseQty = () => {
-    setQuantity((prevQty) => prevQty + 1);
-  };
-
-  const decreaseQty = () => {
-    if (quantity > 1) {
-      setQuantity((prevQty) => prevQty - 1);
-    }
-  };
+  const increaseQty = () => setQuantity((prevQty) => prevQty + 1);
+  const decreaseQty = () => quantity > 1 && setQuantity((prevQty) => prevQty - 1);
 
   return (
     <div className="flex">
@@ -22,7 +15,7 @@ const SideCartItem = ({ item }) => {
         <Image
           width={20}
           height={20}
-          src={item.images?.[0]?.url || '/assets/image.jpg'}
+          src={item.images?.[0]?.url || "/assets/image.jpg"}
           alt={item.name}
           className="h-full w-full object-contain object-center"
         />
@@ -32,7 +25,7 @@ const SideCartItem = ({ item }) => {
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>
-              <Link href={`/products/${item._id}`} className='line-clamp-2'>{item.name}</Link>
+              <Link href={`/products/${item._id}`} className="line-clamp-2">{item.name}</Link>
             </h3>
             <p className="ml-4">${item.discountPrice?.toFixed(2)}</p>
           </div>
@@ -40,24 +33,17 @@ const SideCartItem = ({ item }) => {
 
         <div className="flex flex-1 items-end justify-between text-sm">
           <div className="flex items-center">
-            <button
-              onClick={decreaseQty}
-              className="px-3 py-1 rounded-md text-gray-500 border border-gray-300 hover:bg-gray-200"
-              disabled={quantity === 1}
-            >
+            <button onClick={decreaseQty} className="px-3 py-1 rounded-md text-gray-500 border border-gray-300 hover:bg-gray-200" disabled={quantity === 1}>
               -
             </button>
             <span className="px-4">{quantity}</span>
-            <button
-              onClick={increaseQty}
-              className="px-3 py-1 rounded-md text-gray-500 border border-gray-300 hover:bg-gray-200"
-            >
+            <button onClick={increaseQty} className="px-3 py-1 rounded-md text-gray-500 border border-gray-300 hover:bg-gray-200">
               +
             </button>
           </div>
 
           <div className="flex">
-              <Trash2/>
+            <Trash2 />
           </div>
         </div>
       </div>

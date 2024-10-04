@@ -27,9 +27,8 @@ import {
 import Sidebar from "./Sidebar";
 
 const Header = () => {
-  const [activeLink, setActiveLink] = useState("/"); // Set default active link
+  const [activeLink, setActiveLink] = useState("/"); 
 
-  // Function to handle active link change
   const handleLinkClick = (href) => {
     setActiveLink(href);
   };
