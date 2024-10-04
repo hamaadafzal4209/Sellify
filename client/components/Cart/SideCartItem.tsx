@@ -10,8 +10,8 @@ const SideCartItem = ({ item }) => {
   const decreaseQty = () => quantity > 1 && setQuantity((prevQty) => prevQty - 1);
 
   return (
-    <div className="flex">
-      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+    <div className="flex w-full gap-2">
+      <div className="h-24 w-24 flex-shrink-0 rounded-md border border-gray-200">
         <Image
           width={20}
           height={20}
@@ -21,17 +21,17 @@ const SideCartItem = ({ item }) => {
         />
       </div>
 
-      <div className="ml-4 flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col">
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>
-              <Link href={`/products/${item._id}`} className="line-clamp-2">{item.name}</Link>
+              <Link href={`/products/${item._id}`} className="line-clamp-2 text-wrap">{item.name}</Link>
             </h3>
             <p className="ml-4">${item.discountPrice?.toFixed(2)}</p>
           </div>
         </div>
 
-        <div className="flex flex-1 items-end justify-between text-sm">
+        <div className="flex justify-between text-sm">
           <div className="flex items-center">
             <button onClick={decreaseQty} className="px-3 py-1 rounded-md text-gray-500 border border-gray-300 hover:bg-gray-200" disabled={quantity === 1}>
               -

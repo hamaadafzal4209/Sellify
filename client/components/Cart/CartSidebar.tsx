@@ -35,15 +35,15 @@ const CartSidebar = () => {
           </SheetHeader>
 
           {/* Scrollable area for cart items */}
-          <ScrollArea className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
-            <div className="space-y-6 bg-white">
+          <div className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
+            <div className="space-y-6 bg-white pr-4">
               {cart.length > 0 ? (
                 cart.map((item) => <SideCartItem key={item._id} item={item} />)
               ) : (
                 <p className="text-center text-gray-500">Your cart is empty</p>
               )}
             </div>
-          </ScrollArea>
+          </div>
 
           {/* Checkout and View Cart buttons */}
           <div className="mt-4">
