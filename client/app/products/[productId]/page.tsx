@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "@/app/redux/Features/product/productAction";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import RelatedProducts from "@/components/Products/RelatedProducts";
 
 export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
@@ -42,6 +43,13 @@ export default function ProductDetails() {
       setProduct(foundProduct || null);
     }
   }, [isLoading, allProducts, productId]);
+
+  // Ensure product is not null before accessing its properties
+  const relatedProducts = product
+    ? allProducts.filter(
+        (item) => item.category === product.category && item._id !== product._id // Exclude the current product
+      )
+    : []; // Return an empty array if product is null
 
   const handleAddToCart = () => {
     if (product) {
@@ -77,6 +85,36 @@ export default function ProductDetails() {
     );
   }
 
+  // Dummy reviews data
+  const dummyReviews = [
+    {
+      name: "John Doe",
+      comment: "Absolutely loved this product! It exceeded my expectations.",
+      rating: 5,
+    },
+    {
+      name: "Jane Smith",
+      comment:
+        "The quality is fantastic, but it took longer to arrive than expected.",
+      rating: 4,
+    },
+    {
+      name: "Michael Johnson",
+      comment: "Good value for money. Would recommend to others!",
+      rating: 4,
+    },
+    {
+      name: "Emily Davis",
+      comment: "Not what I expected. It looks different from the pictures.",
+      rating: 3,
+    },
+    {
+      name: "Chris Lee",
+      comment: "Fantastic product! I will definitely buy again.",
+      rating: 5,
+    },
+  ];
+
   return (
     <div className="main-container py-8 px-4 lg:px-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -87,7 +125,7 @@ export default function ProductDetails() {
             height={1000}
             src={product.images?.[mainImageIndex]?.url}
             alt={product.name}
-            className="w-full h-96 object-contain bg-gray-100 p-4 rounded-lg"
+            className="max-w-sm w-full h-96 object-contain bg-gray-100 p-4 rounded-lg"
           />
           <div className="flex gap-2 mt-4 overflow-x-auto max-w-md">
             {product.images?.map((image, index) => (
@@ -116,7 +154,7 @@ export default function ProductDetails() {
         <div className="space-y-6">
           <div>
             <h2 className="text-2xl font-bold">{product.name}</h2>
-            
+
             {/* Description with Show More / Less */}
             <p className="text-gray-500 mt-2">
               {isDescriptionExpanded
@@ -183,14 +221,13 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Tabs for Product Details, Features, and Reviews */}
+      {/* Tabs for Product Features and Reviews */}
       <div className="mt-12">
         <Tabs defaultValue="features">
           <TabsList>
             <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
-
 
           {/* Product Features */}
           <TabsContent value="features" className="mt-6">
@@ -205,35 +242,43 @@ export default function ProductDetails() {
           {/* Customer Reviews */}
           <TabsContent value="reviews" className="mt-6">
             <h3 className="text-lg font-semibold">Customer Reviews</h3>
-            {product.reviews?.length ? (
+            {dummyReviews.length ? (
               <div className="space-y-4 mt-4">
-                {product.reviews.map((review, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-50 p-4 rounded-lg shadow-sm"
-                  >
-                    <p className="text-gray-800">{review.comment}</p>
-                    <div className="flex mt-2">
-                      {[...Array(5)].map((_, i) => (
+                {dummyReviews.map((review, index) => (
+                  <div key={index} className="border-b pb-4">
+                    <h4 className="font-semibold">{review.name}</h4>
+                    <div className="flex">
+                      {[...Array(review.rating)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(review.rating)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }`}
+                          className="w-4 h-4 text-yellow-400 fill-yellow-400"
+                        />
+                      ))}
+                      {[...Array(5 - review.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-4 h-4 text-gray-300"
                         />
                       ))}
                     </div>
+                    <p className="mt-2 text-gray-600">{review.comment}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-600 mt-2">No reviews available.</p>
+              <p className="text-gray-500">No reviews yet.</p>
             )}
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Related Products Section */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-12">
+          <h3 className="text-2xl font-semibold">Related Products</h3>
+          <RelatedProducts products={relatedProducts} />
+        </div>
+      )}
     </div>
   );
 }
