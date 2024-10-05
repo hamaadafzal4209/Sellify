@@ -53,7 +53,7 @@ const CartSidebar = () => {
           </SheetHeader>
 
           {/* Scrollable area for cart items */}
-          <div className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
+          <div className="h-[73vh] max-h-[73vh] overflow-y-auto mt-6">
             <div className="space-y-6 bg-white pr-4">
               {cart.length > 0 ? (
                 cart.map((item: any) => (
