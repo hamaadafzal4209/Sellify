@@ -3,10 +3,7 @@ import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const SideWishListItem = ({
-  data,
-  removeFromWishListHandler,
-}) => {
+const SideWishListItem = ({ data, removeFromWishListHandler }) => {
   return (
     <div className="flex w-full gap-4 border-b pb-4">
       <div className="h-24 w-24 flex-shrink-0 rounded-md border border-gray-200">

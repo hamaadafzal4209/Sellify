@@ -190,7 +190,7 @@ export default function Header() {
               {isAuthenticated ? (
                 <div className="md:ml-8 flex items-center gap-6 md:gap-8">
                   <CartSidebar />
-                  <WishListSidebar/>
+                  <WishListSidebar />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
