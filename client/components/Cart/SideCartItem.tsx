@@ -5,7 +5,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 
 const SideCartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
-  const [quantity, setQuantity] = useState(data.qty);
+  const [quantity, setQuantity] = useState(1);
   const totalPrice = data.discountPrice * quantity;
 
   const increment = () => {
@@ -27,7 +27,7 @@ const SideCartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) =>
   };
 
   return (
-    <div className="flex w-full gap-4">
+    <div className="flex w-full gap-4 border-b pb-4">
       <div className="h-24 w-24 flex-shrink-0 rounded-md border border-gray-200">
         <Image
           width={20}

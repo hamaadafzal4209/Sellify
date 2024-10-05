@@ -15,7 +15,6 @@ import {
   addTocartAction,
   removeFromCartAction,
 } from "@/app/redux/Features/cart/cartAction";
-import { AnyCnameRecord } from "node:dns";
 
 const CartSidebar = () => {
   const { isAuthenticated } = useSelector((state) => state.user);
@@ -53,7 +52,7 @@ const CartSidebar = () => {
           </SheetHeader>
 
           {/* Scrollable area for cart items */}
-          <div className="h-[73vh] max-h-[73vh] overflow-y-auto mt-6">
+          <div className="h-[68vh] max-h-[68vh] overflow-y-auto mt-6">
             <div className="space-y-6 bg-white pr-4">
               {cart.length > 0 ? (
                 cart.map((item: any) => (
