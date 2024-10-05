@@ -4,13 +4,49 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Heart } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addTocartAction,
+  removeFromCartAction,
+} from "@/app/redux/Features/cart/cartAction";
+import {
+  addToWishlistAction,
+  removeFromWishlistAction,
+} from "@/app/redux/Features/wishlist/wishlistAction";
 
 const ProductDetailPopup = ({ isOpen, onClose, product }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { wishlist } = useSelector((state: any) => state.wishlist);
+  const { cart } = useSelector((state: any) => state.cart);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Check if the product is already in the wishlist
+    const isProductInWishlist = wishlist.some((item: any) => item._id === product._id);
+    setIsWishlisted(isProductInWishlist);
+  }, [wishlist, product]);
 
   if (!product) return null;
+
+  const handleAddToCart = () => {
+    const isInCart = cart.some((item: any) => item._id === product._id);
+    if (isInCart) {
+      dispatch(removeFromCartAction(product._id));
+    } else {
+      dispatch(addTocartAction(product));
+    }
+  };
+
+  const handleAddToWishlist = () => {
+    if (isWishlisted) {
+      dispatch(removeFromWishlistAction(product._id));
+    } else {
+      dispatch(addToWishlistAction(product));
+    }
+    setIsWishlisted(!isWishlisted);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -88,15 +124,20 @@ const ProductDetailPopup = ({ isOpen, onClose, product }) => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 mt-6">
-              <Button className="flex-1 bg-main-500 hover:bg-main-600 text-white">
-                Add to Cart
+              <Button
+                className="flex-1 bg-main-500 hover:bg-main-600 text-white"
+                onClick={handleAddToCart}
+              >
+                {cart.some((item: any) => item._id === product._id)
+                  ? "Remove from Cart"
+                  : "Add to Cart"}
               </Button>
               <Button
                 variant="outline"
                 className={`flex-1 ${
                   isWishlisted ? "text-red-500" : "text-gray-700"
                 }`}
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={handleAddToWishlist}
               >
                 <Heart
                   className={`mr-2 h-4 w-4 ${
