@@ -37,7 +37,7 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const { cart = [] } = useSelector((state: any) => state.cart);
   const { wishlist = [] } = useSelector((state: any) => state.wishlist);
-  
+
   const [isFavorited, setIsFavorited] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -55,7 +55,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
   // Check if product is in wishlist
   useEffect(() => {
     if (wishlist) {
-      const isItemInWishlist = wishlist.some((item: any) => item._id === product._id);
+      const isItemInWishlist = wishlist.some(
+        (item: any) => item._id === product._id
+      );
       setIsFavorited(isItemInWishlist);
     }
   }, [wishlist, product._id]);
@@ -200,7 +202,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           type="button"
           className={`inline-flex w-full items-center justify-center mt-4 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-300 ${
             inCart
-              ? "bg-green-500 text-white"
+              ? "bg-green-600 text-white"
               : "bg-main-500 text-white hover:bg-main-600"
           }`}
           onClick={inCart ? handleRemoveFromCart : handleAddToCart}

@@ -31,8 +31,8 @@ const CartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
       <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
         <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
           <Image
-            width={20}
-            height={20}
+            width={1000}
+            height={1000}
             className="h-24 w-24 object-contain"
             src={data.images[0]?.url}
             alt={data.name}

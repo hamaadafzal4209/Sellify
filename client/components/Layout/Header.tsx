@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getAllProducts } from "@/app/redux/Features/product/productAction";
 import Image from "next/image";
 import CartSidebar from "../Cart/CartSidebar";
+import WishListSidebar from "../WishList/WishListSidebar";
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -189,6 +190,7 @@ export default function Header() {
               {isAuthenticated ? (
                 <div className="md:ml-8 flex items-center gap-6 md:gap-8">
                   <CartSidebar />
+                  <WishListSidebar/>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button

@@ -1,21 +1,11 @@
 "use client";
-import { Trash2, ShoppingCart, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  removeFromWishlistAction,
-  addToCartAction,
-} from "@/app/redux/Features/wishlist/wishlistAction";
+import { removeFromWishlistAction } from "@/app/redux/Features/wishlist/wishlistAction";
+import WishlistItem from "@/components/WishList/WIshlistItem";
 
 export default function WishlistPage() {
   const { wishlist = [] } = useSelector((state: any) => state.wishlist);
@@ -30,11 +20,7 @@ export default function WishlistPage() {
     });
   };
 
-  const removeFromWishlist = (id) => {
-    dispatch(removeFromWishlistAction(id));
-  };
-
-  const addToCart = (id) => {
+  const addToCart = (id: string) => {
     const product = wishlist.find((item) => item._id === id);
     if (product) {
       dispatch(addToCartAction(product));
@@ -42,7 +28,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="main-container px-4 py-8 max-w-6xl">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
         {wishlist.length > 0 && (
@@ -80,49 +66,9 @@ export default function WishlistPage() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="card-container gap-6">
             {wishlist.map((item) => (
-              <Card key={item._id} className="wishlist-item overflow-hidden">
-                <CardContent className="p-0">
-                  <div>
-                    <image
-                      width={20}
-                      height={20}
-                      src={item.images?.[0]?.url}
-                      alt={item.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h2 className="text-xl font-semibold mb-2 text-gray-800">
-                      {item.name}
-                    </h2>
-                    <p className="text-gray-600 mb-4">
-                      ${item?.discountPrice.toFixed(2)}
-                    </p>
-                  </div>
-                </CardContent>
-                <Separator />
-                <CardFooter className="flex justify-between p-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeFromWishlist(item._id)}
-                    className="wishlist-item__remove"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Remove from wishlist</span>
-                  </Button>
-                  <Button
-                    onClick={() => addToCart(item._id)}
-                    disabled={!item.inStock}
-                    className="wishlist-item__cart"
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
-                </CardFooter>
-              </Card>
+              <WishlistItem key={item._id} item={item} addToCart={addToCart} />
             ))}
           </div>
         </div>
