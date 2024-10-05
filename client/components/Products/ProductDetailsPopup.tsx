@@ -24,7 +24,9 @@ const ProductDetailPopup = ({ isOpen, onClose, product }) => {
 
   useEffect(() => {
     // Check if the product is already in the wishlist
-    const isProductInWishlist = wishlist.some((item: any) => item._id === product._id);
+    const isProductInWishlist = wishlist.some(
+      (item: any) => item._id === product._id
+    );
     setIsWishlisted(isProductInWishlist);
   }, [wishlist, product]);
 

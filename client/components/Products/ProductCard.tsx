@@ -21,6 +21,7 @@ import {
   addToWishlistAction,
   removeFromWishlistAction,
 } from "@/app/redux/Features/wishlist/wishlistAction";
+import { ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
   product: {
@@ -201,21 +202,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         <button
           type="button"
-          className={`inline-flex w-full items-center justify-center mt-4 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-300 ${
-            inCart
-              ? "bg-green-600 text-white"
-              : "bg-main-500 text-white hover:bg-main-600"
-          }`}
+          className={`inline-flex w-full items-center justify-center mt-4 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-300 bg-main-500 text-white hover:bg-main-600`}
           onClick={inCart ? handleRemoveFromCart : handleAddToCart}
         >
           {inCart ? (
             <>
-              <FaCheck className="mr-2 h-5 w-5" />
-              Added to Cart
+              <FaShoppingCart className="mr-2 h-5 w-5" />
+              Remove from Cart
             </>
           ) : (
             <>
-              <FaShoppingCart className="mr-2 h-5 w-5" />
+              <ShoppingCart className="mr-2 h-5 w-5" />
               Add to Cart
             </>
           )}

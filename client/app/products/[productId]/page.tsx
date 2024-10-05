@@ -10,16 +10,37 @@ import { getAllProducts } from "@/app/redux/Features/product/productAction";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import RelatedProducts from "@/components/Products/RelatedProducts";
+import {
+  addTocartAction,
+  removeFromCartAction,
+} from "@/app/redux/Features/cart/cartAction";
+import {
+  addToWishlistAction,
+  removeFromWishlistAction,
+} from "@/app/redux/Features/wishlist/wishlistAction";
 
 export default function ProductDetails() {
+  const { allProducts } = useSelector((state) => state.product);
+  const { wishlist } = useSelector((state: any) => state.wishlist);
+  const { cart } = useSelector((state: any) => state.cart);
+  const dispatch = useDispatch();
+
   const [quantity, setQuantity] = useState(1);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const [product, setProduct] = useState(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const dispatch = useDispatch();
-  const { allProducts } = useSelector((state) => state.product);
   const { productId } = useParams();
+
+  useEffect(() => {
+    if (product) {
+      const isProductInWishlist = wishlist.some(
+        (item: any) => item._id === product._id
+      );
+      setIsWishlisted(isProductInWishlist);
+    }
+  }, [wishlist, product]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -56,13 +77,21 @@ export default function ProductDetails() {
   }, [product, allProducts]);
 
   const handleAddToCart = () => {
-    if (product) {
-      console.log("Added to cart:", {
-        productId: product._id,
-        name: product.name,
-        quantity: quantity,
-      });
+    const isInCart = cart.some((item: any) => item._id === product._id);
+    if (isInCart) {
+      dispatch(removeFromCartAction(product._id));
+    } else {
+      dispatch(addTocartAction(product));
     }
+  };
+
+  const handleAddToWishlist = () => {
+    if (isWishlisted) {
+      dispatch(removeFromWishlistAction(product._id));
+    } else {
+      dispatch(addToWishlistAction(product));
+    }
+    setIsWishlisted(!isWishlisted);
   };
 
   const handleImageChange = (index) => {
@@ -131,7 +160,7 @@ export default function ProductDetails() {
             alt={product.name}
             className="max-w-sm w-full h-96 object-contain bg-gray-100 p-4 rounded-lg"
           />
-          <div className="flex gap-2 mt-4 overflow-x-auto max-w-md">
+          <div className="flex gap-2 mt-4 overflow-x-auto max-w-md no-scrollbar">
             {product.images?.map((image, index) => (
               <div
                 key={index}
@@ -181,7 +210,7 @@ export default function ProductDetails() {
                 ${product.originalPrice}
               </span>
               {product.discountPrice && (
-                <Badge className="ml-2 text-sm bg-gray-200 text-black">
+                <Badge className="ml-2 text-sm bg-gray-200 hover:bg-gray-200 text-black">
                   Save ${product.originalPrice - product.discountPrice}
                 </Badge>
               )}
@@ -211,16 +240,30 @@ export default function ProductDetails() {
           </div>
 
           <div className="flex space-x-4 mt-6">
-            <Button
-              className="flex-1 bg-main-500 hover:bg-main-600 text-white"
-              onClick={handleAddToCart}
-            >
-              Add to Cart
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <Heart className="mr-2 h-4 w-4" />
-              Add to Wishlist
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <Button
+                className="flex-1 bg-main-500 hover:bg-main-600 text-white"
+                onClick={handleAddToCart}
+              >
+                {cart.some((item: any) => item._id === product._id)
+                  ? "Remove from Cart"
+                  : "Add to Cart"}
+              </Button>
+              <Button
+                variant="outline"
+                className={`flex-1 ${
+                  isWishlisted ? "text-red-500" : "text-gray-700"
+                }`}
+                onClick={handleAddToWishlist}
+              >
+                <Heart
+                  className={`mr-2 h-4 w-4 ${
+                    isWishlisted ? "fill-red-500" : ""
+                  }`}
+                />
+                {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
