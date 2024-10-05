@@ -70,9 +70,9 @@ const CartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
             </p>
             <div
             onClick={() => removeFromCartHandler(data)}
-            className="text-red-500 hover:text-red-600 flex items-center gap-2 text-sm"
+            className="text-red-500 hover:text-red-600 flex items-center gap-1 text-sm cursor-pointer"
           >
-            <CircleX /> <span>remove</span>
+            <CircleX className="text-xs" /> <span>remove</span>
           </div>
           </div>
           </div>
