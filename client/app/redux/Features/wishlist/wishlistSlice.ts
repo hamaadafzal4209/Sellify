@@ -21,7 +21,7 @@ const wishlistSlice = createSlice({
     },
     removeFromWishlist: (state, action) => {
       state.wishlist = state.wishlist.filter((i) => i._id !== action.payload);
-    },    
+    },
   },
 });
 

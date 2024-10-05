@@ -9,7 +9,7 @@ import {
   AiOutlineStar,
   AiFillHeart,
 } from "react-icons/ai";
-import { FaShoppingCart, FaCheck } from "react-icons/fa"; // Import FaCheck for inCart state
+import { FaShoppingCart, FaCheck } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 import ProductDetailPopup from "./ProductDetailsPopup";
 import { useDispatch, useSelector } from "react-redux";
