@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { ShoppingCart } from "lucide-react";
 import SideCartItem from "./SideCartItem";
@@ -11,10 +11,29 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import Link from "next/link";
+import {
+  addTocartAction,
+  removeFromCartAction,
+} from "@/app/redux/Features/cart/cartAction";
+import { AnyCnameRecord } from "node:dns";
 
 const CartSidebar = () => {
-  const { cart } = useSelector((state) => state.cart);
   const { isAuthenticated } = useSelector((state) => state.user);
+  const { cart = [] } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+
+  const removeFromCartHandler = (data) => {
+    dispatch(removeFromCartAction(data._id));
+  };
+
+  const quantityChangeHandler = (data) => {
+    dispatch(addTocartAction(data));
+  };
+
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.qty * item.discountPrice,
+    0
+  );
 
   return (
     <div>
@@ -37,7 +56,14 @@ const CartSidebar = () => {
           <div className="h-[73vh] max-h-[73vh] overflow-y-auto pt-6">
             <div className="space-y-6 bg-white pr-4">
               {cart.length > 0 ? (
-                cart.map((item) => <SideCartItem key={item._id} item={item} />)
+                cart.map((item: any) => (
+                  <SideCartItem
+                    data={item}
+                    key={item._id}
+                    quantityChangeHandler={quantityChangeHandler}
+                    removeFromCartHandler={removeFromCartHandler}
+                  />
+                ))
               ) : (
                 <p className="text-center text-gray-500">Your cart is empty</p>
               )}

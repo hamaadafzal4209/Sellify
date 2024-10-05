@@ -12,9 +12,8 @@ import {
 import { FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 import ProductDetailPopup from "./ProductDetailsPopup";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addTocartAction, removeFromCartAction } from "@/app/redux/Features/cart/cartAction";
-import { addToWishlistAction, removeFromWishlistAction } from "@/app/redux/Features/wishlist/wishlistAction"; // Adjust the import path accordingly
 
 const ProductCard = ({ product }) => {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -35,30 +34,8 @@ const ProductCard = ({ product }) => {
     setIsAddedToCart(isProductInCart);
   }, [product._id]);
 
-  // Load initial state for wishlist
-  useEffect(() => {
-    const wishlistProducts = JSON.parse(localStorage.getItem("wishlistProducts")) || [];
-    const isProductInWishlist = wishlistProducts.some((item) => item._id === product._id);
-    setIsFavorited(isProductInWishlist);
-  }, [product._id]);
-
   const handleFavoriteToggle = () => {
-    if (isFavorited) {
-      dispatch(removeFromWishlistAction(product._id));
-      setIsFavorited(false);
-
-      // Update local storage
-      const wishlistProducts = JSON.parse(localStorage.getItem("wishlistProducts")) || [];
-      const updatedWishlist = wishlistProducts.filter((item) => item._id !== product._id);
-      localStorage.setItem("wishlistProducts", JSON.stringify(updatedWishlist));
-    } else {
-      dispatch(addToWishlistAction(product));
-      setIsFavorited(true);
-
-      // Save to local storage
-      const wishlistProducts = JSON.parse(localStorage.getItem("wishlistProducts")) || [];
-      localStorage.setItem("wishlistProducts", JSON.stringify([...wishlistProducts, product]));
-    }
+    setIsFavorited((prev) => !prev);
   };
 
   const handleQuickView = () => {
@@ -97,7 +74,7 @@ const ProductCard = ({ product }) => {
   };
 
   const handleRemoveFromCart = () => {
-    dispatch(removeFromCartAction(product._id));
+    dispatch(removeFromCartAction(product._id)); // Assuming you have this action defined
     setIsAddedToCart(false);
 
     // Update local storage
