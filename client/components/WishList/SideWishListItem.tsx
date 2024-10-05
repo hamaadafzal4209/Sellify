@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 const SideWishListItem = ({ data, removeFromWishListHandler }) => {
   return (
@@ -32,12 +33,12 @@ const SideWishListItem = ({ data, removeFromWishListHandler }) => {
         </div>
 
         <div className="flex justify-between text-sm">
-          <button
+          <Button
             onClick={() => removeFromWishListHandler(data)}
-            className="text-gray-500 hover:text-red-500"
+            className="text-gray-500 bg-transparent hover:bg-transparent hover:text-red-500"
           >
             <Trash2 className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

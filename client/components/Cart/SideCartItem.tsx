@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { Button } from "../ui/button";
 
 const SideCartItem = ({
   data,
@@ -77,12 +78,12 @@ const SideCartItem = ({
             </button>
           </div>
 
-          <button
+          <Button
             onClick={() => removeFromCartHandler(data)}
-            className="text-gray-500 hover:text-red-500"
+            className="text-gray-500 bg-transparent hover:bg-gray-200 hover:text-red-500"
           >
             <Trash2 className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>
