@@ -159,7 +159,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
             <button
               type="button"
-              data-tooltip-id="tooltip-favorite"
+              data-tooltip-id={
+                isFavorited ? "tooltip-remove-favorite" : "tooltip-add-favorite"
+              } // Assign different tooltip IDs
               onClick={handleFavoriteToggle}
               className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
             >
@@ -173,11 +175,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
               </span>
             </button>
             <Tooltip
-              id="tooltip-favorite"
-              content={
-                isFavorited ? "Remove from Favorites" : "Add to Favorites"
-              }
+              id="tooltip-remove-favorite"
+              content="Remove from Favorites"
             />
+            <Tooltip id="tooltip-add-favorite" content="Add to Favorites" />
           </div>
         </div>
 
