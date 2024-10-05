@@ -1,12 +1,25 @@
 "use client";
 
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CartItem from "@/components/Cart/CartItem";
 import Link from "next/link";
+import {
+  addTocartAction,
+  removeFromCartAction,
+} from "../redux/Features/cart/cartAction";
 
-const CartPage: React.FC = () => {
-    const { cart } = useSelector((state) => state.cart);
+const CartPage = () => {
+  const { cart = [] } = useSelector((state: any) => state.cart);
+  const dispatch = useDispatch();
+
+  const removeFromCartHandler = (data) => {
+    dispatch(removeFromCartAction(data._id));
+  };
+
+  const quantityChangeHandler = (data) => {
+    dispatch(addTocartAction(data));
+  };
 
   // Calculate total price
   const totalPrice = cart.reduce(
@@ -31,7 +44,12 @@ const CartPage: React.FC = () => {
               <div className="space-y-6">
                 {cart.length > 0 ? (
                   cart.map((item: any) => (
-                    <CartItem key={item.id} item={item} />
+                    <CartItem
+                      data={item}
+                      key={item._id}
+                      quantityChangeHandler={quantityChangeHandler}
+                      removeFromCartHandler={removeFromCartHandler}
+                    />
                   ))
                 ) : (
                   <p>Your cart is empty.</p>
