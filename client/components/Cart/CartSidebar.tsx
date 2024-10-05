@@ -17,8 +17,8 @@ import {
 } from "@/app/redux/Features/cart/cartAction";
 
 const CartSidebar = () => {
-  const { isAuthenticated } = useSelector((state) => state.user);
-  const { cart = [] } = useSelector((state) => state.cart);
+  const { isAuthenticated } = useSelector((state : any) => state.user);
+  const { cart = [] } = useSelector((state : any) => state.cart);
   const dispatch = useDispatch();
 
   const removeFromCartHandler = (data) => {

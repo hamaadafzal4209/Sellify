@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useEffect } from "react"; // Import useEffect
+import React, { useState, useEffect } from "react";
 import {
   AiFillStar,
   AiOutlineEye,
@@ -9,30 +9,41 @@ import {
   AiOutlineStar,
   AiFillHeart,
 } from "react-icons/ai";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaCheck } from "react-icons/fa"; // Import FaCheck for inCart state
 import { Tooltip } from "react-tooltip";
 import ProductDetailPopup from "./ProductDetailsPopup";
-import { useDispatch } from "react-redux";
-import { addTocartAction, removeFromCartAction } from "@/app/redux/Features/cart/cartAction";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addTocartAction,
+  removeFromCartAction,
+} from "@/app/redux/Features/cart/cartAction";
 
-const ProductCard = ({ product }) => {
+interface ProductCardProps {
+  product: {
+    _id: string;
+    name: string;
+    images: { url: string }[];
+    ratings: number;
+    reviews: { length: number }[];
+    stock: number;
+    discountPrice: number;
+  };
+}
+
+const ProductCard = ({ product }: ProductCardProps) => {
+  const { cart = [] } = useSelector((state) => state.cart);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [inCart, setInCart] = useState(false);
   const dispatch = useDispatch();
 
-  // Ensure product exists
-  if (!product || !product._id) {
-    return null;
-  }
-
-  // Load initial state from local storage
   useEffect(() => {
-    const cartProducts = JSON.parse(localStorage.getItem("cartProducts")) || [];
-    const isProductInCart = cartProducts.some((item) => item._id === product._id);
-    setIsAddedToCart(isProductInCart);
-  }, [product._id]);
+    if (cart) {
+      const isItemInCart = cart.some((item: any) => item._id === product._id);
+      setInCart(isItemInCart);
+    }
+  }, [cart, product._id]);
 
   const handleFavoriteToggle = () => {
     setIsFavorited((prev) => !prev);
@@ -43,7 +54,7 @@ const ProductCard = ({ product }) => {
     setIsQuickViewOpen(true);
   };
 
-  const renderStars = (rating) => {
+  const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 !== 0;
     const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
@@ -66,21 +77,19 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = () => {
     dispatch(addTocartAction(product));
-    setIsAddedToCart(true);
+    setInCart(true);
 
     // Save to local storage
     const cartProducts = JSON.parse(localStorage.getItem("cartProducts")) || [];
-    localStorage.setItem("cartProducts", JSON.stringify([...cartProducts, product]));
+    localStorage.setItem(
+      "cartProducts",
+      JSON.stringify([...cartProducts, product])
+    );
   };
 
   const handleRemoveFromCart = () => {
-    dispatch(removeFromCartAction(product._id)); // Assuming you have this action defined
-    setIsAddedToCart(false);
-
-    // Update local storage
-    const cartProducts = JSON.parse(localStorage.getItem("cartProducts")) || [];
-    const updatedCartProducts = cartProducts.filter((item) => item._id !== product._id);
-    localStorage.setItem("cartProducts", JSON.stringify(updatedCartProducts));
+    dispatch(removeFromCartAction(product._id));
+    setInCart(false);
   };
 
   return (
@@ -91,7 +100,7 @@ const ProductCard = ({ product }) => {
             width={1000}
             height={1000}
             className="h-full w-full p-2 rounded-lg object-contain shadow"
-            src={product.images?.[0]?.url}
+            src={product.images?.[0]?.url || "/assets/image.jpg"}
             alt={product.name}
           />
         </Link>
@@ -149,7 +158,9 @@ const ProductCard = ({ product }) => {
         </Link>
 
         <div className="mt-2 flex items-center gap-1">
-          <div className="flex items-center">{renderStars(product.ratings)}</div>
+          <div className="flex items-center">
+            {renderStars(product.ratings)}
+          </div>
           <p className="text-sm font-medium text-gray-900">{product.ratings}</p>
           <p className="text-sm font-medium text-gray-500">
             ({product.reviews?.length})
@@ -159,14 +170,23 @@ const ProductCard = ({ product }) => {
         <button
           type="button"
           className={`inline-flex w-full items-center justify-center mt-4 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-300 ${
-            isAddedToCart
-              ? 'bg-green-600 text-white hover:bg-green-700' // Styling when added to cart
-              : 'bg-main-500 text-white hover:bg-main-600' // Default styling
+            inCart
+              ? "bg-green-500 text-white"
+              : "bg-main-500 text-white hover:bg-main-600"
           }`}
-          onClick={isAddedToCart ? handleRemoveFromCart : handleAddToCart} // Toggle between add and remove
+          onClick={inCart ? handleRemoveFromCart : handleAddToCart}
         >
-          <FaShoppingCart className="mr-2 h-5 w-5" />
-          {isAddedToCart ? 'Remove from Cart' : 'Add to Cart'}
+          {inCart ? (
+            <>
+              <FaCheck className="mr-2 h-5 w-5" />
+              Added to Cart
+            </>
+          ) : (
+            <>
+              <FaShoppingCart className="mr-2 h-5 w-5" />
+              Add to Cart
+            </>
+          )}
         </button>
       </div>
 
