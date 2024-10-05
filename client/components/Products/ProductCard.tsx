@@ -17,6 +17,10 @@ import {
   addTocartAction,
   removeFromCartAction,
 } from "@/app/redux/Features/cart/cartAction";
+import {
+  addToWishlistAction,
+  removeFromWishlistAction,
+} from "@/app/redux/Features/wishlist/wishlistAction";
 
 interface ProductCardProps {
   product: {
@@ -31,13 +35,16 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const { cart = [] } = useSelector((state) => state.cart);
+  const { cart = [] } = useSelector((state: any) => state.cart);
+  const { wishlist = [] } = useSelector((state: any) => state.wishlist);
+  
   const [isFavorited, setIsFavorited] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [inCart, setInCart] = useState(false);
   const dispatch = useDispatch();
 
+  // Check if product is in cart
   useEffect(() => {
     if (cart) {
       const isItemInCart = cart.some((item: any) => item._id === product._id);
@@ -45,8 +52,20 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
   }, [cart, product._id]);
 
+  // Check if product is in wishlist
+  useEffect(() => {
+    if (wishlist) {
+      const isItemInWishlist = wishlist.some((item: any) => item._id === product._id);
+      setIsFavorited(isItemInWishlist);
+    }
+  }, [wishlist, product._id]);
+
   const handleFavoriteToggle = () => {
-    setIsFavorited((prev) => !prev);
+    if (isFavorited) {
+      removeFromWishlistHandler(product._id);
+    } else {
+      addToWishlistHandler(product);
+    }
   };
 
   const handleQuickView = () => {
@@ -73,6 +92,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
         ))}
       </>
     );
+  };
+
+  const removeFromWishlistHandler = (productId) => {
+    setIsFavorited(false);
+    dispatch(removeFromWishlistAction(productId));
+  };
+
+  const addToWishlistHandler = (product) => {
+    setIsFavorited(true);
+    dispatch(addToWishlistAction(product));
   };
 
   const handleAddToCart = () => {
